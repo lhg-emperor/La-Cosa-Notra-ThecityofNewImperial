@@ -11,9 +11,17 @@ public class PlayerMovement : MonoBehaviour
     private PlayerControls controls;
     private Vector2 moveInput;
 
+    private Animator animator;
+    private SpriteRenderer spriteRenderer;
+
     void Awake()
     {
+        animator = transform.GetComponent<Animator>();
+        spriteRenderer = transform.GetComponent<SpriteRenderer>();
+
+
         rb = GetComponent<Rigidbody2D>();
+
         controls = new PlayerControls();
 
         controls.Movement.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
@@ -33,6 +41,7 @@ public class PlayerMovement : MonoBehaviour
     void FixedUpdate()
     {
         Move();
+        Animate();
     }
 
     void Move()
@@ -48,6 +57,24 @@ public class PlayerMovement : MonoBehaviour
 
             // Xoay nhân vật theo hướng di chuyển
             rb.rotation = angle;
+
+            spriteRenderer.flipX = movement.x < 0;
         }
+    }
+    public void Animate()
+    {
+        bool isMoving = moveInput != Vector2.zero;
+
+        if (animator != null)
+        {
+            animator.SetBool("isRunning", isMoving);
+        }
+
+        // Optional: lật sprite trái/phải nếu di chuyển ngang
+        if (spriteRenderer != null && moveInput.x != 0)
+        {
+            spriteRenderer.flipX = moveInput.x < 0;
+        }
+
     }
 }
