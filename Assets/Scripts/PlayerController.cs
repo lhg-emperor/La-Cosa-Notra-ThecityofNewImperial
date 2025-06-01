@@ -26,6 +26,8 @@ public class PlayerMovement : MonoBehaviour
 
         controls.Movement.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
         controls.Movement.Move.canceled += ctx => moveInput = Vector2.zero;
+
+
     }
 
     void OnEnable()

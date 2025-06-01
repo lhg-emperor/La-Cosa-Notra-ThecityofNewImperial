@@ -13,15 +13,6 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
-                },
-                {
-                    "name": "Look",
-                    "type": "Value",
-                    "id": "39d2bfa2-fc42-4152-9eb3-7f03425cccc6",
-                    "expectedControlType": "Vector2",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -79,15 +70,32 @@
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
-                },
+                }
+            ]
+        },
+        {
+            "name": "Combat",
+            "id": "ebed4a3f-83ca-4630-9d0c-c07ceca3e676",
+            "actions": [
+                {
+                    "name": "Attack",
+                    "type": "Button",
+                    "id": "cb8ab3ce-bd54-44de-89a0-d0c1e02f09bb",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
                 {
                     "name": "",
-                    "id": "423883dd-e7fc-4aa8-a858-b3fb740ae3ab",
+                    "id": "9cd772ea-cbbe-41d0-bd9f-8826af163a84",
                     "path": "",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Look",
+                    "action": "Attack",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
