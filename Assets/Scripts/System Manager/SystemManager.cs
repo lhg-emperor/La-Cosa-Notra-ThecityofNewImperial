@@ -1,13 +1,19 @@
-﻿// GameSystemManager.cs
-using UnityEngine;
+﻿using UnityEngine;
 
 public class GameSystemManager : MonoBehaviour
 {
     public static GameSystemManager Instance { get; private set; }
-    public Weapon Empty;
 
-    [Header("References")]
+    [Header("Player reference")]
     public Player player;
+
+    [Header("Weapon prefabs or objects")]
+    public GameObject baseballBatPrefab;
+    public GameObject katanaPrefab;
+
+    public IWeapon emptyWeapon;
+    public IWeapon batWeapon;
+    public IWeapon katanaWeapon;
 
     void Awake()
     {
@@ -20,10 +26,10 @@ public class GameSystemManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        if (Empty == null)
-        {
-            Empty = new Weapon("Tay không", Weapon.WeaponType.Empty, 5, 1f);
-        }
+        // Khởi tạo các vũ khí
+        emptyWeapon = new EmptyWeapon();
+        batWeapon = new BatWeapon(baseballBatPrefab);
+        katanaWeapon = new KatanaWeapon(katanaPrefab);
     }
 
     void Start()
@@ -34,10 +40,23 @@ public class GameSystemManager : MonoBehaviour
         }
     }
 
-    // trả về vũ khí mặc định (tay không)
-    public Weapon GetDefaultWeapon()
+    public IWeapon GetDefaultWeapon()
     {
-        return Empty;
+        return emptyWeapon;
+    }
+
+    public IWeapon GetWeaponByName(string name)
+    {
+        switch (name)
+        {
+            case "BaseballBat":
+                return batWeapon;
+            case "Katana":
+                return katanaWeapon;
+            case "Empty":
+            default:
+                return emptyWeapon;
+        }
     }
 
     public void TriggerPlayerAttack()

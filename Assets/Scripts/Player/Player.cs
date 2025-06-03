@@ -1,12 +1,11 @@
-﻿// Player.cs
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class Player : MonoBehaviour
 {
-    public Weapon currentWeapon;  // Vũ khí hiện tại
+    public IWeapon currentWeapon;
 
     [Header("Settings")]
     public float moveSpeed = 5f;
@@ -17,57 +16,47 @@ public class Player : MonoBehaviour
 
     private Animator animator;
     private SpriteRenderer spriteRenderer;
-    private bool Hit = false;
+    public bool isAttacking = false;
 
-    private void Start()
-    {
-        // Gán vũ khí mặc định khi bắt đầu
-        EquipWeapon(GameSystemManager.Instance.GetDefaultWeapon());
-    }
+    public GameObject weaponModelInstance;
 
-    void Awake()
+    public void Awake()
     {
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
 
         controls = new PlayerControls();
-
         controls.Movement.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
         controls.Movement.Move.canceled += ctx => moveInput = Vector2.zero;
 
-        controls.Combat.Attack.performed += ctx => OnAttack();
+        controls.Combat.Attack.performed += ctx => Attack();
     }
 
-    void OnEnable()
+    public void Start()
+    {
+        EquipWeapon(GameSystemManager.Instance.GetDefaultWeapon());
+    }
+
+    public void OnEnable()
     {
         controls.Movement.Enable();
         controls.Combat.Enable();
     }
 
-    void OnDisable()
+    public void OnDisable()
     {
         controls.Movement.Disable();
         controls.Combat.Disable();
     }
 
-    private void OnAttack()
-    {
-        if (Hit || animator == null) return;
-
-        animator.SetBool("isHit", true);
-        Hit = true;
-
-        StartCoroutine(ResetHit(0.5f));
-    }
-
-    void FixedUpdate()
+    public void FixedUpdate()
     {
         Move();
         Animate();
     }
 
-    void Move()
+    private void Move()
     {
         Vector2 movement = moveInput.normalized * moveSpeed * Time.fixedDeltaTime;
         if (movement != Vector2.zero)
@@ -81,7 +70,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    void Animate()
+    public void Animate()
     {
         bool isMoving = moveInput != Vector2.zero;
 
@@ -96,40 +85,57 @@ public class Player : MonoBehaviour
         }
     }
 
-    private IEnumerator ResetHit(float delay)
+    public void Attack()
     {
-        yield return new WaitForSeconds(delay);
-        animator.SetBool("isHit", false);
-        Hit = false;
+        if (isAttacking || currentWeapon == null) return;
+
+        isAttacking = true;
+
+        // Trigger animation
+        if (animator != null && !string.IsNullOrEmpty(currentWeapon.PlayerAttackAnimTrigger))
+        {
+            animator.SetTrigger(currentWeapon.PlayerAttackAnimTrigger);
+        }
+
+        // Gọi hành vi tấn công của vũ khí
+        currentWeapon.PerformAttack(this);
+
+        StartCoroutine(ResetAttack(0.5f));
     }
 
-    // Phương thức thiết lập vũ khí
-    public void EquipWeapon(Weapon newWeapon)
+    public IEnumerator ResetAttack(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        isAttacking = false;
+    }
+
+    public void EquipWeapon(IWeapon newWeapon)
     {
         if (newWeapon == null)
         {
-            currentWeapon = GameSystemManager.Instance.GetDefaultWeapon();
-        }
-        else
-        {
-            currentWeapon = newWeapon;
+            newWeapon = GameSystemManager.Instance.GetDefaultWeapon();
         }
 
-        Debug.Log($"Player đã trang bị vũ khí: {currentWeapon.weaponName} - Loại: {currentWeapon.type}");
-        // Có thể thêm xử lý animation hoặc UI ở đây dựa trên loại vũ khí
-    }
+        // Xoá model cũ nếu có
+        if (weaponModelInstance != null)
+        {
+            Destroy(weaponModelInstance);
+        }
 
-    // Phương thức tấn công
-    public void Attack()
-    {
-        if (currentWeapon != null)
+        // Huỷ bỏ trạng thái vũ khí cũ
+        currentWeapon?.OnUnequip(this);
+
+        currentWeapon = newWeapon;
+
+        // Gọi logic trang bị vũ khí
+        currentWeapon.OnEquip(this, transform);
+
+        // Gắn prefab nếu có
+        if (currentWeapon.WeaponModelPrefab != null)
         {
-            Debug.Log($"Tấn công với {currentWeapon.weaponName}, gây {currentWeapon.damage} sát thương, tầm {currentWeapon.range}");
-            // Thêm logic animation, hiệu ứng dựa trên currentWeapon.type
+            weaponModelInstance = Instantiate(currentWeapon.WeaponModelPrefab, transform);
         }
-        else
-        {
-            Debug.LogWarning("Không có vũ khí, không thể tấn công");
-        }
+
+        Debug.Log($"[Player] Đã trang bị vũ khí: {currentWeapon.WeaponName} - Loại: {currentWeapon.Type}");
     }
 }
