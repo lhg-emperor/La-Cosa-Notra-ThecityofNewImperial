@@ -1,40 +1,27 @@
 ﻿using UnityEngine;
 
-public class BatWeapon : IWeapon
+public class BatWeapon : WeaponManager
 {
-    private GameObject prefab;
+    public override string WeaponName => "Baseball Bat";
+    public override WeaponType Type => WeaponType.Melee;
+    public override int Damage => 35;
+    public override float Range => 1.2f;
 
-    public BatWeapon(GameObject prefab)
+    public override void PerformAttack(Player attacker)
     {
-        this.prefab = prefab;
+        // TODO: Thêm logic xử lý tấn công cho gậy bóng chày
+        Debug.Log("Bat attack performed!");
     }
 
-    public string WeaponName => "Gậy bóng chày";
-    public WeaponType Type => WeaponType.Melee;
-    public int Damage => 35;
-    public float Range => 1.2f;
-    public Sprite Icon => null;
-    public GameObject WeaponModelPrefab => prefab;
-
-    public string PlayerIdleAnimState => "Idle_Bat";
-    public string PlayerRunAnimState => "Run_Bat";
-    public string PlayerAttackAnimTrigger => "Swing_Bat";
-
-    public void PerformAttack(Player attacker)
+    public override void OnEquip(Player player)
     {
-        Debug.Log("Vung gậy bóng chày!");
+        // TODO: Gán animation, gắn vũ khí lên tay,...
+        Debug.Log("Bat equipped.");
     }
 
-    public void OnEquip(Player player, Transform handTransform)
+    public override void OnUnequip(Player player)
     {
-        if (prefab != null && handTransform != null)
-        {
-            GameObject weaponInstance = GameObject.Instantiate(prefab, handTransform);
-        }
-    }
-
-    public void OnUnequip(Player player)
-    {
-        // TODO: clear vũ khí cũ
+        // TODO: Reset animation, tháo vũ khí,...
+        Debug.Log("Bat unequipped.");
     }
 }

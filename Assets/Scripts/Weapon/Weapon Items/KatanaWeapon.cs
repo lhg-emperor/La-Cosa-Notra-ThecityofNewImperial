@@ -1,40 +1,37 @@
 ﻿using UnityEngine;
 
-public class KatanaWeapon : IWeapon
+public class KatanaWeapon : WeaponManager
 {
-    private GameObject prefab;
 
-    public KatanaWeapon(GameObject prefab)
+    public override string WeaponName => "Katana";
+    public override WeaponType Type => WeaponType.Melee;
+    public override int Damage => 40;
+    public override float Range => 1.5f;
+
+    public override void PerformAttack(Player attacker)
     {
-        this.prefab = prefab;
+        // TODO: Triển khai logic tấn công thực tế ở đây
+        Debug.Log($"{attacker.name} vung Katana gây {Damage} sát thương!");
     }
 
-    public string WeaponName => "Katana";
-    public WeaponType Type => WeaponType.Melee;
-    public int Damage => 50;
-    public float Range => 1.5f;
-    public Sprite Icon => null;
-    public GameObject WeaponModelPrefab => prefab;
-
-    public string PlayerIdleAnimState => "Idle_Katana";
-    public string PlayerRunAnimState => "Run_Katana";
-    public string PlayerAttackAnimTrigger => "Slash_Katana";
-
-    public void PerformAttack(Player attacker)
+    public override void OnEquip(Player player)
     {
-        Debug.Log("Chém bằng katana!");
+        base.OnEquip(player);
+        // TODO: Load mô hình, set animation,...
+        Debug.Log($"{player.name} đã trang bị Katana.");
     }
 
-    public void OnEquip(Player player, Transform handTransform)
+    public override void OnUnequip(Player player)
     {
-        if (prefab != null && handTransform != null)
-        {
-            GameObject weaponInstance = GameObject.Instantiate(prefab, handTransform);
-        }
+        base.OnUnequip(player);
+        // TODO: Gỡ mô hình, reset animation,...
+        Debug.Log($"{player.name} đã gỡ bỏ Katana.");
     }
 
-    public void OnUnequip(Player player)
+
+    public override string GetAttackAnimationTrigger()
     {
-        // TODO: clear vũ khí cũ
+        return "Attack_Katana"; // Phải trùng với tên trigger trong Animator
     }
+
 }

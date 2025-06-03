@@ -1,23 +1,27 @@
 ﻿using UnityEngine;
 
-public class EmptyWeapon : IWeapon
+public class EmptyWeapon : WeaponManager
 {
-    public string WeaponName => "Tay không";
-    public WeaponType Type => WeaponType.Empty;
-    public int Damage => 5;
-    public float Range => 1f;
-    public Sprite Icon => null;
-    public GameObject WeaponModelPrefab => null;
+    public override string WeaponName => "Empty";
+    public override WeaponType Type => WeaponType.Empty;
+    public override int Damage => 5;
+    public override float Range => 1f;
 
-    public string PlayerIdleAnimState => "Idle_Unarmed";
-    public string PlayerRunAnimState => "Run_Unarmed";
-    public string PlayerAttackAnimTrigger => "Punch";
-
-    public void PerformAttack(Player attacker)
+    public override void OnEquip(Player player)
     {
-        Debug.Log("Đấm tay không!");
+        base.OnEquip(player);
+        Debug.Log($"[EmptyWeapon] {player.name} đã trang bị tay không. Loại: {Type}, Sát thương: {Damage}, Tầm đánh: {Range}");
     }
 
-    public void OnEquip(Player player, Transform handTransform) { }
-    public void OnUnequip(Player player) { }
+    public override void OnUnequip(Player player)
+    {
+        base.OnUnequip(player);
+        Debug.Log($"[EmptyWeapon] {player.name} gỡ bỏ tay không.");
+    }
+
+    public override void PerformAttack(Player attacker)
+    {
+        Debug.Log($"[EmptyWeapon] {attacker.name} tấn công tay không, gây {Damage} sát thương, tầm {Range}m.");
+    }
+
 }

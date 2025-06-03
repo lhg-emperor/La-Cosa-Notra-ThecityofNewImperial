@@ -4,19 +4,17 @@ public class GameSystemManager : MonoBehaviour
 {
     public static GameSystemManager Instance { get; private set; }
 
-    [Header("Player reference")]
+    [Header("Player tham chiếu trong scene")]
     public Player player;
 
-    [Header("Weapon prefabs or objects")]
-    public GameObject baseballBatPrefab;
-    public GameObject katanaPrefab;
-
-    public IWeapon emptyWeapon;
-    public IWeapon batWeapon;
-    public IWeapon katanaWeapon;
+    // Các định nghĩa vũ khí sẵn có
+    private WeaponManager emptyWeapon;
+    private WeaponManager batWeapon;
+    private WeaponManager katanaWeapon;
 
     void Awake()
     {
+        // Đảm bảo Singleton
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -27,26 +25,32 @@ public class GameSystemManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         // Khởi tạo các vũ khí
-        emptyWeapon = new EmptyWeapon();
-        batWeapon = new BatWeapon(baseballBatPrefab);
-        katanaWeapon = new KatanaWeapon(katanaPrefab);
+        InitializeWeapons();
     }
 
     void Start()
     {
         if (player == null)
         {
-            Debug.LogWarning("⚠️ GameSystemManager chưa được gán Player! Gán trong Inspector hoặc tìm trong Scene.");
+            Debug.LogWarning("⚠️ Player chưa được gán trong GameSystemManager. Gán thủ công hoặc tìm tự động.");
         }
     }
 
-    public IWeapon GetDefaultWeapon()
+    private void InitializeWeapons()
+    {
+        emptyWeapon = new EmptyWeapon();
+        batWeapon = new BatWeapon();
+        katanaWeapon = new KatanaWeapon();
+    }
+
+    public WeaponManager GetDefaultWeapon()
     {
         return emptyWeapon;
     }
 
-    public IWeapon GetWeaponByName(string name)
+    public WeaponManager GetWeaponByName(string name)
     {
+        // Lấy vũ khí dựa trên tên gọi
         switch (name)
         {
             case "BaseballBat":
@@ -61,9 +65,6 @@ public class GameSystemManager : MonoBehaviour
 
     public void TriggerPlayerAttack()
     {
-        if (player != null)
-        {
-            player.Attack();
-        }
+        player?.Attack();
     }
 }
