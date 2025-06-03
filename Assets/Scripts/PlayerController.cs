@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections;
+
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerMovement : MonoBehaviour
@@ -13,6 +15,8 @@ public class PlayerMovement : MonoBehaviour
 
     private Animator animator;
     private SpriteRenderer spriteRenderer;
+    private bool Hit = false;
+
 
     void Awake()
     {
@@ -27,17 +31,28 @@ public class PlayerMovement : MonoBehaviour
         controls.Movement.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
         controls.Movement.Move.canceled += ctx => moveInput = Vector2.zero;
 
-
+        controls.Combat.Attack.performed += ctx => OnAttack();  
     }
 
     void OnEnable()
     {
         controls.Movement.Enable();
+        controls.Combat.Enable();
     }
 
     void OnDisable()
     {
         controls.Movement.Disable();
+    }
+    private void OnAttack()
+    {
+        if (Hit || animator == null) return;
+
+        
+        animator.SetBool("isHit", true);
+        Hit = true;
+
+        StartCoroutine(ResetHit(0.5f)); 
     }
 
     void FixedUpdate()
@@ -79,4 +94,11 @@ public class PlayerMovement : MonoBehaviour
         }
 
     }
+    private IEnumerator ResetHit(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        animator.SetBool("isHit", false);
+        Hit = false;
+    }
+
 }
