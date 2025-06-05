@@ -2,20 +2,22 @@
 
 public class CameraFollow : MonoBehaviour
 {
-    public Transform target;  // Nhân vật chính
+    // Biến tham chiếu tới Main Player
+    public Transform target;
 
-    public Vector3 offset = new Vector3(0, 10, -10); // Khoảng cách camera so với nhân vật
-    public float smoothSpeed = 0.125f;              // Độ mượt khi theo
+    // Khoảng cách camera so với Player (có thể chỉnh trong Inspector)
+    public Vector3 offset = new Vector3(0, 0, -10);
 
+    // Cập nhật vị trí camera sau khi Player di chuyển
     void LateUpdate()
     {
-        if (target == null) return;
+        if (target == null)
+        {
+            Debug.LogWarning("CameraFollow: Chưa gán target Player!");
+            return;
+        }
 
-        Vector3 desiredPosition = target.position + offset;
-        Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
-
-        transform.position = smoothedPosition;
-
-        transform.rotation = Quaternion.Euler(45, 0, 0); // giữ camera góc nhìn cố định (ví dụ 45 độ nhìn xuống)
+        // Camera luôn giữ vị trí bằng vị trí Player + offset
+        transform.position = target.position + offset;
     }
 }

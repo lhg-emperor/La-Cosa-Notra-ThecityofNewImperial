@@ -186,6 +186,54 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""PickUp"",
+            ""id"": ""41503caf-d3b0-4ba8-8fa8-429db53fa737"",
+            ""actions"": [
+                {
+                    ""name"": ""pick"",
+                    ""type"": ""Button"",
+                    ""id"": ""616f96b1-4e94-4f3a-b37b-bf4bde0c7af4"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""drop"",
+                    ""type"": ""Button"",
+                    ""id"": ""4a137787-d3ca-45ce-9edc-60be6370a4aa"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""0881df96-f3da-4e1b-94d0-5c18c3328c27"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""pick"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0ba8e1cc-8242-4641-9234-781e0792a833"",
+                    ""path"": ""<Keyboard>/t"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""drop"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -196,12 +244,17 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         // Combat
         m_Combat = asset.FindActionMap("Combat", throwIfNotFound: true);
         m_Combat_Attack = m_Combat.FindAction("Attack", throwIfNotFound: true);
+        // PickUp
+        m_PickUp = asset.FindActionMap("PickUp", throwIfNotFound: true);
+        m_PickUp_pick = m_PickUp.FindAction("pick", throwIfNotFound: true);
+        m_PickUp_drop = m_PickUp.FindAction("drop", throwIfNotFound: true);
     }
 
     ~@PlayerControls()
     {
         UnityEngine.Debug.Assert(!m_Movement.enabled, "This will cause a leak and performance issues, PlayerControls.Movement.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Combat.enabled, "This will cause a leak and performance issues, PlayerControls.Combat.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_PickUp.enabled, "This will cause a leak and performance issues, PlayerControls.PickUp.Disable() has not been called.");
     }
 
     /// <summary>
@@ -465,6 +518,113 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="CombatActions" /> instance referencing this action map.
     /// </summary>
     public CombatActions @Combat => new CombatActions(this);
+
+    // PickUp
+    private readonly InputActionMap m_PickUp;
+    private List<IPickUpActions> m_PickUpActionsCallbackInterfaces = new List<IPickUpActions>();
+    private readonly InputAction m_PickUp_pick;
+    private readonly InputAction m_PickUp_drop;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "PickUp".
+    /// </summary>
+    public struct PickUpActions
+    {
+        private @PlayerControls m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public PickUpActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "PickUp/pick".
+        /// </summary>
+        public InputAction @pick => m_Wrapper.m_PickUp_pick;
+        /// <summary>
+        /// Provides access to the underlying input action "PickUp/drop".
+        /// </summary>
+        public InputAction @drop => m_Wrapper.m_PickUp_drop;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_PickUp; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="PickUpActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(PickUpActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="PickUpActions" />
+        public void AddCallbacks(IPickUpActions instance)
+        {
+            if (instance == null || m_Wrapper.m_PickUpActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_PickUpActionsCallbackInterfaces.Add(instance);
+            @pick.started += instance.OnPick;
+            @pick.performed += instance.OnPick;
+            @pick.canceled += instance.OnPick;
+            @drop.started += instance.OnDrop;
+            @drop.performed += instance.OnDrop;
+            @drop.canceled += instance.OnDrop;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="PickUpActions" />
+        private void UnregisterCallbacks(IPickUpActions instance)
+        {
+            @pick.started -= instance.OnPick;
+            @pick.performed -= instance.OnPick;
+            @pick.canceled -= instance.OnPick;
+            @drop.started -= instance.OnDrop;
+            @drop.performed -= instance.OnDrop;
+            @drop.canceled -= instance.OnDrop;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="PickUpActions.UnregisterCallbacks(IPickUpActions)" />.
+        /// </summary>
+        /// <seealso cref="PickUpActions.UnregisterCallbacks(IPickUpActions)" />
+        public void RemoveCallbacks(IPickUpActions instance)
+        {
+            if (m_Wrapper.m_PickUpActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="PickUpActions.AddCallbacks(IPickUpActions)" />
+        /// <seealso cref="PickUpActions.RemoveCallbacks(IPickUpActions)" />
+        /// <seealso cref="PickUpActions.UnregisterCallbacks(IPickUpActions)" />
+        public void SetCallbacks(IPickUpActions instance)
+        {
+            foreach (var item in m_Wrapper.m_PickUpActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_PickUpActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="PickUpActions" /> instance referencing this action map.
+    /// </summary>
+    public PickUpActions @PickUp => new PickUpActions(this);
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Movement" which allows adding and removing callbacks.
     /// </summary>
@@ -494,5 +654,27 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnAttack(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "PickUp" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="PickUpActions.AddCallbacks(IPickUpActions)" />
+    /// <seealso cref="PickUpActions.RemoveCallbacks(IPickUpActions)" />
+    public interface IPickUpActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "pick" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnPick(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "drop" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnDrop(InputAction.CallbackContext context);
     }
 }

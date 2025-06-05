@@ -4,7 +4,7 @@ using System.Collections;
 
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class PlayerMovement : MonoBehaviour
+public class Player : MonoBehaviour
 {
     [Header("Settings")]
     public float moveSpeed = 5f;
