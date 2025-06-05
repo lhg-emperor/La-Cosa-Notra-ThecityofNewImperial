@@ -16,6 +16,7 @@ public class CameraFollow : MonoBehaviour
 
         transform.position = smoothedPosition;
 
-        transform.rotation = Quaternion.Euler(45, 0, 0); // giữ camera góc nhìn cố định (ví dụ 45 độ nhìn xuống)
+        transform.rotation = Quaternion.Euler(45, 0, 0); // Nhìn thẳng xuống
+
     }
 }

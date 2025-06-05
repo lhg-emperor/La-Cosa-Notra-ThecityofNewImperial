@@ -188,6 +188,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             ]
         },
         {
+<<<<<<< HEAD:Assets/Scripts/Player/PlayerControls.cs
             ""name"": ""Pickup"",
             ""id"": ""bdddc7a3-7888-4207-97b0-6b8fb9d617a6"",
             ""actions"": [
@@ -195,6 +196,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""name"": ""Pickup"",
                     ""type"": ""Button"",
                     ""id"": ""ad23e215-db07-4069-b65b-802718c05e9e"",
+=======
+            ""name"": ""PickUp"",
+            ""id"": ""68a1e3ba-12d4-4ba1-8ee6-5a408e7800fe"",
+            ""actions"": [
+                {
+                    ""name"": ""pick"",
+                    ""type"": ""Button"",
+                    ""id"": ""b9af484f-8e91-42c5-bbfe-cad49758d4b0"",
+>>>>>>> 1994831 (Cập nhật thay đổi):Assets/Scripts/PlayerControls.cs
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -204,12 +214,20 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             ""bindings"": [
                 {
                     ""name"": """",
+<<<<<<< HEAD:Assets/Scripts/Player/PlayerControls.cs
                     ""id"": ""17a655ae-0d6d-4178-8566-6f9021440ee2"",
+=======
+                    ""id"": ""cc6f8745-2abd-4d7f-a91b-b69705c00927"",
+>>>>>>> 1994831 (Cập nhật thay đổi):Assets/Scripts/PlayerControls.cs
                     ""path"": ""<Keyboard>/r"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
+<<<<<<< HEAD:Assets/Scripts/Player/PlayerControls.cs
                     ""action"": ""Pickup"",
+=======
+                    ""action"": ""pick"",
+>>>>>>> 1994831 (Cập nhật thay đổi):Assets/Scripts/PlayerControls.cs
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -224,16 +242,26 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         // Combat
         m_Combat = asset.FindActionMap("Combat", throwIfNotFound: true);
         m_Combat_Attack = m_Combat.FindAction("Attack", throwIfNotFound: true);
+<<<<<<< HEAD:Assets/Scripts/Player/PlayerControls.cs
         // Pickup
         m_Pickup = asset.FindActionMap("Pickup", throwIfNotFound: true);
         m_Pickup_Pickup = m_Pickup.FindAction("Pickup", throwIfNotFound: true);
+=======
+        // PickUp
+        m_PickUp = asset.FindActionMap("PickUp", throwIfNotFound: true);
+        m_PickUp_pick = m_PickUp.FindAction("pick", throwIfNotFound: true);
+>>>>>>> 1994831 (Cập nhật thay đổi):Assets/Scripts/PlayerControls.cs
     }
 
     ~@PlayerControls()
     {
         UnityEngine.Debug.Assert(!m_Movement.enabled, "This will cause a leak and performance issues, PlayerControls.Movement.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Combat.enabled, "This will cause a leak and performance issues, PlayerControls.Combat.Disable() has not been called.");
+<<<<<<< HEAD:Assets/Scripts/Player/PlayerControls.cs
         UnityEngine.Debug.Assert(!m_Pickup.enabled, "This will cause a leak and performance issues, PlayerControls.Pickup.Disable() has not been called.");
+=======
+        UnityEngine.Debug.Assert(!m_PickUp.enabled, "This will cause a leak and performance issues, PlayerControls.PickUp.Disable() has not been called.");
+>>>>>>> 1994831 (Cập nhật thay đổi):Assets/Scripts/PlayerControls.cs
     }
 
     /// <summary>
@@ -498,6 +526,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     /// </summary>
     public CombatActions @Combat => new CombatActions(this);
 
+<<<<<<< HEAD:Assets/Scripts/Player/PlayerControls.cs
     // Pickup
     private readonly InputActionMap m_Pickup;
     private List<IPickupActions> m_PickupActionsCallbackInterfaces = new List<IPickupActions>();
@@ -506,12 +535,23 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     /// Provides access to input actions defined in input action map "Pickup".
     /// </summary>
     public struct PickupActions
+=======
+    // PickUp
+    private readonly InputActionMap m_PickUp;
+    private List<IPickUpActions> m_PickUpActionsCallbackInterfaces = new List<IPickUpActions>();
+    private readonly InputAction m_PickUp_pick;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "PickUp".
+    /// </summary>
+    public struct PickUpActions
+>>>>>>> 1994831 (Cập nhật thay đổi):Assets/Scripts/PlayerControls.cs
     {
         private @PlayerControls m_Wrapper;
 
         /// <summary>
         /// Construct a new instance of the input action map wrapper class.
         /// </summary>
+<<<<<<< HEAD:Assets/Scripts/Player/PlayerControls.cs
         public PickupActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
         /// <summary>
         /// Provides access to the underlying input action "Pickup/Pickup".
@@ -521,6 +561,17 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action map instance.
         /// </summary>
         public InputActionMap Get() { return m_Wrapper.m_Pickup; }
+=======
+        public PickUpActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "PickUp/pick".
+        /// </summary>
+        public InputAction @pick => m_Wrapper.m_PickUp_pick;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_PickUp; }
+>>>>>>> 1994831 (Cập nhật thay đổi):Assets/Scripts/PlayerControls.cs
         /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
         public void Enable() { Get().Enable(); }
         /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
@@ -528,9 +579,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
         public bool enabled => Get().enabled;
         /// <summary>
+<<<<<<< HEAD:Assets/Scripts/Player/PlayerControls.cs
         /// Implicitly converts an <see ref="PickupActions" /> to an <see ref="InputActionMap" /> instance.
         /// </summary>
         public static implicit operator InputActionMap(PickupActions set) { return set.Get(); }
+=======
+        /// Implicitly converts an <see ref="PickUpActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(PickUpActions set) { return set.Get(); }
+>>>>>>> 1994831 (Cập nhật thay đổi):Assets/Scripts/PlayerControls.cs
         /// <summary>
         /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
         /// </summary>
@@ -538,6 +595,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <remarks>
         /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
         /// </remarks>
+<<<<<<< HEAD:Assets/Scripts/Player/PlayerControls.cs
         /// <seealso cref="PickupActions" />
         public void AddCallbacks(IPickupActions instance)
         {
@@ -546,6 +604,16 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Pickup.started += instance.OnPickup;
             @Pickup.performed += instance.OnPickup;
             @Pickup.canceled += instance.OnPickup;
+=======
+        /// <seealso cref="PickUpActions" />
+        public void AddCallbacks(IPickUpActions instance)
+        {
+            if (instance == null || m_Wrapper.m_PickUpActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_PickUpActionsCallbackInterfaces.Add(instance);
+            @pick.started += instance.OnPick;
+            @pick.performed += instance.OnPick;
+            @pick.canceled += instance.OnPick;
+>>>>>>> 1994831 (Cập nhật thay đổi):Assets/Scripts/PlayerControls.cs
         }
 
         /// <summary>
@@ -554,6 +622,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <remarks>
         /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
         /// </remarks>
+<<<<<<< HEAD:Assets/Scripts/Player/PlayerControls.cs
         /// <seealso cref="PickupActions" />
         private void UnregisterCallbacks(IPickupActions instance)
         {
@@ -569,6 +638,23 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public void RemoveCallbacks(IPickupActions instance)
         {
             if (m_Wrapper.m_PickupActionsCallbackInterfaces.Remove(instance))
+=======
+        /// <seealso cref="PickUpActions" />
+        private void UnregisterCallbacks(IPickUpActions instance)
+        {
+            @pick.started -= instance.OnPick;
+            @pick.performed -= instance.OnPick;
+            @pick.canceled -= instance.OnPick;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="PickUpActions.UnregisterCallbacks(IPickUpActions)" />.
+        /// </summary>
+        /// <seealso cref="PickUpActions.UnregisterCallbacks(IPickUpActions)" />
+        public void RemoveCallbacks(IPickUpActions instance)
+        {
+            if (m_Wrapper.m_PickUpActionsCallbackInterfaces.Remove(instance))
+>>>>>>> 1994831 (Cập nhật thay đổi):Assets/Scripts/PlayerControls.cs
                 UnregisterCallbacks(instance);
         }
 
@@ -578,6 +664,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <remarks>
         /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
         /// </remarks>
+<<<<<<< HEAD:Assets/Scripts/Player/PlayerControls.cs
         /// <seealso cref="PickupActions.AddCallbacks(IPickupActions)" />
         /// <seealso cref="PickupActions.RemoveCallbacks(IPickupActions)" />
         /// <seealso cref="PickupActions.UnregisterCallbacks(IPickupActions)" />
@@ -586,13 +673,29 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             foreach (var item in m_Wrapper.m_PickupActionsCallbackInterfaces)
                 UnregisterCallbacks(item);
             m_Wrapper.m_PickupActionsCallbackInterfaces.Clear();
+=======
+        /// <seealso cref="PickUpActions.AddCallbacks(IPickUpActions)" />
+        /// <seealso cref="PickUpActions.RemoveCallbacks(IPickUpActions)" />
+        /// <seealso cref="PickUpActions.UnregisterCallbacks(IPickUpActions)" />
+        public void SetCallbacks(IPickUpActions instance)
+        {
+            foreach (var item in m_Wrapper.m_PickUpActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_PickUpActionsCallbackInterfaces.Clear();
+>>>>>>> 1994831 (Cập nhật thay đổi):Assets/Scripts/PlayerControls.cs
             AddCallbacks(instance);
         }
     }
     /// <summary>
+<<<<<<< HEAD:Assets/Scripts/Player/PlayerControls.cs
     /// Provides a new <see cref="PickupActions" /> instance referencing this action map.
     /// </summary>
     public PickupActions @Pickup => new PickupActions(this);
+=======
+    /// Provides a new <see cref="PickUpActions" /> instance referencing this action map.
+    /// </summary>
+    public PickUpActions @PickUp => new PickUpActions(this);
+>>>>>>> 1994831 (Cập nhật thay đổi):Assets/Scripts/PlayerControls.cs
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Movement" which allows adding and removing callbacks.
     /// </summary>
@@ -624,6 +727,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnAttack(InputAction.CallbackContext context);
     }
     /// <summary>
+<<<<<<< HEAD:Assets/Scripts/Player/PlayerControls.cs
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Pickup" which allows adding and removing callbacks.
     /// </summary>
     /// <seealso cref="PickupActions.AddCallbacks(IPickupActions)" />
@@ -632,10 +736,24 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     {
         /// <summary>
         /// Method invoked when associated input action "Pickup" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+=======
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "PickUp" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="PickUpActions.AddCallbacks(IPickUpActions)" />
+    /// <seealso cref="PickUpActions.RemoveCallbacks(IPickUpActions)" />
+    public interface IPickUpActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "pick" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+>>>>>>> 1994831 (Cập nhật thay đổi):Assets/Scripts/PlayerControls.cs
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+<<<<<<< HEAD:Assets/Scripts/Player/PlayerControls.cs
         void OnPickup(InputAction.CallbackContext context);
+=======
+        void OnPick(InputAction.CallbackContext context);
+>>>>>>> 1994831 (Cập nhật thay đổi):Assets/Scripts/PlayerControls.cs
     }
 }

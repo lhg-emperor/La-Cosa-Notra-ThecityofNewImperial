@@ -3,7 +3,8 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - Weapon
   layers:
   - Default
   - TransparentFX
@@ -44,8 +45,13 @@ TagManager:
   - name: Background
     uniqueID: 3572266759
     locked: 0
+<<<<<<< HEAD
   - name: WeaponItem
     uniqueID: 4269182569
+=======
+  - name: weapon
+    uniqueID: 3515876941
+>>>>>>> 1994831 (Cập nhật thay đổi)
     locked: 0
   - name: Character
     uniqueID: 2168037715

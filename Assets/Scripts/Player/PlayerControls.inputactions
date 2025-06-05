@@ -102,6 +102,7 @@
             ]
         },
         {
+<<<<<<< HEAD:Assets/Scripts/Player/PlayerControls.inputactions
             "name": "Pickup",
             "id": "bdddc7a3-7888-4207-97b0-6b8fb9d617a6",
             "actions": [
@@ -109,6 +110,15 @@
                     "name": "Pickup",
                     "type": "Button",
                     "id": "ad23e215-db07-4069-b65b-802718c05e9e",
+=======
+            "name": "PickUp",
+            "id": "68a1e3ba-12d4-4ba1-8ee6-5a408e7800fe",
+            "actions": [
+                {
+                    "name": "pick",
+                    "type": "Button",
+                    "id": "b9af484f-8e91-42c5-bbfe-cad49758d4b0",
+>>>>>>> 1994831 (Cập nhật thay đổi):Assets/Scripts/PlayerControls.inputactions
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -118,12 +128,20 @@
             "bindings": [
                 {
                     "name": "",
+<<<<<<< HEAD:Assets/Scripts/Player/PlayerControls.inputactions
                     "id": "17a655ae-0d6d-4178-8566-6f9021440ee2",
+=======
+                    "id": "cc6f8745-2abd-4d7f-a91b-b69705c00927",
+>>>>>>> 1994831 (Cập nhật thay đổi):Assets/Scripts/PlayerControls.inputactions
                     "path": "<Keyboard>/r",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
+<<<<<<< HEAD:Assets/Scripts/Player/PlayerControls.inputactions
                     "action": "Pickup",
+=======
+                    "action": "pick",
+>>>>>>> 1994831 (Cập nhật thay đổi):Assets/Scripts/PlayerControls.inputactions
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
