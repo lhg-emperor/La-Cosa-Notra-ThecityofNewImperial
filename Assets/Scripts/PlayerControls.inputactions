@@ -113,15 +113,6 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
-                },
-                {
-                    "name": "drop",
-                    "type": "Button",
-                    "id": "4a137787-d3ca-45ce-9edc-60be6370a4aa",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -135,10 +126,27 @@
                     "action": "pick",
                     "isComposite": false,
                     "isPartOfComposite": false
-                },
+                }
+            ]
+        },
+        {
+            "name": "PutDown",
+            "id": "ef50b0c9-7e0e-400f-bc39-74eb21a9a43d",
+            "actions": [
+                {
+                    "name": "drop",
+                    "type": "Button",
+                    "id": "8fbc5c72-6804-44c9-9579-333b4e4abe7f",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
                 {
                     "name": "",
-                    "id": "0ba8e1cc-8242-4641-9234-781e0792a833",
+                    "id": "e20730be-0d3c-4719-9358-921db9f4f502",
                     "path": "<Keyboard>/t",
                     "interactions": "",
                     "processors": "",

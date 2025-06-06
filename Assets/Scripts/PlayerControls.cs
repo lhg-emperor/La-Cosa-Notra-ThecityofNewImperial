@@ -199,15 +199,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""drop"",
-                    ""type"": ""Button"",
-                    ""id"": ""4a137787-d3ca-45ce-9edc-60be6370a4aa"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -221,10 +212,27 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""pick"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
-                },
+                }
+            ]
+        },
+        {
+            ""name"": ""PutDown"",
+            ""id"": ""ef50b0c9-7e0e-400f-bc39-74eb21a9a43d"",
+            ""actions"": [
+                {
+                    ""name"": ""drop"",
+                    ""type"": ""Button"",
+                    ""id"": ""8fbc5c72-6804-44c9-9579-333b4e4abe7f"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
                 {
                     ""name"": """",
-                    ""id"": ""0ba8e1cc-8242-4641-9234-781e0792a833"",
+                    ""id"": ""e20730be-0d3c-4719-9358-921db9f4f502"",
                     ""path"": ""<Keyboard>/t"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -247,7 +255,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         // PickUp
         m_PickUp = asset.FindActionMap("PickUp", throwIfNotFound: true);
         m_PickUp_pick = m_PickUp.FindAction("pick", throwIfNotFound: true);
-        m_PickUp_drop = m_PickUp.FindAction("drop", throwIfNotFound: true);
+        // PutDown
+        m_PutDown = asset.FindActionMap("PutDown", throwIfNotFound: true);
+        m_PutDown_drop = m_PutDown.FindAction("drop", throwIfNotFound: true);
     }
 
     ~@PlayerControls()
@@ -255,6 +265,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         UnityEngine.Debug.Assert(!m_Movement.enabled, "This will cause a leak and performance issues, PlayerControls.Movement.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Combat.enabled, "This will cause a leak and performance issues, PlayerControls.Combat.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_PickUp.enabled, "This will cause a leak and performance issues, PlayerControls.PickUp.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_PutDown.enabled, "This will cause a leak and performance issues, PlayerControls.PutDown.Disable() has not been called.");
     }
 
     /// <summary>
@@ -523,7 +534,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_PickUp;
     private List<IPickUpActions> m_PickUpActionsCallbackInterfaces = new List<IPickUpActions>();
     private readonly InputAction m_PickUp_pick;
-    private readonly InputAction m_PickUp_drop;
     /// <summary>
     /// Provides access to input actions defined in input action map "PickUp".
     /// </summary>
@@ -539,10 +549,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "PickUp/pick".
         /// </summary>
         public InputAction @pick => m_Wrapper.m_PickUp_pick;
-        /// <summary>
-        /// Provides access to the underlying input action "PickUp/drop".
-        /// </summary>
-        public InputAction @drop => m_Wrapper.m_PickUp_drop;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -572,9 +578,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @pick.started += instance.OnPick;
             @pick.performed += instance.OnPick;
             @pick.canceled += instance.OnPick;
-            @drop.started += instance.OnDrop;
-            @drop.performed += instance.OnDrop;
-            @drop.canceled += instance.OnDrop;
         }
 
         /// <summary>
@@ -589,9 +592,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @pick.started -= instance.OnPick;
             @pick.performed -= instance.OnPick;
             @pick.canceled -= instance.OnPick;
-            @drop.started -= instance.OnDrop;
-            @drop.performed -= instance.OnDrop;
-            @drop.canceled -= instance.OnDrop;
         }
 
         /// <summary>
@@ -625,6 +625,102 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="PickUpActions" /> instance referencing this action map.
     /// </summary>
     public PickUpActions @PickUp => new PickUpActions(this);
+
+    // PutDown
+    private readonly InputActionMap m_PutDown;
+    private List<IPutDownActions> m_PutDownActionsCallbackInterfaces = new List<IPutDownActions>();
+    private readonly InputAction m_PutDown_drop;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "PutDown".
+    /// </summary>
+    public struct PutDownActions
+    {
+        private @PlayerControls m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public PutDownActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "PutDown/drop".
+        /// </summary>
+        public InputAction @drop => m_Wrapper.m_PutDown_drop;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_PutDown; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="PutDownActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(PutDownActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="PutDownActions" />
+        public void AddCallbacks(IPutDownActions instance)
+        {
+            if (instance == null || m_Wrapper.m_PutDownActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_PutDownActionsCallbackInterfaces.Add(instance);
+            @drop.started += instance.OnDrop;
+            @drop.performed += instance.OnDrop;
+            @drop.canceled += instance.OnDrop;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="PutDownActions" />
+        private void UnregisterCallbacks(IPutDownActions instance)
+        {
+            @drop.started -= instance.OnDrop;
+            @drop.performed -= instance.OnDrop;
+            @drop.canceled -= instance.OnDrop;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="PutDownActions.UnregisterCallbacks(IPutDownActions)" />.
+        /// </summary>
+        /// <seealso cref="PutDownActions.UnregisterCallbacks(IPutDownActions)" />
+        public void RemoveCallbacks(IPutDownActions instance)
+        {
+            if (m_Wrapper.m_PutDownActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="PutDownActions.AddCallbacks(IPutDownActions)" />
+        /// <seealso cref="PutDownActions.RemoveCallbacks(IPutDownActions)" />
+        /// <seealso cref="PutDownActions.UnregisterCallbacks(IPutDownActions)" />
+        public void SetCallbacks(IPutDownActions instance)
+        {
+            foreach (var item in m_Wrapper.m_PutDownActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_PutDownActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="PutDownActions" /> instance referencing this action map.
+    /// </summary>
+    public PutDownActions @PutDown => new PutDownActions(this);
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Movement" which allows adding and removing callbacks.
     /// </summary>
@@ -669,6 +765,14 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnPick(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "PutDown" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="PutDownActions.AddCallbacks(IPutDownActions)" />
+    /// <seealso cref="PutDownActions.RemoveCallbacks(IPutDownActions)" />
+    public interface IPutDownActions
+    {
         /// <summary>
         /// Method invoked when associated input action "drop" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

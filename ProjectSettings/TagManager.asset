@@ -44,6 +44,9 @@ TagManager:
   - name: Background
     uniqueID: 3572266759
     locked: 0
+  - name: weapon
+    uniqueID: 783632711
+    locked: 0
   - name: Character
     uniqueID: 2168037715
     locked: 0
