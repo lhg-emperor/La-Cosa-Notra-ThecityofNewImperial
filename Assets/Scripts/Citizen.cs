@@ -1,23 +1,47 @@
-﻿using UnityEditor.Tilemaps;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Citizen : MonoBehaviour
 {
     [SerializeField] private float moveSpeed;
 
     private Rigidbody2D rb;
-    private Vector2 moveCitizen;
+    private Vector2 moveDirection;
+    private Vector2 targetPosition;
+    private bool isMoving = false;
+
+    public float Health = 50f;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
     }
+
     private void FixedUpdate()
     {
-        rb.MovePosition(rb.position + moveCitizen * (moveSpeed * Time.fixedDeltaTime));
+        if (isMoving)
+        {
+            Vector2 direction = (targetPosition - rb.position);
+            if (direction.magnitude < 0.1f)
+            {
+                Stop(); // Đến đích thì dừng
+            }
+            else
+            {
+                moveDirection = direction.normalized;
+                rb.MovePosition(rb.position + moveDirection * (moveSpeed * Time.fixedDeltaTime));
+            }
+        }
     }
-    public void Moveto(Vector2 Targetposition)
+
+    public void Moveto(Vector2 newTarget)
     {
-        moveCitizen = Targetposition;
+        targetPosition = newTarget;
+        isMoving = true;
+    }
+
+    public void Stop()
+    {
+        isMoving = false;
+        moveDirection = Vector2.zero;
     }
 }

@@ -17,6 +17,12 @@ public class Player : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private bool Hit = false;
 
+    [Header("Weapon Pickup")]
+    private GameObject near;
+    private GameObject held;
+
+    private float BaseDamage = 10f;
+    private float CurrentDamage;
 
     void Awake()
     {
@@ -31,18 +37,28 @@ public class Player : MonoBehaviour
         controls.Movement.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
         controls.Movement.Move.canceled += ctx => moveInput = Vector2.zero;
 
-        controls.Combat.Attack.performed += ctx => OnAttack();  
+        controls.Combat.Attack.performed += ctx => OnAttack();
+
+        controls.PickUp.pick.performed += ctx => PickUp();
+        controls.PutDown.drop.performed += ctx => Drop();
+
+        //Chỉ số tấn công của thg Main-Vito
+        CurrentDamage = BaseDamage;
     }
 
     void OnEnable()
     {
         controls.Movement.Enable();
         controls.Combat.Enable();
+        controls.PickUp.Enable();
+        controls.PutDown.Enable();
     }
 
     void OnDisable()
     {
         controls.Movement.Disable();
+        controls.PickUp.Disable();
+        controls.PutDown.Disable();
     }
     private void OnAttack()
     {
@@ -52,7 +68,8 @@ public class Player : MonoBehaviour
         animator.SetBool("isHit", true);
         Hit = true;
 
-        StartCoroutine(ResetHit(0.5f)); 
+        StartCoroutine(ResetHit(0.5f));
+        Debug.Log(message: "Damage gây ra là:"+CurrentDamage);
     }
 
     void FixedUpdate()
@@ -66,13 +83,10 @@ public class Player : MonoBehaviour
         Vector2 movement = moveInput.normalized * moveSpeed * Time.fixedDeltaTime;
         if (movement != Vector2.zero)
         {
-            // Di chuyển nhân vật
             rb.MovePosition(rb.position + movement);
 
-            // Tính góc xoay theo hướng di chuyển (tính bằng radian, đổi sang độ)
             float angle = Mathf.Atan2(movement.y, movement.x) * Mathf.Rad2Deg - 90f;
 
-            // Xoay nhân vật theo hướng di chuyển
             rb.rotation = angle;
 
             spriteRenderer.flipX = movement.x < 0;
@@ -100,5 +114,64 @@ public class Player : MonoBehaviour
         animator.SetBool("isHit", false);
         Hit = false;
     }
+    private void PickUp()
+    {
+        Debug.Log(message:"Đa kích hoạt điều kiện");
+        if (held == null && near != null)
+        {
+            held = near;
+            held.SetActive(false);
+            Debug.Log(message:"Đã lụm");
 
+            Bat bat = held.GetComponent<Bat>();
+            if ( bat != null)
+            {
+                CurrentDamage = bat.batDamage;
+                Debug.Log(message: "Đã trang bị Bat, damage hiện tại là" + CurrentDamage);
+            }
+            else
+            {
+                CurrentDamage = BaseDamage;
+                Debug.Log("Không tìm thấy Bat script, Damage trở về mặc định.");
+            }
+        }
+    }
+    private void Drop()
+    {
+        Debug.Log("Do m ngu, bố éo có lỗi");
+        Debug.Log(held);
+        if (held != null)
+        {
+            held.transform.position = transform.position + transform.right * 0.5f;
+            held.SetActive(true);
+            held = null;
+            Debug.Log(message: "Đã thả");
+        }
+        else
+        {
+            Debug.Log(message: "Có cầm éo gì đâu mà m thả");
+        }
+    }
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Weapon"))
+        {
+            Bat bat = other.GetComponent<Bat>();
+            if (bat != null && bat.canPickUp)
+            {
+                near = bat.gameObject;
+            }
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Weapon"))
+        {
+            if (near == other.gameObject)
+            {
+                near = null;
+            }
+        }
+    }
 }
