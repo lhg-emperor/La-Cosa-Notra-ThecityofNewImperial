@@ -40,7 +40,7 @@ public class Bat : MonoBehaviour
         }
         if (!gameObject.activeSelf && dropAction.WasPressedThisFrame())
         {
-            Debug.Log(message:"Đã thả");
+            gameObject.SetActive(true);
         }
     }
 

@@ -23,7 +23,7 @@ public class Citizen : MonoBehaviour
             Vector2 direction = (targetPosition - rb.position);
             if (direction.magnitude < 0.1f)
             {
-                Stop(); // Đến đích thì dừng
+                Stop(); 
             }
             else
             {

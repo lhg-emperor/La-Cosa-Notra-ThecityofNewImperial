@@ -27,15 +27,15 @@ public class CitizenAI : MonoBehaviour
     {
         while (state == State.Roaming)
         {
-            // Random thời gian di chuyển
-            float walkDuration = Random.Range(2f, 5f);
+            // thời gian di chuyển
+            float walkDuration = Random.Range(2f, 4f);
             Vector2 roamPosition = GetRoamingPosition();
             citizen.Moveto(roamPosition);
             yield return new WaitForSeconds(walkDuration);
 
             // Dừng lại một lúc
             float pauseDuration = Random.Range(1f, 4f);
-            citizen.Stop(); // Giả sử Citizen có hàm dừng lại
+            citizen.Stop(); 
             yield return new WaitForSeconds(pauseDuration);
 
             // Có thể quay nhìn ngó?
@@ -52,7 +52,7 @@ public class CitizenAI : MonoBehaviour
         float elapsed = 0f;
         while (elapsed < duration)
         {
-            float angle = Random.Range(-90f, 90f); // Quay trái/phải
+            float angle = Random.Range(-90f, 90f); 
             transform.Rotate(0, 0, angle);
             yield return new WaitForSeconds(Random.Range(0.5f, 1.5f));
             elapsed += Random.Range(0.5f, 1.5f);
@@ -61,7 +61,7 @@ public class CitizenAI : MonoBehaviour
 
     private Vector2 GetRoamingPosition()
     {
-        // Vị trí tương đối ngẫu nhiên quanh NPC
+        // Vị trí ngẫu nhiên 
         float radius = Random.Range(1f, 3f);
         Vector2 randomDirection = Random.insideUnitCircle.normalized;
         return (Vector2)transform.position + randomDirection * radius;

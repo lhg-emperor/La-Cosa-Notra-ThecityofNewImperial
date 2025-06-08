@@ -119,7 +119,7 @@ public class Player : MonoBehaviour
         Debug.Log(message:"Đa kích hoạt điều kiện");
         if (held == null && near != null)
         {
-            held = near;
+            held = Instantiate(near);
             held.SetActive(false);
             Debug.Log(message:"Đã lụm");
 
@@ -135,6 +135,14 @@ public class Player : MonoBehaviour
                 Debug.Log("Không tìm thấy Bat script, Damage trở về mặc định.");
             }
         }
+        else if(held != null) 
+        {
+            Debug.Log(message: "Đang cầm");
+        }
+        else if(near == null)
+        {
+            Debug.Log(message: "K ở gần để pick");
+        }
     }
     private void Drop()
     {
@@ -142,7 +150,7 @@ public class Player : MonoBehaviour
         Debug.Log(held);
         if (held != null)
         {
-            held.transform.position = transform.position + transform.right * 0.5f;
+            held.transform.position = transform.position + transform.right * 1f;
             held.SetActive(true);
             held = null;
             Debug.Log(message: "Đã thả");
@@ -151,17 +159,26 @@ public class Player : MonoBehaviour
         {
             Debug.Log(message: "Có cầm éo gì đâu mà m thả");
         }
+        
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Weapon"))
         {
             Bat bat = other.GetComponent<Bat>();
+            Debug.Log(bat);
+            Debug.Log(bat.canPickUp);
             if (bat != null && bat.canPickUp)
             {
                 near = bat.gameObject;
             }
+            else if(bat == null)
+            {
+                Debug.Log(message: "K tìm thấy ");
+            }
+        
         }
+        
     }
 
     private void OnTriggerExit2D(Collider2D other)
