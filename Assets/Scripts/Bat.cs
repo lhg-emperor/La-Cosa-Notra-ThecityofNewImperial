@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 
 public class Bat : MonoBehaviour
 {
-    public int batDamage = 15;
+    public int damage = 15;
     public bool canPickUp = false;
 
     private GameObject Player;
@@ -16,14 +16,14 @@ public class Bat : MonoBehaviour
     {
         playerControls = new PlayerControls();
         playerControls.Enable();
-        pickupAction = playerControls.PickUp.pick;
-        dropAction = playerControls.PutDown.drop;
     }
 
     void OnEnable()
     {
         pickupAction.Enable();
         dropAction.Enable();
+        if (playerControls != null)
+            playerControls.Disable();
     }
 
     private void OnDisable()
@@ -36,11 +36,7 @@ public class Bat : MonoBehaviour
     {
         if (canPickUp && pickupAction.WasPressedThisFrame())
         {
-            gameObject.SetActive(false);
-        }
-        if (!gameObject.activeSelf && dropAction.WasPressedThisFrame())
-        {
-            gameObject.SetActive(true);
+            Destroy(gameObject);
         }
     }
 
