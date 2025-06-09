@@ -22,6 +22,8 @@ public class Player : MonoBehaviour
 
     private GameObject near;
     public GameObject BatPrefab;
+
+    private PlayerTrigger playerTrigger;
     void Awake()
     {
         animator = GetComponent<Animator>();
@@ -41,6 +43,7 @@ public class Player : MonoBehaviour
 
 
         CurrentDamage = BaseDamage;
+        playerTrigger = GetComponentInChildren<PlayerTrigger>();
     }
 
     void OnEnable()
@@ -65,6 +68,14 @@ public class Player : MonoBehaviour
 
         animator.SetBool("isHit", true);
         Hit = true;
+
+        if(playerTrigger != null)
+        {
+            foreach (Citizen citizen in playerTrigger.GetTargets())
+            {
+                citizen.TakeDamage(CurrentDamage);
+            } 
+        }
 
         StartCoroutine(ResetHit(0.5f));
         Debug.Log("Damage gây ra là: " + CurrentDamage);

@@ -44,4 +44,13 @@ public class Citizen : MonoBehaviour
         isMoving = false;
         moveDirection = Vector2.zero;
     }
+    public void TakeDamage(float damage)
+    {
+        Health -= damage;
+        Debug.Log(Health);
+        if(Health < 0)
+        {
+            Destroy(gameObject);
+        }
+    }
 }
