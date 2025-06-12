@@ -101,13 +101,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abffcda6c9c9310428a163027c1a2024, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  batDamage: 15
+  damage: 15
   canPickUp: 1
+  BatPrefab: {fileID: 1936211921142303468}
   pickupAction:
     m_Name: Pickup
     m_Type: 0
     m_ExpectedControlType: 
-    m_Id: 124af61b-82ae-4d30-8aba-8c9b25593f84
+    m_Id: 6dd061f8-b2df-4667-9105-b6d94a0a51dd
     m_Processors: 
     m_Interactions: 
     m_SingletonActionBindings: []
@@ -116,7 +117,7 @@ MonoBehaviour:
     m_Name: Drop
     m_Type: 0
     m_ExpectedControlType: 
-    m_Id: ebade1ce-d702-43bf-a57e-7516deae58cf
+    m_Id: 433414d8-e5eb-4789-9d1d-3dc6a67b88a3
     m_Processors: 
     m_Interactions: 
     m_SingletonActionBindings: []

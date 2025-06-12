@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Citizen : MonoBehaviour
+public class Citizen : MonoBehaviour, IDamageable
 {
     [SerializeField] private float moveSpeed;
 
@@ -8,8 +8,9 @@ public class Citizen : MonoBehaviour
     private Vector2 moveDirection;
     private Vector2 targetPosition;
     private bool isMoving = false;
+    private float isTakeDamage;
 
-    public float Health = 50f;
+    public float Health = 105f;
 
     private void Awake()
     {
@@ -48,7 +49,7 @@ public class Citizen : MonoBehaviour
     {
         Health -= damage;
         Debug.Log(Health);
-        if(Health < 0)
+        if(Health <= 0)
         {
             Destroy(gameObject);
         }

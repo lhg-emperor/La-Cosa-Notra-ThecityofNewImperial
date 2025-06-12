@@ -242,6 +242,34 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""LookAround"",
+            ""id"": ""842d999e-42a4-4291-bc8b-eb11c42a6c01"",
+            ""actions"": [
+                {
+                    ""name"": ""look"",
+                    ""type"": ""Value"",
+                    ""id"": ""2cb3a142-c1cf-4e02-b9f8-7aeba8198c2b"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""231910f7-f0b0-4c24-9414-7072733a4f18"",
+                    ""path"": ""<Mouse>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -258,6 +286,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         // PutDown
         m_PutDown = asset.FindActionMap("PutDown", throwIfNotFound: true);
         m_PutDown_drop = m_PutDown.FindAction("drop", throwIfNotFound: true);
+        // LookAround
+        m_LookAround = asset.FindActionMap("LookAround", throwIfNotFound: true);
+        m_LookAround_look = m_LookAround.FindAction("look", throwIfNotFound: true);
     }
 
     ~@PlayerControls()
@@ -266,6 +297,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         UnityEngine.Debug.Assert(!m_Combat.enabled, "This will cause a leak and performance issues, PlayerControls.Combat.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_PickUp.enabled, "This will cause a leak and performance issues, PlayerControls.PickUp.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_PutDown.enabled, "This will cause a leak and performance issues, PlayerControls.PutDown.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_LookAround.enabled, "This will cause a leak and performance issues, PlayerControls.LookAround.Disable() has not been called.");
     }
 
     /// <summary>
@@ -721,6 +753,102 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="PutDownActions" /> instance referencing this action map.
     /// </summary>
     public PutDownActions @PutDown => new PutDownActions(this);
+
+    // LookAround
+    private readonly InputActionMap m_LookAround;
+    private List<ILookAroundActions> m_LookAroundActionsCallbackInterfaces = new List<ILookAroundActions>();
+    private readonly InputAction m_LookAround_look;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "LookAround".
+    /// </summary>
+    public struct LookAroundActions
+    {
+        private @PlayerControls m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public LookAroundActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "LookAround/look".
+        /// </summary>
+        public InputAction @look => m_Wrapper.m_LookAround_look;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_LookAround; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="LookAroundActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(LookAroundActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="LookAroundActions" />
+        public void AddCallbacks(ILookAroundActions instance)
+        {
+            if (instance == null || m_Wrapper.m_LookAroundActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_LookAroundActionsCallbackInterfaces.Add(instance);
+            @look.started += instance.OnLook;
+            @look.performed += instance.OnLook;
+            @look.canceled += instance.OnLook;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="LookAroundActions" />
+        private void UnregisterCallbacks(ILookAroundActions instance)
+        {
+            @look.started -= instance.OnLook;
+            @look.performed -= instance.OnLook;
+            @look.canceled -= instance.OnLook;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="LookAroundActions.UnregisterCallbacks(ILookAroundActions)" />.
+        /// </summary>
+        /// <seealso cref="LookAroundActions.UnregisterCallbacks(ILookAroundActions)" />
+        public void RemoveCallbacks(ILookAroundActions instance)
+        {
+            if (m_Wrapper.m_LookAroundActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="LookAroundActions.AddCallbacks(ILookAroundActions)" />
+        /// <seealso cref="LookAroundActions.RemoveCallbacks(ILookAroundActions)" />
+        /// <seealso cref="LookAroundActions.UnregisterCallbacks(ILookAroundActions)" />
+        public void SetCallbacks(ILookAroundActions instance)
+        {
+            foreach (var item in m_Wrapper.m_LookAroundActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_LookAroundActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="LookAroundActions" /> instance referencing this action map.
+    /// </summary>
+    public LookAroundActions @LookAround => new LookAroundActions(this);
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Movement" which allows adding and removing callbacks.
     /// </summary>
@@ -780,5 +908,20 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnDrop(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "LookAround" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="LookAroundActions.AddCallbacks(ILookAroundActions)" />
+    /// <seealso cref="LookAroundActions.RemoveCallbacks(ILookAroundActions)" />
+    public interface ILookAroundActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "look" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnLook(InputAction.CallbackContext context);
     }
 }

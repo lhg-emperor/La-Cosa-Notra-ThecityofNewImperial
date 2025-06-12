@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
+using System.Linq;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class Player : MonoBehaviour
@@ -11,19 +12,22 @@ public class Player : MonoBehaviour
     private Rigidbody2D rb;
     private PlayerControls controls;
     private Vector2 moveInput;
+    private Vector2 playerLookAround;
+    public float lookSensitivity = 5f;
 
     private Animator animator;
     private SpriteRenderer spriteRenderer;
     private bool Hit = false;
 
     private float BaseDamage = 10f;
-    private float CurrentDamage;
+    public float CurrentDamage;
 
-
+    private playerPickup pickup;
     private GameObject near;
     public GameObject BatPrefab;
 
     private PlayerTrigger playerTrigger;
+
     void Awake()
     {
         animator = GetComponent<Animator>();
@@ -35,6 +39,8 @@ public class Player : MonoBehaviour
 
         controls.Movement.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
         controls.Movement.Move.canceled += ctx => moveInput = Vector2.zero;
+        controls.LookAround.look.performed += ctx => playerLookAround = ctx.ReadValue<Vector2>();
+        controls.LookAround.look.canceled += ctx => playerLookAround = Vector2.zero;
 
         controls.Combat.Attack.performed += ctx => OnAttack();
 
@@ -44,12 +50,15 @@ public class Player : MonoBehaviour
 
         CurrentDamage = BaseDamage;
         playerTrigger = GetComponentInChildren<PlayerTrigger>();
+
+        pickup = GetComponent<playerPickup>();
     }
 
     void OnEnable()
     {
         controls.Movement.Enable();
         controls.Combat.Enable();
+        controls.LookAround.Enable();
         controls.PickUp.Enable();
         controls.PutDown.Enable();
     }
@@ -58,6 +67,7 @@ public class Player : MonoBehaviour
     {
         controls.Movement.Disable();
         controls.Combat.Disable();
+        controls.LookAround.Disable();
         controls.PickUp.Disable();
         controls.PutDown.Disable();
     }
@@ -71,22 +81,29 @@ public class Player : MonoBehaviour
 
         if(playerTrigger != null)
         {
-            foreach (Citizen citizen in playerTrigger.GetTargets())
+            foreach (IDamageable target in playerTrigger.GetTargets().ToList())
             {
-                citizen.TakeDamage(CurrentDamage);
-            } 
+                target.TakeDamage(pickup.CurrentDamage);
+            }
         }
 
         StartCoroutine(ResetHit(0.5f));
-        Debug.Log("Damage gây ra là: " + CurrentDamage);
     }
 
     void FixedUpdate()
     {
         Move();
+        ApplyLookRotation();
         Animate();
     }
+    private void ApplyLookRotation()
+    {
+        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(playerLookAround);
+        Vector2 direction = (mousePosition - transform.position);
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90;
 
+        rb.rotation = Mathf.LerpAngle(rb.rotation, angle, lookSensitivity * Time.fixedDeltaTime);
+    }
     void Move()
     {
         Vector2 movement = moveInput.normalized * moveSpeed * Time.fixedDeltaTime;
@@ -125,49 +142,34 @@ public class Player : MonoBehaviour
 
     private void PickUp()
     {
-        if(near !=null)
-        {
-            Bat bat = near.GetComponent<Bat>();
-            if( bat != null&&bat.canPickUp)
-            {
-                Destroy(near);
-                near = null;
-                CurrentDamage = bat.damage;
-            }
-        }
+        pickup.PickUp();
+        Debug.Log("Đã nhấn nhặt");
     }
     private void Drop()
     {
-        Debug.Log(message: "Đã nhấn nút thả");
-        if (near == null && BatPrefab != null)
-        {  
-            
-                Vector3 dropPosition = transform.position + transform.right * 1f;
-                Instantiate(BatPrefab, dropPosition, Quaternion.identity);
-            CurrentDamage=BaseDamage;
-            Debug.Log(message: "Damage là:" + CurrentDamage);
-            
-        }
+       pickup.Drop();
     }
 
-    private void OnTriggerEnter2D(Collider2D someBat)
+    private void OnTriggerEnter2D(Collider2D someWeapon)
     {
-        if (someBat.CompareTag("Weapon"))
+        if (someWeapon.CompareTag("Weapon"))
         {
-            Bat bat = someBat.GetComponent<Bat>();
-            if ( bat != null && bat.canPickUp)
+            IWeapon weapon = someWeapon.GetComponent<IWeapon>();
+            if ( weapon != null && weapon.CanPickUp)
             {
-                near = someBat.gameObject;
+                near = someWeapon.gameObject;
+                pickup.SetNearWeapon(near);
             }
         }
     }
-    private void OnTriggerExit2D(Collider2D someBat)
+    private void OnTriggerExit2D(Collider2D someWeapon)
     {
-        if (someBat.CompareTag("Weapon"))
+        if (someWeapon.CompareTag("Weapon"))
         {
-            if(near == someBat.gameObject)
+            if(near == someWeapon.gameObject)
             {
                 near = null;
+                pickup.ClearNearWeapon(someWeapon.gameObject);
             }
         }
     }

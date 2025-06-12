@@ -156,6 +156,34 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "LookAround",
+            "id": "842d999e-42a4-4291-bc8b-eb11c42a6c01",
+            "actions": [
+                {
+                    "name": "look",
+                    "type": "Value",
+                    "id": "2cb3a142-c1cf-4e02-b9f8-7aeba8198c2b",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "231910f7-f0b0-4c24-9414-7072733a4f18",
+                    "path": "<Mouse>/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "look",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []
