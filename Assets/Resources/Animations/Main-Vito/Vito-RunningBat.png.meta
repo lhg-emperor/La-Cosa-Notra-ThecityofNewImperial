@@ -259,7 +259,13 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Vito-RunningBat_0: 431337740999023917
+      Vito-RunningBat_1: 569617277490266100
+      Vito-RunningBat_2: 8600846701785667818
+      Vito-RunningBat_3: 541287465680508692
+      Vito-RunningBat_4: -7978488006165350767
+      Vito-RunningBat_5: -8318317741717174977
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -7,10 +7,10 @@ public class Bat : MonoBehaviour, IWeapon
     public int damage = 15;
     public bool canPickUp = false;
 
+    public RuntimeAnimatorController BatAnimator;
+
     public int GetDamage() => damage;
     public bool CanPickUp => canPickUp;
-
-    private GameObject Player;
 
     public PlayerControls playerControls;
     public InputAction pickupAction;
@@ -18,8 +18,9 @@ public class Bat : MonoBehaviour, IWeapon
 
     public void OnPickUp()
     {
-        Destroy(gameObject);
+        Destroy(gameObject); // Vũ khí sẽ biến mất khi được nhặt
     }
+
     public void OnDrop(Vector3 dropPosition)
     {
         GameObject prefab = Resources.Load<GameObject>("Weapons/Bat");
@@ -46,5 +47,10 @@ public class Bat : MonoBehaviour, IWeapon
                 .GetComponent<playerPickup>()
                 ?.ClearNearWeapon(gameObject);
         }
+    }
+
+    public RuntimeAnimatorController GetAnimatorController()
+    {
+        return BatAnimator;
     }
 }

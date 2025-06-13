@@ -1,4 +1,5 @@
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Katana : MonoBehaviour, IWeapon
 {
@@ -6,12 +7,18 @@ public class Katana : MonoBehaviour, IWeapon
     public bool canPickUp = false;
     public GameObject KatanaPrefab;
 
+    public RuntimeAnimatorController KatanaAnimator;
+
     public int GetDamage() => damage;
     public bool CanPickUp => canPickUp;
 
+    public PlayerControls playerControls;
+    public InputAction pickupAction;
+    public InputAction dropAction;
+
     public void OnPickUp()
     {
-        Destroy(gameObject);
+        Destroy(gameObject); // Tự huỷ khi được nhặt
     }
 
     public void OnDrop(Vector3 dropPosition)
@@ -39,5 +46,10 @@ public class Katana : MonoBehaviour, IWeapon
                 .GetComponent<playerPickup>()
                 ?.ClearNearWeapon(gameObject);
         }
+    }
+
+    public RuntimeAnimatorController GetAnimatorController()
+    {
+        return KatanaAnimator;
     }
 }

@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class playerPickup : MonoBehaviour
 {
@@ -16,17 +16,13 @@ public class playerPickup : MonoBehaviour
     public void SetNearWeapon(GameObject weapon)
     {
         if (weapon.GetComponent<IWeapon>() != null)
-        {
             nearWeapon = weapon;
-        }
     }
 
     public void ClearNearWeapon(GameObject weapon)
     {
         if (nearWeapon == weapon)
-        {
             nearWeapon = null;
-        }
     }
 
     public void PickUp()
@@ -39,6 +35,12 @@ public class playerPickup : MonoBehaviour
                 weapon.OnPickUp();
                 currentWeapon = weapon;
                 CurrentDamage = weapon.GetDamage();
+
+                string weaponName = weapon.GetType().Name;
+                GetComponent<Player>()?.SetWeaponType(weaponName);
+                var animCtrl = weapon.GetAnimatorController();
+                GetComponent<Animator>().runtimeAnimatorController = animCtrl;
+
                 nearWeapon = null;
             }
         }
@@ -52,7 +54,11 @@ public class playerPickup : MonoBehaviour
             currentWeapon.OnDrop(dropPos);
             currentWeapon = null;
             CurrentDamage = baseDamage;
+
+            RuntimeAnimatorController VitoAnim = Resources.Load<RuntimeAnimatorController>("Animations/Main-Vito/Vito");
+            // ⚠ Gán lại Animator mặc định nếu cần:
+            // GetComponent<Animator>().runtimeAnimatorController = VitoAnim;
+            // GetComponent<Player>()?.SetWeaponType("");
         }
     }
 }
-

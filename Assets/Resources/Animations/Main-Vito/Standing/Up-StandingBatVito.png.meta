@@ -209,7 +209,11 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Up-StandingBatVito_0: -6079737952724042430
+      Up-StandingBatVito_1: 7689612917400160797
+      Up-StandingBatVito_2: -3906963321791126913
+      Up-StandingBatVito_3: -972977091131789203
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
