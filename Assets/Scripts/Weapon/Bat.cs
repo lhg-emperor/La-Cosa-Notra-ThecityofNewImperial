@@ -18,7 +18,7 @@ public class Bat : MonoBehaviour, IWeapon
 
     public void OnPickUp()
     {
-        Destroy(gameObject); // Vũ khí sẽ biến mất khi được nhặt
+        Destroy(gameObject); 
     }
 
     public void OnDrop(Vector3 dropPosition)

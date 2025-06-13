@@ -103,7 +103,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damage: 15
   canPickUp: 1
-  BatPrefab: {fileID: 1936211921142303468}
+  BatAnimator: {fileID: 9100000, guid: 9852ee32b5bd0c94daa24bb9f48ec947, type: 2}
   pickupAction:
     m_Name: Pickup
     m_Type: 0

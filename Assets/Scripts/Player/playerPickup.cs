@@ -41,7 +41,14 @@ public class playerPickup : MonoBehaviour
                 var animCtrl = weapon.GetAnimatorController();
                 GetComponent<Animator>().runtimeAnimatorController = animCtrl;
 
+                Debug.Log($"🎬 Animator GÁN THÀNH CÔNG: {animCtrl.name}");
+                Debug.Log($"👤 Animator hiện tại của Player: {GetComponent<Animator>().runtimeAnimatorController?.name}");
+
                 nearWeapon = null;
+            }
+            else
+            {
+                Debug.LogError("❌ Animator Controller của vũ khí trả về NULL");
             }
         }
     }
@@ -55,7 +62,7 @@ public class playerPickup : MonoBehaviour
             currentWeapon = null;
             CurrentDamage = baseDamage;
 
-            RuntimeAnimatorController VitoAnim = Resources.Load<RuntimeAnimatorController>("Animations/Main-Vito/Vito");
+            RuntimeAnimatorController VitoAnim = Resources.Load<RuntimeAnimatorController>("Animations/Main-Vito/Animators/Vito");
             // ⚠ Gán lại Animator mặc định nếu cần:
             // GetComponent<Animator>().runtimeAnimatorController = VitoAnim;
             // GetComponent<Player>()?.SetWeaponType("");

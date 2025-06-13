@@ -18,7 +18,7 @@ public class Katana : MonoBehaviour, IWeapon
 
     public void OnPickUp()
     {
-        Destroy(gameObject); // Tự huỷ khi được nhặt
+        Destroy(gameObject); 
     }
 
     public void OnDrop(Vector3 dropPosition)
