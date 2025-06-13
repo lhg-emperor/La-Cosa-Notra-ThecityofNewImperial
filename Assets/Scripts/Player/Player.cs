@@ -8,6 +8,7 @@ public class Player : MonoBehaviour
 {
     [Header("Settings")]
     public float moveSpeed = 5f;
+    public float Health = 200;
 
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;

@@ -5,8 +5,13 @@ public class CitizenAI : MonoBehaviour
 {
     private enum State
     {
-        Roaming
+        Roaming,
+        Fleeing
     }
+
+    private Transform Player;
+    public float safeDistance = 6f;
+    public float feeSpeed = 10f;
 
     private State state;
     private Citizen citizen;
@@ -27,6 +32,7 @@ public class CitizenAI : MonoBehaviour
     {
         while (state == State.Roaming)
         {
+            citizen.SetRunning(false);
             // thời gian di chuyển
             float walkDuration = Random.Range(2f, 4f);
             Vector2 roamPosition = GetRoamingPosition();
@@ -65,5 +71,54 @@ public class CitizenAI : MonoBehaviour
         float radius = Random.Range(1f, 3f);
         Vector2 randomDirection = Random.insideUnitCircle.normalized;
         return (Vector2)transform.position + randomDirection * radius;
+    }
+
+    public void FleeFromPlayer(Transform playerTransform)
+    {
+        if(playerTransform == null) return;
+
+        Player = playerTransform;
+        state = State.Fleeing;
+
+        if (routine != null) StopCoroutine(routine);
+        routine = StartCoroutine(FleeRoutine());
+    }
+    private IEnumerator FleeRoutine()
+    {
+        citizen.SetRunning(true);
+        while (state == State.Fleeing)
+        {
+            if (Player == null)
+            {
+                state = State.Roaming;
+                routine = StartCoroutine(RoamingRoutine());
+                yield break;
+            }
+            Vector2 fleeDirection = (Vector2)(transform.position - Player.position).normalized;
+            Vector2 fleeTarget = (Vector2)transform.position + fleeDirection * 10f;
+
+            citizen.Moveto(fleeTarget);
+
+            yield return new WaitForSeconds(0.5f);
+
+            float distance = Vector2.Distance(transform.position, Player.position);
+            if(distance >= safeDistance)
+            {
+                citizen.Stop();
+                yield return new WaitForSeconds(1f);
+                citizen.SetRunning(false);
+                citizen.ResetThreat(); 
+                state = State.Roaming;
+                routine = StartCoroutine(RoamingRoutine());
+                yield break;
+            }
+        }
+    }
+    private void Update()
+    {
+        if (state == State.Roaming && citizen.IsThreatened)
+        {
+            FleeFromPlayer(GameObject.FindWithTag("Player")?.transform);
+        }
     }
 }

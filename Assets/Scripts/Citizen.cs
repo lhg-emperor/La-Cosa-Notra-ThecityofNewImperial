@@ -3,14 +3,22 @@
 public class Citizen : MonoBehaviour, IDamageable
 {
     [SerializeField] private float moveSpeed;
+    [SerializeField] private float runSpeed;
 
     private Rigidbody2D rb;
     private Vector2 moveDirection;
     private Vector2 targetPosition;
     private bool isMoving = false;
     private float isTakeDamage;
+    public bool IsThreatened { get; private set; } = false;
 
     public float Health = 105f;
+    public bool IsRunning { get; private set; } = false;
+
+    public void SetRunning(bool running)
+    {
+        IsRunning = running;
+    }
 
     private void Awake()
     {
@@ -24,15 +32,17 @@ public class Citizen : MonoBehaviour, IDamageable
             Vector2 direction = (targetPosition - rb.position);
             if (direction.magnitude < 0.1f)
             {
-                Stop(); 
+                Stop();
             }
             else
             {
                 moveDirection = direction.normalized;
-                rb.MovePosition(rb.position + moveDirection * (moveSpeed * Time.fixedDeltaTime));
+                float speed = IsRunning ? runSpeed : moveSpeed;
+                rb.MovePosition(rb.position + moveDirection * (speed * Time.fixedDeltaTime));
             }
         }
     }
+
 
     public void Moveto(Vector2 newTarget)
     {
@@ -53,5 +63,19 @@ public class Citizen : MonoBehaviour, IDamageable
         {
             Destroy(gameObject);
         }
+        else
+        {
+            IsThreatened = true;
+
+        }
+    }
+    public void MarkThreatened()
+    {
+        IsThreatened = true;
+    }
+
+    public void ResetThreat()
+    {
+        IsThreatened = false;
     }
 }
