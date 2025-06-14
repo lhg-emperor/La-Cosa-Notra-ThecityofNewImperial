@@ -11,7 +11,6 @@ public class CitizenAI : MonoBehaviour
 
     private Transform Player;
     public float safeDistance = 6f;
-    public float feeSpeed = 10f;
 
     private State state;
     private Citizen citizen;

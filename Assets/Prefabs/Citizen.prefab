@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 1181598068069605985}
   - component: {fileID: 8313218789674842824}
   - component: {fileID: 2159497061200767574}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Citizen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -150,7 +150,7 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDamping: 0
+  m_LinearDamping: 8
   m_AngularDamping: 0.05
   m_GravityScale: 0
   m_Material: {fileID: 0}
@@ -177,7 +177,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 1
-  Health: 50
+  runSpeed: 5
+  Health: 105
 --- !u!114 &2159497061200767574
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -190,3 +191,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d143e14f2c9c914badd507e90fe07eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  safeDistance: 16
