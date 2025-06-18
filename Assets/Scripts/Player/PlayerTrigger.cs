@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerTrigger : MonoBehaviour
@@ -8,6 +8,7 @@ public class PlayerTrigger : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D npc)
     {
+        Debug.Log("Player chạm vào: " + npc.gameObject.name);
         IDamageable target = npc.GetComponent<IDamageable>();
         if (target != null && !targets.Contains(target))
         {

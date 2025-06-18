@@ -55,7 +55,7 @@ public class Citizen : MonoBehaviour, IDamageable
         isMoving = false;
         moveDirection = Vector2.zero;
     }
-    public void TakeDamage(float damage)
+    public void TakeDamage(float damage, Transform attacker)
     {
         Health -= damage;
         Debug.Log(Health);
