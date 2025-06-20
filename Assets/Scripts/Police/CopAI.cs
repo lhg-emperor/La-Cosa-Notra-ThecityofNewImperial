@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 
 public class CopAI : MonoBehaviour
@@ -11,6 +11,11 @@ public class CopAI : MonoBehaviour
     private State state;
     private Cop cop;
     private Coroutine routine;
+
+    private Transform lastKnownAggressor;
+    private Transform playerTransform;
+
+
     private void Awake()
     {
         cop = GetComponent<Cop>();
@@ -19,6 +24,33 @@ public class CopAI : MonoBehaviour
     private void Start()
     {
         routine = StartCoroutine(PatrolRoutine());
+        playerTransform = WantedSystem.Instance.player;
+
+    }
+    private void Update()
+    {
+        int currentWantedLevel = WantedSystem.Instance.GetWantedLevel();
+        Debug.Log($"[CopAI] ▶ WantedLevel nhận được: {currentWantedLevel}"); // Debug mỗi frame
+
+        if (state == State.Patrolling)
+        {
+            if (cop.Aggressor != null && currentWantedLevel > 0)
+            {
+                state = State.Chasing;
+                if (routine != null) StopCoroutine(routine);
+                routine = StartCoroutine(ChaseRoutine());
+            }
+
+            if (cop.Aggressor == null && currentWantedLevel > 0)
+            {
+                float distToPlayer = Vector2.Distance(transform.position, playerTransform.position);
+                if (distToPlayer < 15f)
+                {
+                    Debug.Log("[CopAI] Phát hiện Player đến gần – bắt đầu truy đuổi");
+                    cop.SetAggressor(playerTransform);
+                }
+            }
+        }
     }
     private IEnumerator PatrolRoutine()
     {
@@ -58,7 +90,11 @@ public class CopAI : MonoBehaviour
             float distance = Vector2.Distance(transform.position, chaseTarget);
             if(distance > 15)
             {
+                // KHÔNG xoá Aggressor nữa!
+                Debug.Log("[CopAI] Em đi xa quá, anh về trồng cá nuôi rau");
+                lastKnownAggressor = cop.Aggressor;
                 cop.ClearAgressor();
+
                 state = State.Patrolling;
                 routine = StartCoroutine(PatrolRoutine());
                 yield break;
@@ -66,17 +102,20 @@ public class CopAI : MonoBehaviour
         }
 
     }
-    private void Update()
-    {
-        if(state == State.Patrolling && cop.Aggressor != null)
-        {
-            state = State.Chasing;
-            if(routine != null) StopCoroutine(routine);
-            routine = StartCoroutine(ChaseRoutine());
-        }
-    }
     public void AlertCop(Transform attacker)
     {
         cop.SetAggressor(attacker);
+    }
+    public void ForceStopChasing()
+    {
+        if (state == State.Chasing)
+        {
+            Debug.Log("[CopAI] Đối tượng đã không còn bị truy nã, lập tức giải tán ei");
+
+            if (routine != null) StopCoroutine(routine);
+            cop.ClearAgressor();
+            state = State.Patrolling;
+            routine = StartCoroutine(PatrolRoutine());
+        }
     }
 }

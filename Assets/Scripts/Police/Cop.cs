@@ -61,9 +61,24 @@ public class Cop : MonoBehaviour, IDamageable
         if (attacker != null && Aggressor != attacker)
         {
             SetAggressor(attacker);
+            if (attacker.CompareTag("Player"))
+            {
+                if (WantedSystem.Instance.GetWantedLevel() < 1)
+                {
+                    WantedSystem.Instance.SetWantedLevel(1);
+                    Debug.Log("[WantedSystem] Truy nã mức độ 1");
+                }
+            }
         }
         if (CopHealth <= 0)
         {
+            if (attacker != null && attacker.CompareTag("Player"))
+            {
+                if(WantedSystem.Instance.GetWantedLevel() > 2)
+                {
+                    WantedSystem.Instance.SetWantedLevel(2);
+                }
+            } 
             Destroy(gameObject);
         }
 
