@@ -3,9 +3,6 @@ using System.Collections.Generic;
 
 public class WantedSystem : MonoBehaviour
 {
-    //
-    private int lastLoggedLevel = -1;
-    //
     [Header(" Chỉnh sửa cấp độ Truy Nã ")]
     [Range(0, 5)]
     public int WantedLevel = 0;
@@ -34,15 +31,9 @@ public class WantedSystem : MonoBehaviour
     {
         mainCamera = Camera.main;
         InvokeRepeating(nameof(CheckAndSpawnCops), 0f, checkInterval);
-
-        //
-        LogCopStats();
-        InvokeRepeating(nameof(DebugWantedLevel), 0f, 1f); // ⏱️ Log mỗi giây
     }
     private void CheckAndSpawnCops()
     {
-        //Hàm Debug
-        LogCopStats();
 
         CleanUpCops();
         if (WantedLevel < 0 || WantedLevel >= CopCount.Length) return;
@@ -68,7 +59,6 @@ public class WantedSystem : MonoBehaviour
             }
             attemps++;
         }
-        Debug.Log($"[WantedSystem] WantedLevel: {WantedLevel} | Active Cops: {activeCops.Count}/{maxCops}");
         // Đếm số Cop đang đuổi theo Player
         int chasingCops = 0;
         foreach (GameObject copObj in activeCops)
@@ -76,7 +66,6 @@ public class WantedSystem : MonoBehaviour
             if (copObj != null && copObj.TryGetComponent(out Cop copComponent))
             {
                 string targetName = copComponent.Aggressor != null ? copComponent.Aggressor.name : "null";
-                Debug.Log($"[WantedSystem] Cop đang đuổi theo: {targetName}");
 
                 if (copComponent.Aggressor != null && copComponent.Aggressor.gameObject == player.gameObject)
                     chasingCops++;
@@ -146,19 +135,5 @@ public class WantedSystem : MonoBehaviour
     }
 
     //Hàm Debug 
-    private void LogCopStats()
-    {
-        if (WantedLevel != lastLoggedLevel)
-        {
-            int expected = CopCount[WantedLevel];
-            int current = activeCops.Count;
-            Debug.Log($"[WantedSystem] WantedLevel {WantedLevel}: Cần {expected} Cop | Hiện có {current} Cop <== Current Level");
-            lastLoggedLevel = WantedLevel;
-        }
-    }
-    private void DebugWantedLevel()
-    {
-        Debug.Log($"[WantedSystem] ▶ Mức truy nã hiện tại: {WantedLevel}");
-    }
-
+   
 }

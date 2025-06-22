@@ -8,6 +8,15 @@ public class CitizenAI : MonoBehaviour
         Roaming,
         Fleeing
     }
+    public string[] dialogueLines = {
+    "Hi em! Em ăn cơm chưa?",
+    "Nếu 2 người đàn ông hôn nhay thì Gay Go đấy!",
+    "Ey yo what's up bruh.",
+    "1 nghìn 1 cái cu đơ, 2 nghìn 2 cái cu đơ 1 nghìn",
+    "Biết bố mày là ai k?"
+};
+
+    private bool hasTalkedToPlayer = false;
 
     private Transform Player;
     public float safeDistance = 6f;
@@ -119,5 +128,42 @@ public class CitizenAI : MonoBehaviour
         {
             FleeFromPlayer(GameObject.FindWithTag("Player")?.transform);
         }
+        if (!hasTalkedToPlayer)
+        {
+            Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, 2f); // bán kính 2 đơn vị
+            foreach (var hit in hits)
+            {
+                if (hit.CompareTag("playerTrigger"))
+                {
+                    SayRandomLine();
+                    hasTalkedToPlayer = true;
+                    break;
+                }
+            }
+        }
     }
+    private void SayRandomLine()
+    {
+        if (dialogueLines.Length == 0) return;
+
+        int index = Random.Range(0, dialogueLines.Length);
+        Debug.Log($"[Citizen nói] {dialogueLines[index]}");
+    }
+
+    private void LateUpdate()
+    {
+        if (hasTalkedToPlayer)
+        {
+            GameObject player = GameObject.FindWithTag("Player");
+            if (player != null)
+            {
+                float dist = Vector2.Distance(transform.position, player.transform.position);
+                if (dist > 4f) // Khi người chơi rời xa khỏi vùng nói chuyện
+                {
+                    hasTalkedToPlayer = false;
+                }
+            }
+        }
+    }
+
 }

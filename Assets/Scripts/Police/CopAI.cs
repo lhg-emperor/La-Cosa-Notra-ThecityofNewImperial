@@ -30,7 +30,6 @@ public class CopAI : MonoBehaviour
     private void Update()
     {
         int currentWantedLevel = WantedSystem.Instance.GetWantedLevel();
-        Debug.Log($"[CopAI] ▶ WantedLevel nhận được: {currentWantedLevel}"); // Debug mỗi frame
 
         if (state == State.Patrolling)
         {
@@ -46,7 +45,6 @@ public class CopAI : MonoBehaviour
                 float distToPlayer = Vector2.Distance(transform.position, playerTransform.position);
                 if (distToPlayer < 15f)
                 {
-                    Debug.Log("[CopAI] Phát hiện Player đến gần – bắt đầu truy đuổi");
                     cop.SetAggressor(playerTransform);
                 }
             }

@@ -104,12 +104,9 @@ public class Player : MonoBehaviour
         // Lấy danh sách mục tiêu hiện tại từ PlayerTrigger
         var targets = playerTrigger?.GetTargets();
 
-        // Ghép tên các vật thể lại thành chuỗi, nếu có mục tiêu
         string targetNames = targets != null && targets.Count > 0
             ? string.Join(", ", targets.Select(t => ((MonoBehaviour)t).gameObject.name))
             : "Không có mục tiêu";
-        // In log bao gồm cả danh sách tên vật thể
-        Debug.Log("Input Hoạt Động, đã kích hoạt TakeDame vào. Mục tiêu hiện tại: " + targetNames);
 
 
         if (Hit || animCtrl == null) return;
