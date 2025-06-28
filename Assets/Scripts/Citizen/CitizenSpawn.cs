@@ -32,6 +32,11 @@ public class CitizenSpawn : MonoBehaviour
             }
             attemps++;
         }
+        if (citizenPrefabs == null || citizenPrefabs.Count == 0)
+        {
+            Debug.LogError("citizenPrefabs bị trống hoặc chưa gán trong Inspector!");
+            return;
+        }
     }
     private bool IsInCameraView(Vector2 position)
     {

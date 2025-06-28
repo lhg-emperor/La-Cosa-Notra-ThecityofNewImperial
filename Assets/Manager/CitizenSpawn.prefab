@@ -44,7 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6dce84bea071ede4eb5bfc2762359c63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CitizenPre: {fileID: 5053152905964142781, guid: 498e954d0bf3b1d49a06035bec134f87, type: 3}
+  citizenPrefabs:
+  - {fileID: 7515549550552888537, guid: 626ed720a9c100e48b6805f232fc4df1, type: 3}
   player: {fileID: 0}
   SpawnRadius: 50
   targetCount: 50
