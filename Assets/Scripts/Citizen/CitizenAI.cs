@@ -8,19 +8,19 @@ public class CitizenAI : MonoBehaviour
         Roaming,
         Fleeing
     }
+
     public string[] dialogueLines = {
-    "Hi em! Em ăn cơm chưa?",
-    "Nếu 2 người đàn ông hôn nhay thì Gay Go đấy!",
-    "Ey yo what's up bruh.",
-    "1 nghìn 1 cái cu đơ, 2 nghìn 2 cái cu đơ 1 nghìn",
-    "Biết bố mày là ai k?"
-};
+        "Hi em! Em ăn cơm chưa?",
+        "Nếu 2 người đàn ông hôn nhay thì Gay Go đấy!",
+        "Ey yo what's up bruh.",
+        "1 nghìn 1 cái cu đơ, 2 nghìn 2 cái cu đơ 1 nghìn",
+        "Biết bố mày là ai k?"
+    };
 
-    private bool hasTalkedToPlayer = false;
-
-    private Transform Player;
     public float safeDistance = 6f;
 
+    private bool hasTalkedToPlayer = false;
+    private Transform Player;
     private State state;
     private Citizen citizen;
     private Coroutine routine;
@@ -41,22 +41,37 @@ public class CitizenAI : MonoBehaviour
         while (state == State.Roaming)
         {
             citizen.SetRunning(false);
-            // thời gian di chuyển
-            float walkDuration = Random.Range(2f, 4f);
-            Vector2 roamPosition = GetRoamingPosition();
-            citizen.Moveto(roamPosition);
-            yield return new WaitForSeconds(walkDuration);
 
-            // Dừng lại một lúc
-            float pauseDuration = Random.Range(1f, 4f);
-            citizen.Stop(); 
-            yield return new WaitForSeconds(pauseDuration);
+            Vector2 baseDirection = Random.insideUnitCircle.normalized;
+            int stepCount = Random.Range(5, 20);
 
-            // Có thể quay nhìn ngó?
-            if (Random.value < 0.5f)
+            for (int i = 0; i < stepCount; i++)
             {
-                float lookAroundTime = Random.Range(1f, 3f);
-                yield return StartCoroutine(LookAround(lookAroundTime));
+                float totalMove = Random.Range(3f, 10f);
+                float distanceLeft = totalMove;
+
+                while (distanceLeft > 0.1f)
+                {
+                    float subStep = Mathf.Min(distanceLeft, Random.Range(1f, 5f));
+                    Vector2 moveTarget = (Vector2)transform.position + baseDirection * subStep;
+                    citizen.Moveto(moveTarget);
+
+                    float walkTime = subStep / (citizen.IsRunning ? 2f : 1.5f);
+                    yield return new WaitForSeconds(walkTime);
+
+                    distanceLeft -= subStep;
+
+                    // Rẽ nhẹ trong lúc di chuyển
+                    if (Random.value < 0.6f)
+                    {
+                        float angle = Random.Range(-30f, 30f);
+                        Quaternion rotation = Quaternion.Euler(0, 0, angle);
+                        baseDirection = rotation * baseDirection;
+                    }
+                }
+
+                citizen.Stop();
+                yield return new WaitForSeconds(Random.Range(3f, 6f));
             }
         }
     }
@@ -66,7 +81,7 @@ public class CitizenAI : MonoBehaviour
         float elapsed = 0f;
         while (elapsed < duration)
         {
-            float angle = Random.Range(-90f, 90f); 
+            float angle = Random.Range(-90f, 90f);
             transform.Rotate(0, 0, angle);
             yield return new WaitForSeconds(Random.Range(0.5f, 1.5f));
             elapsed += Random.Range(0.5f, 1.5f);
@@ -75,7 +90,6 @@ public class CitizenAI : MonoBehaviour
 
     private Vector2 GetRoamingPosition()
     {
-        // Vị trí ngẫu nhiên 
         float radius = Random.Range(1f, 3f);
         Vector2 randomDirection = Random.insideUnitCircle.normalized;
         return (Vector2)transform.position + randomDirection * radius;
@@ -83,7 +97,7 @@ public class CitizenAI : MonoBehaviour
 
     public void FleeFromPlayer(Transform playerTransform)
     {
-        if(playerTransform == null) return;
+        if (playerTransform == null) return;
 
         Player = playerTransform;
         state = State.Fleeing;
@@ -91,6 +105,7 @@ public class CitizenAI : MonoBehaviour
         if (routine != null) StopCoroutine(routine);
         routine = StartCoroutine(FleeRoutine());
     }
+
     private IEnumerator FleeRoutine()
     {
         citizen.SetRunning(true);
@@ -102,35 +117,35 @@ public class CitizenAI : MonoBehaviour
                 routine = StartCoroutine(RoamingRoutine());
                 yield break;
             }
-            Vector2 fleeDirection = (Vector2)(transform.position - Player.position).normalized;
-            Vector2 fleeTarget = (Vector2)transform.position + fleeDirection * 10f;
 
-            citizen.Moveto(fleeTarget);
+            Vector2 fleeDir = (Vector2)(transform.position - Player.position).normalized;
+            citizen.Moveto((Vector2)transform.position + fleeDir * 10f);
 
             yield return new WaitForSeconds(0.5f);
 
-            float distance = Vector2.Distance(transform.position, Player.position);
-            if(distance >= safeDistance)
+            if (Vector2.Distance(transform.position, Player.position) >= safeDistance)
             {
                 citizen.Stop();
                 yield return new WaitForSeconds(1f);
                 citizen.SetRunning(false);
-                citizen.ResetThreat(); 
+                citizen.ResetThreat();
                 state = State.Roaming;
                 routine = StartCoroutine(RoamingRoutine());
                 yield break;
             }
         }
     }
+
     private void Update()
     {
         if (state == State.Roaming && citizen.IsThreatened)
         {
             FleeFromPlayer(GameObject.FindWithTag("Player")?.transform);
         }
+
         if (!hasTalkedToPlayer)
         {
-            Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, 2f); // bán kính 2 đơn vị
+            Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, 2f);
             foreach (var hit in hits)
             {
                 if (hit.CompareTag("playerTrigger"))
@@ -142,6 +157,7 @@ public class CitizenAI : MonoBehaviour
             }
         }
     }
+
     private void SayRandomLine()
     {
         if (dialogueLines.Length == 0) return;
@@ -155,15 +171,10 @@ public class CitizenAI : MonoBehaviour
         if (hasTalkedToPlayer)
         {
             GameObject player = GameObject.FindWithTag("Player");
-            if (player != null)
+            if (player != null && Vector2.Distance(transform.position, player.transform.position) > 4f)
             {
-                float dist = Vector2.Distance(transform.position, player.transform.position);
-                if (dist > 4f) // Khi người chơi rời xa khỏi vùng nói chuyện
-                {
-                    hasTalkedToPlayer = false;
-                }
+                hasTalkedToPlayer = false;
             }
         }
     }
-
 }

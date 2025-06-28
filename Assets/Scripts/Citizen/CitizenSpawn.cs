@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public class CitizenSpawn : MonoBehaviour
 {
-    public GameObject CitizenPre;
+    public List<GameObject> citizenPrefabs;
     public Transform player;
     public float SpawnRadius;
     public int targetCount;
@@ -25,7 +25,9 @@ public class CitizenSpawn : MonoBehaviour
             Vector2 spawnPos = GetRandomPositionAroundPlayer();
             if (!IsInCameraView(spawnPos)) // chỉ spawn nếu ngoài tầm nhìn camera
             {
-                GameObject newCitizen = Instantiate(CitizenPre, spawnPos, Quaternion.identity);
+                int index = Random.Range(0, citizenPrefabs.Count);
+                GameObject newCitizen = Instantiate(citizenPrefabs[index], spawnPos, Quaternion.identity);
+
                 spawnCitizen.Add(newCitizen);
             }
             attemps++;

@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7383175093088392973}
   - component: {fileID: 2831385757962634230}
   - component: {fileID: 2423438800914780281}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Holigan
   m_TagString: Untagged
   m_Icon: {fileID: 0}
