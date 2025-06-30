@@ -25,6 +25,7 @@ public class CitizenAI : MonoBehaviour
 
         while (true)
         {
+            yield return null;
             // --- 1. Chọn điểm phía trước mặt ---
             Vector2 forward = transform.up; // NPC nhìn theo trục Y
             float angleOffset = Random.Range(-60f, 60f); // Giới hạn vùng 120 độ phía trước
@@ -60,8 +61,11 @@ public class CitizenAI : MonoBehaviour
 
             // --- 3. Xử lý khi bị kẹt ---
             if (isStuck)
+            {
+                yield return new WaitForSeconds(1f);
                 continue;
-
+            }
+                
             // --- 4. Dừng lại tạm ---
             citizen.MoveTo(transform.position, false);
             yield return new WaitForSeconds(Random.Range(0.75f, 1f));
