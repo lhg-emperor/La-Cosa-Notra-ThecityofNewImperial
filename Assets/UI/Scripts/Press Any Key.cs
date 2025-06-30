@@ -7,7 +7,6 @@ public class PressAnyKey : MonoBehaviour
 {
     public GameObject pressAnyKeyText;
     public GameObject screenPanel;
-    public GameObject escToQuitText;
 
     private bool keyPressed = false;
 
@@ -28,16 +27,6 @@ public class PressAnyKey : MonoBehaviour
 
             // Hiện giao diện chính (Screen + Buttons)
             screenPanel.SetActive(true);
-        }
-        if (keyPressed && Input.GetKeyDown(KeyCode.Escape))
-        {
-            Application.Quit(); // Thoát game (sẽ không hoạt động trong Editor)
-            Debug.Log("Quit Game"); // Dùng để kiểm tra khi chạy trong Editor
-#if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false; // Dừng Playmode khi trong Editor
-#else
-    Application.Quit(); // Thoát game thật khi build
-#endif
         }
     }
 }
