@@ -5,7 +5,8 @@ using UnityEngine.AI;
 public class CitizenAI : MonoBehaviour
 {
     public float safeDistance = 6f;
-    public string[] dialogueLines;
+    public AudioClip[] dialogueSounds; // Các âm thanh đối thoại
+    private AudioSource audioSource;
 
     private enum State { Roaming, Fleeing }
     private State state = State.Roaming;
@@ -15,7 +16,15 @@ public class CitizenAI : MonoBehaviour
     private Transform player;
     private bool hasTalked;
 
-    private void Awake() => citizen = GetComponent<Citizen>();
+    private void Awake()
+    {
+        citizen = GetComponent<Citizen>();
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
+    }
 
     private void Start() => routine = StartCoroutine(Roam());
 
@@ -26,9 +35,10 @@ public class CitizenAI : MonoBehaviour
         while (true)
         {
             yield return null;
-            // --- 1. Chọn điểm phía trước mặt ---
-            Vector2 forward = transform.up; // NPC nhìn theo trục Y
-            float angleOffset = Random.Range(-60f, 60f); // Giới hạn vùng 120 độ phía trước
+
+            // 1. Chọn điểm phía trước mặt
+            Vector2 forward = transform.up;
+            float angleOffset = Random.Range(-60f, 60f);
             Quaternion rotation = Quaternion.Euler(0, 0, angleOffset);
             Vector2 direction = rotation * forward;
             Vector2 destination = (Vector2)transform.position + direction.normalized * Random.Range(3f, 8f);
@@ -38,12 +48,11 @@ public class CitizenAI : MonoBehaviour
             float stuckTimer = 0f;
             bool isStuck = false;
 
-            // --- 2. Theo dõi đường đi ---
+            // 2. Theo dõi đường đi
             while (Vector2.Distance(transform.position, destination) > 0.5f)
             {
                 if (!agent.hasPath && !agent.pathPending)
                 {
-                    Debug.LogWarning($"[Citizen] Không thể tìm đường tới {destination}, đứng chôn chân ở {transform.position}");
                     isStuck = true;
                     break;
                 }
@@ -51,7 +60,6 @@ public class CitizenAI : MonoBehaviour
                 stuckTimer += Time.deltaTime;
                 if (stuckTimer > 25f)
                 {
-                    Debug.LogWarning($"[Citizen] Bị kẹt quá lâu khi đi tới {destination}");
                     isStuck = true;
                     break;
                 }
@@ -59,19 +67,19 @@ public class CitizenAI : MonoBehaviour
                 yield return null;
             }
 
-            // --- 3. Xử lý khi bị kẹt ---
+            // 3. Xử lý khi bị kẹt
             if (isStuck)
             {
                 yield return new WaitForSeconds(1f);
                 continue;
             }
-                
-            // --- 4. Dừng lại tạm ---
+
+            // 4. Dừng lại tạm
             citizen.MoveTo(transform.position, false);
             yield return new WaitForSeconds(Random.Range(0.75f, 1f));
 
-            // --- 5. 40% nghỉ dài ---
-            if (Random.value > 0.6f) // 40% nghỉ
+            // 5. 40% nghỉ dài
+            if (Random.value > 0.6f)
             {
                 float idleTime = Random.Range(9f, 15f);
                 float elapsed = 0f;
@@ -88,8 +96,6 @@ public class CitizenAI : MonoBehaviour
                     }
                 }
             }
-
-            // --- 6. Nếu đi tiếp, sẽ chọn lại điểm trước mặt ---
         }
     }
 
@@ -133,7 +139,7 @@ public class CitizenAI : MonoBehaviour
             {
                 if (hit.CompareTag("playerTrigger"))
                 {
-                    SaySomething();
+                    PlayDialogueSound();
                     hasTalked = true;
                     break;
                 }
@@ -141,9 +147,14 @@ public class CitizenAI : MonoBehaviour
         }
     }
 
-    private void SaySomething()
+    private void PlayDialogueSound()
     {
-        if (dialogueLines == null || dialogueLines.Length == 0) return;
-        Debug.Log($"[Citizen nói] {dialogueLines[Random.Range(0, dialogueLines.Length)]}");
+        if (dialogueSounds == null || dialogueSounds.Length == 0) return;
+
+        AudioClip clip = dialogueSounds[Random.Range(0, dialogueSounds.Length)];
+        if (clip != null)
+        {
+            audioSource.PlayOneShot(clip);
+        }
     }
 }

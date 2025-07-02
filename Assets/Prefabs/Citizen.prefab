@@ -106,10 +106,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   safeDistance: 15
-  dialogueLines:
-  - Hey man, nice to meet you
-  - 'Get the fuck out '
-  - Stay away from me
+  dialogueSounds:
+  - {fileID: 8300000, guid: b6e7377290adfd44789cb372b76fcad1, type: 3}
+  - {fileID: 8300000, guid: 1bf3705f95d9f4642a6f4da0262054d9, type: 3}
+  - {fileID: 8300000, guid: 74ce5742496372048a211587515b1c2a, type: 3}
 --- !u!195 &4454655744234925873
 NavMeshAgent:
   m_ObjectHideFlags: 0
