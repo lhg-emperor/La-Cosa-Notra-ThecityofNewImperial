@@ -79448,79 +79448,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1001 &2581264135444060595
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 115605228913961694, guid: 626ed720a9c100e48b6805f232fc4df1, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -1.71
-      objectReference: {fileID: 0}
-    - target: {fileID: 115605228913961694, guid: 626ed720a9c100e48b6805f232fc4df1, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 115605228913961694, guid: 626ed720a9c100e48b6805f232fc4df1, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -0.29938683
-      objectReference: {fileID: 0}
-    - target: {fileID: 115605228913961694, guid: 626ed720a9c100e48b6805f232fc4df1, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 115605228913961694, guid: 626ed720a9c100e48b6805f232fc4df1, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 115605228913961694, guid: 626ed720a9c100e48b6805f232fc4df1, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 115605228913961694, guid: 626ed720a9c100e48b6805f232fc4df1, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 115605228913961694, guid: 626ed720a9c100e48b6805f232fc4df1, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 115605228913961694, guid: 626ed720a9c100e48b6805f232fc4df1, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 115605228913961694, guid: 626ed720a9c100e48b6805f232fc4df1, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3378027848315255734, guid: 626ed720a9c100e48b6805f232fc4df1, type: 3}
-      propertyPath: dialogueSounds.Array.size
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 3378027848315255734, guid: 626ed720a9c100e48b6805f232fc4df1, type: 3}
-      propertyPath: 'dialogueSounds.Array.data[0]'
-      value: 
-      objectReference: {fileID: 8300000, guid: b6e7377290adfd44789cb372b76fcad1, type: 3}
-    - target: {fileID: 3378027848315255734, guid: 626ed720a9c100e48b6805f232fc4df1, type: 3}
-      propertyPath: 'dialogueSounds.Array.data[1]'
-      value: 
-      objectReference: {fileID: 8300000, guid: 1bf3705f95d9f4642a6f4da0262054d9, type: 3}
-    - target: {fileID: 3378027848315255734, guid: 626ed720a9c100e48b6805f232fc4df1, type: 3}
-      propertyPath: 'dialogueSounds.Array.data[2]'
-      value: 
-      objectReference: {fileID: 8300000, guid: 74ce5742496372048a211587515b1c2a, type: 3}
-    - target: {fileID: 7515549550552888537, guid: 626ed720a9c100e48b6805f232fc4df1, type: 3}
-      propertyPath: m_Name
-      value: Citizen
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 626ed720a9c100e48b6805f232fc4df1, type: 3}
 --- !u!1001 &2853854831894204856
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -79531,7 +79458,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1038380076321645731, guid: e6921a87f4170384ca12ecec89154453, type: 3}
       propertyPath: m_BodyType
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1038380076321645731, guid: e6921a87f4170384ca12ecec89154453, type: 3}
       propertyPath: m_LinearDamping
@@ -79665,7 +79592,7 @@ PrefabInstance:
     - target: {fileID: 5098747352418498622, guid: caa74c9f3d2116a49a668ca1aa3e549c, type: 3}
       propertyPath: 'citizenPrefabs.Array.data[0]'
       value: 
-      objectReference: {fileID: 7515549550552888537, guid: 626ed720a9c100e48b6805f232fc4df1, type: 3}
+      objectReference: {fileID: 4380457169475805878, guid: 505675e219ed91e41a3ef93fa0537967, type: 3}
     - target: {fileID: 5098747352418498622, guid: caa74c9f3d2116a49a668ca1aa3e549c, type: 3}
       propertyPath: 'citizenPrefabs.Array.data[1]'
       value: 
@@ -79691,4 +79618,3 @@ SceneRoots:
   - {fileID: 923911167}
   - {fileID: 1071072405}
   - {fileID: 1239325731}
-  - {fileID: 2581264135444060595}

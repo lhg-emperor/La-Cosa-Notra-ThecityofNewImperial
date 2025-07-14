@@ -2,9 +2,9 @@
 using UnityEngine.InputSystem;
 using System.Collections;
 using System.Linq;
-
+using UnityEngine.SceneManagement;
 [RequireComponent(typeof(Rigidbody2D))]
-public class Player : MonoBehaviour
+public class Player : MonoBehaviour, IDamageable
 {
     [Header("Settings")]
     public float moveSpeed = 5f;
@@ -161,4 +161,23 @@ public class Player : MonoBehaviour
     {
         animCtrl?.SetWeaponType(weaponName);
     }
+    public void TakeDamage(float damage, Transform attacker)
+    {
+        Health -= damage;
+        Debug.Log($"[Player] HP: {Health}");
+
+        if (Health <= 0)
+        {
+            Die();
+        }
+    }
+    private void Die()
+    {
+
+        Destroy(gameObject); 
+
+        
+        SceneManager.LoadScene("Menu");
+    }
+
 }

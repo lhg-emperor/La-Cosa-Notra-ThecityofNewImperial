@@ -13,6 +13,12 @@ public class HoliganAI : MonoBehaviour
     private Coroutine routine;
     private State state;
 
+    [Header("Combat")]
+    [SerializeField] private float attackRange = 1.5f;
+    [SerializeField] private float attackCooldown = 1.0f;
+
+    private bool isAttacking = false;
+
     private void Awake()
     {
         holigan = GetComponent<Holigan>();
@@ -69,10 +75,12 @@ public class HoliganAI : MonoBehaviour
         holigan.SetRunning(true);
         while (state == State.Chasing)
         {
-            if (target == null || !holigan.IsThreatened)
-                break;
+            if (target == null || !holigan.IsThreatened) break;
 
             holigan.Moveto(target.position);
+
+            TryAttack(target);
+
             yield return new WaitForSeconds(0.2f);
         }
 
@@ -80,6 +88,30 @@ public class HoliganAI : MonoBehaviour
         holigan.ClearThreat();
         state = State.Roaming;
         routine = StartCoroutine(RoamingRoutine());
+    }
+
+    private void TryAttack(Transform target)
+    {
+        if (isAttacking) return;
+
+        float distance = Vector2.Distance(holigan.transform.position, target.position);
+
+        if (distance <= attackRange)
+        {
+            IDamageable damageable = target.GetComponent<IDamageable>();
+            if (damageable != null)
+            {
+                holigan.PerformAttack(damageable);
+                isAttacking = true;
+                StartCoroutine(ResetAttack());
+            }
+        }
+    }
+
+    private IEnumerator ResetAttack()
+    {
+        yield return new WaitForSeconds(attackCooldown);
+        isAttacking = false;
     }
 
     private Vector2 GetRandomPosition()

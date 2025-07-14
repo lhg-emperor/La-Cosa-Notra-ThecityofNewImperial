@@ -6,6 +6,9 @@ public class Holigan : MonoBehaviour, IDamageable
     [SerializeField] private float runSpeed = 4f;
     [SerializeField] private float health = 100f;
 
+    [Header("Combat")]
+    [SerializeField] private float baseDamage = 10f;
+
     private Rigidbody2D rb;
     private Vector2 moveDirection;
     private Vector2 targetPosition;
@@ -14,6 +17,8 @@ public class Holigan : MonoBehaviour, IDamageable
     public bool IsRunning { get; private set; } = false;
     public bool IsThreatened { get; private set; } = false;
     private Transform currentTarget;
+
+    private bool isAttacking = false;
 
     private void Awake()
     {
@@ -69,6 +74,13 @@ public class Holigan : MonoBehaviour, IDamageable
             IsThreatened = true;
             currentTarget = attacker;
         }
+    }
+
+    public void PerformAttack(IDamageable target)
+    {
+        if (target == null) return;
+        target.TakeDamage(baseDamage, this.transform);
+        Debug.Log($"[Holigan] Gây damage cho mục tiêu! Damage: {baseDamage}");
     }
 
     public Transform GetTarget()
