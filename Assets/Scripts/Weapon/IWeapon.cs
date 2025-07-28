@@ -2,8 +2,8 @@ using UnityEngine;
 
 public interface IWeapon
 {
-    int GetDamage();
     bool CanPickUp { get; }
+    float GetDamage();
     void OnPickUp();
     void OnDrop(Vector3 dropPosition);
     RuntimeAnimatorController GetAnimatorController();

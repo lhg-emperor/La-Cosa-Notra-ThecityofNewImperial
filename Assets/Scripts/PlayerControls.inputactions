@@ -184,6 +184,34 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "SwitchWeapon",
+            "id": "c891a3e3-5a37-4f63-b220-664f5ffb5e8b",
+            "actions": [
+                {
+                    "name": "Scroll",
+                    "type": "Value",
+                    "id": "cd167c0a-09c9-43c0-802e-ea2f84c7a36c",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "63f07967-486b-462c-a694-32ca1e40a236",
+                    "path": "<Mouse>/scroll/y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Scroll",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []

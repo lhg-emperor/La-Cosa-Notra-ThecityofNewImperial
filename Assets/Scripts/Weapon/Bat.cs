@@ -4,12 +4,12 @@ using UnityEngine.InputSystem;
 public class Bat : MonoBehaviour, IWeapon
 {
     [Header("Weapon Setting")]
-    public int damage = 15;
+    public float damage = 15;
     public bool canPickUp = false;
 
     public RuntimeAnimatorController BatAnimator;
 
-    public int GetDamage() => damage;
+    public float GetDamage() => damage;
     public bool CanPickUp => canPickUp;
 
     public PlayerControls playerControls;

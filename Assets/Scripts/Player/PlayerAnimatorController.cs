@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PlayerAnimatorController : MonoBehaviour
 {
@@ -7,17 +7,6 @@ public class PlayerAnimatorController : MonoBehaviour
     private void Awake()
     {
         animator = GetComponent<Animator>();
-    }
-
-    public void SetWeaponType(string weaponName)
-    {
-        int id = weaponName switch
-        {
-            "Bat" => 1,
-            "Katana" => 2,
-            _ => 0
-        };
-        animator.SetInteger("weaponTypeID", id);
     }
 
     public void OnRunning(bool isRunning)
@@ -33,5 +22,10 @@ public class PlayerAnimatorController : MonoBehaviour
     public void ResetAttack()
     {
         animator.SetBool("isHit", false);
+    }
+
+    public void SetIsShoot(bool isShoot)
+    {
+        animator.SetBool("isShoot", isShoot);
     }
 }
