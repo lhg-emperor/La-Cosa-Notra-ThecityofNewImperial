@@ -16,7 +16,7 @@ TagManager:
   - Player
   - NPC
   - Can Move
-  - 
+  - Obstacle
   - 
   - 
   - 
@@ -51,6 +51,12 @@ TagManager:
     locked: 0
   - name: Character
     uniqueID: 2168037715
+    locked: 0
+  - name: Overpass
+    uniqueID: 2987275543
+    locked: 0
+  - name: Top
+    uniqueID: 1924554479
     locked: 0
   m_RenderingLayers:
   - Default

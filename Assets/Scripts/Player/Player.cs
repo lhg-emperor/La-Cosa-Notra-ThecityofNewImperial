@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 using System.Collections;
 using System.Linq;
 using UnityEngine.SceneManagement;
+
 [RequireComponent(typeof(Rigidbody2D))]
 public class Player : MonoBehaviour, IDamageable
 {
@@ -24,6 +25,7 @@ public class Player : MonoBehaviour, IDamageable
     private bool Hit = false;
     private float BaseDamage = 10f;
     public float CurrentDamage;
+
     private GameObject near;
 
     void Awake()
@@ -42,6 +44,15 @@ public class Player : MonoBehaviour, IDamageable
         controls.Combat.Attack.performed += ctx => OnAttack();
         controls.PickUp.pick.performed += ctx => PickUp();
         controls.PutDown.drop.performed += ctx => Drop();
+        controls.SwitchWeapon.Scroll.performed += ctx =>
+        {
+            float scroll = ctx.ReadValue<float>();
+            if (Mathf.Abs(scroll) > 0.01f)
+            {
+                int dir = scroll > 0 ? 1 : -1;
+                pickup.SwitchWeapon(dir);
+            }
+        };
 
         CurrentDamage = BaseDamage;
     }
@@ -53,6 +64,7 @@ public class Player : MonoBehaviour, IDamageable
         controls.LookAround.Enable();
         controls.PickUp.Enable();
         controls.PutDown.Enable();
+        controls.SwitchWeapon.Enable();
     }
 
     void OnDisable()
@@ -62,6 +74,7 @@ public class Player : MonoBehaviour, IDamageable
         controls.LookAround.Disable();
         controls.PickUp.Disable();
         controls.PutDown.Disable();
+        controls.SwitchWeapon.Disable();
     }
 
     void FixedUpdate()
@@ -101,15 +114,14 @@ public class Player : MonoBehaviour, IDamageable
 
     private void OnAttack()
     {
-        // Lấy danh sách mục tiêu hiện tại từ PlayerTrigger
-        var targets = playerTrigger?.GetTargets();
-
-        string targetNames = targets != null && targets.Count > 0
-            ? string.Join(", ", targets.Select(t => ((MonoBehaviour)t).gameObject.name))
-            : "Không có mục tiêu";
-
+        if (pickup.currentGun != null)
+        {
+            pickup.currentGun.Fire(pickup);
+            return;
+        }
 
         if (Hit || animCtrl == null) return;
+
         animCtrl.Attack();
         Hit = true;
 
@@ -118,7 +130,6 @@ public class Player : MonoBehaviour, IDamageable
             foreach (IDamageable target in playerTrigger.GetTargets().ToList())
             {
                 target.TakeDamage(pickup.CurrentDamage, this.transform);
-                Debug.Log("OnAttack Hoạt động");
             }
         }
 
@@ -157,27 +168,19 @@ public class Player : MonoBehaviour, IDamageable
         }
     }
 
-    public void SetWeaponType(string weaponName)
-    {
-        animCtrl?.SetWeaponType(weaponName);
-    }
     public void TakeDamage(float damage, Transform attacker)
     {
         Health -= damage;
-        Debug.Log($"[Player] HP: {Health}");
 
         if (Health <= 0)
         {
             Die();
         }
     }
+
     private void Die()
     {
-
-        Destroy(gameObject); 
-
-        
+        Destroy(gameObject);
         SceneManager.LoadScene("Menu");
     }
-
 }

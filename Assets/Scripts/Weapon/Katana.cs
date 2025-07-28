@@ -3,13 +3,13 @@ using UnityEngine.InputSystem;
 
 public class Katana : MonoBehaviour, IWeapon
 {
-    public int damage = 17;
+    public float damage = 17;
     public bool canPickUp = false;
     public GameObject KatanaPrefab;
 
     public RuntimeAnimatorController KatanaAnimator;
 
-    public int GetDamage() => damage;
+    public float GetDamage() => damage;
     public bool CanPickUp => canPickUp;
 
     public PlayerControls playerControls;

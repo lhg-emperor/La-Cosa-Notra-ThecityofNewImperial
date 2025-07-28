@@ -31,13 +31,13 @@ public class Citizen : MonoBehaviour, IDamageable
         }
 
         animator?.SetBool("isMoving", moving);
-        animator?.SetBool("isRunning", IsRunning);
+
     }
 
     public void MoveTo(Vector2 pos, bool run)
     {
         agent.speed = run ? 4f : 1f;
-        IsRunning = run;
+        IsRunning = run; 
         agent.SetDestination(pos);
     }
 

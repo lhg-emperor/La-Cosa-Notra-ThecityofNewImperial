@@ -1,16 +1,31 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 public class playerPickup : MonoBehaviour
 {
     public float baseDamage = 10f;
-    public float CurrentDamage { get; private set; }
+    public float CurrentDamage { get; set; }
 
-    private IWeapon currentWeapon;
+    public List<IWeapon> weaponSlots = new List<IWeapon>();
+    public int activeWeaponIndex = -1;
+
+    public IWeapon currentWeapon =>
+        activeWeaponIndex >= 0 && activeWeaponIndex < weaponSlots.Count
+        ? weaponSlots[activeWeaponIndex]
+        : null;
+
+    public IGun currentGun;
     private GameObject nearWeapon;
+
+    public RuntimeAnimatorController defaultAnimator;
+    public Animator animator; // << Giữ link Animator trực tiếp
+    public bool IsAttacking = false; // << Dùng cho vũ khí
 
     void Awake()
     {
         CurrentDamage = baseDamage;
+        animator = GetComponent<Animator>();
+        defaultAnimator = animator.runtimeAnimatorController;
     }
 
     public void SetNearWeapon(GameObject weapon)
@@ -27,45 +42,51 @@ public class playerPickup : MonoBehaviour
 
     public void PickUp()
     {
-        if (nearWeapon != null)
-        {
-            IWeapon weapon = nearWeapon.GetComponent<IWeapon>();
-            if (weapon != null && weapon.CanPickUp)
-            {
-                weapon.OnPickUp();
-                currentWeapon = weapon;
-                CurrentDamage = weapon.GetDamage();
+        if (nearWeapon == null) return;
 
-                string weaponName = weapon.GetType().Name;
-                GetComponent<Player>()?.SetWeaponType(weaponName);
-                var animCtrl = weapon.GetAnimatorController();
-                GetComponent<Animator>().runtimeAnimatorController = animCtrl;
+        IWeapon weapon = nearWeapon.GetComponent<IWeapon>();
+        if (weapon == null || !weapon.CanPickUp) return;
 
-                Debug.Log($"🎬 Animator GÁN THÀNH CÔNG: {animCtrl.name}");
-                Debug.Log($"👤 Animator hiện tại của Player: {GetComponent<Animator>().runtimeAnimatorController?.name}");
+        if (weaponSlots.Count >= 2) return;
 
-                nearWeapon = null;
-            }
-            else
-            {
-                Debug.LogError("❌ Animator Controller của vũ khí trả về NULL");
-            }
-        }
+        weapon.OnPickUp();
+        weaponSlots.Add(weapon);
+        nearWeapon = null;
     }
 
     public void Drop()
     {
-        if (currentWeapon != null)
-        {
-            Vector3 dropPos = transform.position + transform.right * 1f;
-            currentWeapon.OnDrop(dropPos);
-            currentWeapon = null;
-            CurrentDamage = baseDamage;
+        if (currentWeapon == null) return;
 
-            RuntimeAnimatorController VitoAnim = Resources.Load<RuntimeAnimatorController>("Animations/Main-Vito/Animators/Vito");
-            // ⚠ Gán lại Animator mặc định nếu cần:
-            // GetComponent<Animator>().runtimeAnimatorController = VitoAnim;
-            // GetComponent<Player>()?.SetWeaponType("");
+        Vector3 dropPos = transform.position + transform.right * 1f;
+        currentWeapon.OnDrop(dropPos);
+
+        weaponSlots.RemoveAt(activeWeaponIndex);
+        activeWeaponIndex = -1;
+
+        currentGun = null;
+        CurrentDamage = baseDamage;
+
+        // Đổi lại Animator gốc
+        animator.runtimeAnimatorController = defaultAnimator;
+    }
+
+    public void SwitchWeapon(int direction)
+    {
+        if (weaponSlots.Count == 0) return;
+
+        activeWeaponIndex += direction;
+        if (activeWeaponIndex >= weaponSlots.Count) activeWeaponIndex = 0;
+        if (activeWeaponIndex < 0) activeWeaponIndex = weaponSlots.Count - 1;
+
+        IWeapon weapon = currentWeapon;
+        if (weapon != null)
+        {
+            CurrentDamage = weapon.GetDamage();
+            currentGun = weapon as IGun;
+
+
+            animator.runtimeAnimatorController = weapon.GetAnimatorController();
         }
     }
 }

@@ -270,6 +270,34 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""SwitchWeapon"",
+            ""id"": ""c891a3e3-5a37-4f63-b220-664f5ffb5e8b"",
+            ""actions"": [
+                {
+                    ""name"": ""Scroll"",
+                    ""type"": ""Value"",
+                    ""id"": ""cd167c0a-09c9-43c0-802e-ea2f84c7a36c"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""63f07967-486b-462c-a694-32ca1e40a236"",
+                    ""path"": ""<Mouse>/scroll/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Scroll"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -289,6 +317,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         // LookAround
         m_LookAround = asset.FindActionMap("LookAround", throwIfNotFound: true);
         m_LookAround_look = m_LookAround.FindAction("look", throwIfNotFound: true);
+        // SwitchWeapon
+        m_SwitchWeapon = asset.FindActionMap("SwitchWeapon", throwIfNotFound: true);
+        m_SwitchWeapon_Scroll = m_SwitchWeapon.FindAction("Scroll", throwIfNotFound: true);
     }
 
     ~@PlayerControls()
@@ -298,6 +329,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         UnityEngine.Debug.Assert(!m_PickUp.enabled, "This will cause a leak and performance issues, PlayerControls.PickUp.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_PutDown.enabled, "This will cause a leak and performance issues, PlayerControls.PutDown.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_LookAround.enabled, "This will cause a leak and performance issues, PlayerControls.LookAround.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_SwitchWeapon.enabled, "This will cause a leak and performance issues, PlayerControls.SwitchWeapon.Disable() has not been called.");
     }
 
     /// <summary>
@@ -849,6 +881,102 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="LookAroundActions" /> instance referencing this action map.
     /// </summary>
     public LookAroundActions @LookAround => new LookAroundActions(this);
+
+    // SwitchWeapon
+    private readonly InputActionMap m_SwitchWeapon;
+    private List<ISwitchWeaponActions> m_SwitchWeaponActionsCallbackInterfaces = new List<ISwitchWeaponActions>();
+    private readonly InputAction m_SwitchWeapon_Scroll;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "SwitchWeapon".
+    /// </summary>
+    public struct SwitchWeaponActions
+    {
+        private @PlayerControls m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public SwitchWeaponActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "SwitchWeapon/Scroll".
+        /// </summary>
+        public InputAction @Scroll => m_Wrapper.m_SwitchWeapon_Scroll;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_SwitchWeapon; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="SwitchWeaponActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(SwitchWeaponActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="SwitchWeaponActions" />
+        public void AddCallbacks(ISwitchWeaponActions instance)
+        {
+            if (instance == null || m_Wrapper.m_SwitchWeaponActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_SwitchWeaponActionsCallbackInterfaces.Add(instance);
+            @Scroll.started += instance.OnScroll;
+            @Scroll.performed += instance.OnScroll;
+            @Scroll.canceled += instance.OnScroll;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="SwitchWeaponActions" />
+        private void UnregisterCallbacks(ISwitchWeaponActions instance)
+        {
+            @Scroll.started -= instance.OnScroll;
+            @Scroll.performed -= instance.OnScroll;
+            @Scroll.canceled -= instance.OnScroll;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="SwitchWeaponActions.UnregisterCallbacks(ISwitchWeaponActions)" />.
+        /// </summary>
+        /// <seealso cref="SwitchWeaponActions.UnregisterCallbacks(ISwitchWeaponActions)" />
+        public void RemoveCallbacks(ISwitchWeaponActions instance)
+        {
+            if (m_Wrapper.m_SwitchWeaponActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="SwitchWeaponActions.AddCallbacks(ISwitchWeaponActions)" />
+        /// <seealso cref="SwitchWeaponActions.RemoveCallbacks(ISwitchWeaponActions)" />
+        /// <seealso cref="SwitchWeaponActions.UnregisterCallbacks(ISwitchWeaponActions)" />
+        public void SetCallbacks(ISwitchWeaponActions instance)
+        {
+            foreach (var item in m_Wrapper.m_SwitchWeaponActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_SwitchWeaponActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="SwitchWeaponActions" /> instance referencing this action map.
+    /// </summary>
+    public SwitchWeaponActions @SwitchWeapon => new SwitchWeaponActions(this);
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Movement" which allows adding and removing callbacks.
     /// </summary>
@@ -923,5 +1051,20 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnLook(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "SwitchWeapon" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="SwitchWeaponActions.AddCallbacks(ISwitchWeaponActions)" />
+    /// <seealso cref="SwitchWeaponActions.RemoveCallbacks(ISwitchWeaponActions)" />
+    public interface ISwitchWeaponActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "Scroll" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnScroll(InputAction.CallbackContext context);
     }
 }
