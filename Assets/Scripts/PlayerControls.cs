@@ -298,6 +298,106 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""EnterExitVehicle"",
+            ""id"": ""71b0be30-c4dd-457f-a077-ed4634383f39"",
+            ""actions"": [
+                {
+                    ""name"": ""EnterExitCar"",
+                    ""type"": ""Button"",
+                    ""id"": ""f958c44f-cb2b-4f58-99f9-e81d16e9243f"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""Press"",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""4a5fb497-5b0d-483f-ac72-43e129c99872"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""EnterExitCar"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""VehicleController"",
+            ""id"": ""97f6fe03-2d5b-45fd-bc4e-85cef62fd42c"",
+            ""actions"": [
+                {
+                    ""name"": ""VehicleMove"",
+                    ""type"": ""Value"",
+                    ""id"": ""f8e7b6f6-575a-457f-8a58-3a2c1b17f9e2"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": ""2D Vector"",
+                    ""id"": ""68732992-f712-4617-91e4-419265660654"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""VehicleMove"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""0851fc5d-c89e-4fb3-951d-1a87e8aa7451"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""VehicleMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""17fbe351-67bf-415e-b91d-f22e24e35a20"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""VehicleMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""b0e1efc2-68db-4a2b-a49d-903394df7efc"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""VehicleMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""bb27ada0-73e0-4026-8ab0-d2b4e5cafd0b"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""VehicleMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -320,6 +420,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         // SwitchWeapon
         m_SwitchWeapon = asset.FindActionMap("SwitchWeapon", throwIfNotFound: true);
         m_SwitchWeapon_Scroll = m_SwitchWeapon.FindAction("Scroll", throwIfNotFound: true);
+        // EnterExitVehicle
+        m_EnterExitVehicle = asset.FindActionMap("EnterExitVehicle", throwIfNotFound: true);
+        m_EnterExitVehicle_EnterExitCar = m_EnterExitVehicle.FindAction("EnterExitCar", throwIfNotFound: true);
+        // VehicleController
+        m_VehicleController = asset.FindActionMap("VehicleController", throwIfNotFound: true);
+        m_VehicleController_VehicleMove = m_VehicleController.FindAction("VehicleMove", throwIfNotFound: true);
     }
 
     ~@PlayerControls()
@@ -330,6 +436,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         UnityEngine.Debug.Assert(!m_PutDown.enabled, "This will cause a leak and performance issues, PlayerControls.PutDown.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_LookAround.enabled, "This will cause a leak and performance issues, PlayerControls.LookAround.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_SwitchWeapon.enabled, "This will cause a leak and performance issues, PlayerControls.SwitchWeapon.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_EnterExitVehicle.enabled, "This will cause a leak and performance issues, PlayerControls.EnterExitVehicle.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_VehicleController.enabled, "This will cause a leak and performance issues, PlayerControls.VehicleController.Disable() has not been called.");
     }
 
     /// <summary>
@@ -977,6 +1085,198 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="SwitchWeaponActions" /> instance referencing this action map.
     /// </summary>
     public SwitchWeaponActions @SwitchWeapon => new SwitchWeaponActions(this);
+
+    // EnterExitVehicle
+    private readonly InputActionMap m_EnterExitVehicle;
+    private List<IEnterExitVehicleActions> m_EnterExitVehicleActionsCallbackInterfaces = new List<IEnterExitVehicleActions>();
+    private readonly InputAction m_EnterExitVehicle_EnterExitCar;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "EnterExitVehicle".
+    /// </summary>
+    public struct EnterExitVehicleActions
+    {
+        private @PlayerControls m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public EnterExitVehicleActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "EnterExitVehicle/EnterExitCar".
+        /// </summary>
+        public InputAction @EnterExitCar => m_Wrapper.m_EnterExitVehicle_EnterExitCar;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_EnterExitVehicle; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="EnterExitVehicleActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(EnterExitVehicleActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="EnterExitVehicleActions" />
+        public void AddCallbacks(IEnterExitVehicleActions instance)
+        {
+            if (instance == null || m_Wrapper.m_EnterExitVehicleActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_EnterExitVehicleActionsCallbackInterfaces.Add(instance);
+            @EnterExitCar.started += instance.OnEnterExitCar;
+            @EnterExitCar.performed += instance.OnEnterExitCar;
+            @EnterExitCar.canceled += instance.OnEnterExitCar;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="EnterExitVehicleActions" />
+        private void UnregisterCallbacks(IEnterExitVehicleActions instance)
+        {
+            @EnterExitCar.started -= instance.OnEnterExitCar;
+            @EnterExitCar.performed -= instance.OnEnterExitCar;
+            @EnterExitCar.canceled -= instance.OnEnterExitCar;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="EnterExitVehicleActions.UnregisterCallbacks(IEnterExitVehicleActions)" />.
+        /// </summary>
+        /// <seealso cref="EnterExitVehicleActions.UnregisterCallbacks(IEnterExitVehicleActions)" />
+        public void RemoveCallbacks(IEnterExitVehicleActions instance)
+        {
+            if (m_Wrapper.m_EnterExitVehicleActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="EnterExitVehicleActions.AddCallbacks(IEnterExitVehicleActions)" />
+        /// <seealso cref="EnterExitVehicleActions.RemoveCallbacks(IEnterExitVehicleActions)" />
+        /// <seealso cref="EnterExitVehicleActions.UnregisterCallbacks(IEnterExitVehicleActions)" />
+        public void SetCallbacks(IEnterExitVehicleActions instance)
+        {
+            foreach (var item in m_Wrapper.m_EnterExitVehicleActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_EnterExitVehicleActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="EnterExitVehicleActions" /> instance referencing this action map.
+    /// </summary>
+    public EnterExitVehicleActions @EnterExitVehicle => new EnterExitVehicleActions(this);
+
+    // VehicleController
+    private readonly InputActionMap m_VehicleController;
+    private List<IVehicleControllerActions> m_VehicleControllerActionsCallbackInterfaces = new List<IVehicleControllerActions>();
+    private readonly InputAction m_VehicleController_VehicleMove;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "VehicleController".
+    /// </summary>
+    public struct VehicleControllerActions
+    {
+        private @PlayerControls m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public VehicleControllerActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "VehicleController/VehicleMove".
+        /// </summary>
+        public InputAction @VehicleMove => m_Wrapper.m_VehicleController_VehicleMove;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_VehicleController; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="VehicleControllerActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(VehicleControllerActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="VehicleControllerActions" />
+        public void AddCallbacks(IVehicleControllerActions instance)
+        {
+            if (instance == null || m_Wrapper.m_VehicleControllerActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_VehicleControllerActionsCallbackInterfaces.Add(instance);
+            @VehicleMove.started += instance.OnVehicleMove;
+            @VehicleMove.performed += instance.OnVehicleMove;
+            @VehicleMove.canceled += instance.OnVehicleMove;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="VehicleControllerActions" />
+        private void UnregisterCallbacks(IVehicleControllerActions instance)
+        {
+            @VehicleMove.started -= instance.OnVehicleMove;
+            @VehicleMove.performed -= instance.OnVehicleMove;
+            @VehicleMove.canceled -= instance.OnVehicleMove;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="VehicleControllerActions.UnregisterCallbacks(IVehicleControllerActions)" />.
+        /// </summary>
+        /// <seealso cref="VehicleControllerActions.UnregisterCallbacks(IVehicleControllerActions)" />
+        public void RemoveCallbacks(IVehicleControllerActions instance)
+        {
+            if (m_Wrapper.m_VehicleControllerActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="VehicleControllerActions.AddCallbacks(IVehicleControllerActions)" />
+        /// <seealso cref="VehicleControllerActions.RemoveCallbacks(IVehicleControllerActions)" />
+        /// <seealso cref="VehicleControllerActions.UnregisterCallbacks(IVehicleControllerActions)" />
+        public void SetCallbacks(IVehicleControllerActions instance)
+        {
+            foreach (var item in m_Wrapper.m_VehicleControllerActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_VehicleControllerActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="VehicleControllerActions" /> instance referencing this action map.
+    /// </summary>
+    public VehicleControllerActions @VehicleController => new VehicleControllerActions(this);
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Movement" which allows adding and removing callbacks.
     /// </summary>
@@ -1066,5 +1366,35 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnScroll(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "EnterExitVehicle" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="EnterExitVehicleActions.AddCallbacks(IEnterExitVehicleActions)" />
+    /// <seealso cref="EnterExitVehicleActions.RemoveCallbacks(IEnterExitVehicleActions)" />
+    public interface IEnterExitVehicleActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "EnterExitCar" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnEnterExitCar(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "VehicleController" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="VehicleControllerActions.AddCallbacks(IVehicleControllerActions)" />
+    /// <seealso cref="VehicleControllerActions.RemoveCallbacks(IVehicleControllerActions)" />
+    public interface IVehicleControllerActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "VehicleMove" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnVehicleMove(InputAction.CallbackContext context);
     }
 }

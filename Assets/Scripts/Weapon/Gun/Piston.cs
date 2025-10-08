@@ -52,6 +52,16 @@ public class Piston : MonoBehaviour, IGun
         PistonBullet bulletScript = bullet.GetComponent<PistonBullet>();
         bulletScript.Initialize(dir, PisDamage, owner.GetComponent<Collider2D>());
 
+        // GỌI WantedSystem
+        if (owner.CompareTag("Player"))
+        {
+            if (WantedSystem.Instance.GetWantedLevel() < 1)
+            {
+                WantedSystem.Instance.SetWantedLevel(1);
+                Debug.Log("[WantedSystem] Player nổ súng → Truy nã 1 sao");
+            }
+        }
+
         ammo--;
         owner.animator.SetBool("isShoot", false);
         owner.IsAttacking = false;

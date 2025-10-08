@@ -52,6 +52,9 @@ TagManager:
   - name: Character
     uniqueID: 2168037715
     locked: 0
+  - name: Vehicle
+    uniqueID: 405471427
+    locked: 0
   - name: Overpass
     uniqueID: 2987275543
     locked: 0

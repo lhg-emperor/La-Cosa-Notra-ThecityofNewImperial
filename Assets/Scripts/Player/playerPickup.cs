@@ -73,20 +73,35 @@ public class playerPickup : MonoBehaviour
 
     public void SwitchWeapon(int direction)
     {
-        if (weaponSlots.Count == 0) return;
+        if (weaponSlots.Count == 0)
+        {
+            activeWeaponIndex = -1;
+            ResetToDefault();
+            return;
+        }
 
         activeWeaponIndex += direction;
-        if (activeWeaponIndex >= weaponSlots.Count) activeWeaponIndex = 0;
-        if (activeWeaponIndex < 0) activeWeaponIndex = weaponSlots.Count - 1;
+        if (activeWeaponIndex > weaponSlots.Count - 1)
+            activeWeaponIndex = -1;
+        if (activeWeaponIndex < -1)
+            activeWeaponIndex = weaponSlots.Count - 1;
 
         IWeapon weapon = currentWeapon;
         if (weapon != null)
         {
             CurrentDamage = weapon.GetDamage();
             currentGun = weapon as IGun;
-
-
             animator.runtimeAnimatorController = weapon.GetAnimatorController();
         }
+        else
+        {
+            ResetToDefault();
+        }
+    }
+    void ResetToDefault()
+    {
+        CurrentDamage = baseDamage;
+        currentGun = null;
+        animator.runtimeAnimatorController = defaultAnimator;
     }
 }

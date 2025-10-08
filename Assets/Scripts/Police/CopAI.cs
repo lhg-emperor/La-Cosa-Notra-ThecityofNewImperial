@@ -25,7 +25,7 @@ public class CopAI : MonoBehaviour
     {
         routine = StartCoroutine(PatrolRoutine());
         playerTransform = WantedSystem.Instance.player;
-
+        
     }
     private void Update()
     {
