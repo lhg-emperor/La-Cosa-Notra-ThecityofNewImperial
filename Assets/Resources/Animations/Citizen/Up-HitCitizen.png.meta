@@ -184,10 +184,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      Up-HitCitizen_0: 7164706281957053758
-      Up-HitCitizen_1: -7391492342874895107
-      Up-HitCitizen_2: 1794336587213938254
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

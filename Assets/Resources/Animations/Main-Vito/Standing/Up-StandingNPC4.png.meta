@@ -234,12 +234,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      Up-StandingNPC4_0: 1899248333369754097
-      Up-StandingNPC4_1: -3317487894654959150
-      Up-StandingNPC4_2: -1141016179707092618
-      Up-StandingNPC4_3: 2872361619665862371
-      Up-StandingNPC4_4: -1654750846365390772
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
