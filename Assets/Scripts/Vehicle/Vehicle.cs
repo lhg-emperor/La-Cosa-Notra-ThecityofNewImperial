@@ -1,37 +1,22 @@
 ﻿using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(VehiclePhysics))]
 public class VehicleController : MonoBehaviour
 {
-    VehiclePhysics PhysicsCar;
-    private bool canDrive = false;
+    private VehiclePhysics vehiclePhysics;
     private Vector2 moveInput;
-    [Header("Settings")]
+    private bool isDriving = false;
 
-    Rigidbody2D VehicleBody;
-    private void Awake()
+    void Awake()
     {
-        VehiclePhysics physicsCar = GetComponent<VehiclePhysics>();
-
+        vehiclePhysics = GetComponent<VehiclePhysics>();
     }
-    private void Update()
+
+    public void EnableDriving(bool enable)
     {
-        Vector2 inputVector = Vector2.zero;
-
-        inputVector.x = Input.GetAxis("Honrizontal");
-        inputVector.y = Input.GetAxis("Vectical");
-
-        PhysicsCar.SettingInputVector(inputVector);
-    }
-    private void FixedUpdate()
-    {
-        
-
-        // ApplySteering();
-
-        if (!canDrive) return;
-
-        // Di chuyển xe
+        isDriving = enable;
+        moveInput = Vector2.zero;
+        vehiclePhysics.ResetPhysics();
     }
 
     public void SetMoveInput(Vector2 input)
@@ -39,9 +24,11 @@ public class VehicleController : MonoBehaviour
         moveInput = input;
     }
 
-    // 🟢 Bật/tắt chế độ điều khiển xe
-    public void EnableDriving(bool enable)
+    void FixedUpdate()
     {
-        canDrive = enable;
+        if (!isDriving) return;
+
+        // Chuyển input sang physics để xử lý
+        vehiclePhysics.ApplyInput(moveInput);
     }
 }
