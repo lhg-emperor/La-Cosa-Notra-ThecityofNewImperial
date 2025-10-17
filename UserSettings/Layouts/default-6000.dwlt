@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1536
     height: 772.8
   m_ShowMode: 4
-  m_Title: Console
+  m_Title: Game
   m_RootView: {fileID: 2}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -932,9 +932,9 @@ MonoBehaviour:
   m_AudioPlay: 0
   m_DebugDrawModesUseInteractiveLightBakingData: 0
   m_Position:
-    m_Target: {x: 202.02496, y: -57.342724, z: -0.78126675}
+    m_Target: {x: -11.803858, y: -100.39386, z: -0.74405956}
     speed: 2
-    m_Value: {x: 202.02496, y: -57.342724, z: -0.78126675}
+    m_Value: {x: -11.803858, y: -100.39386, z: -0.74405956}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -984,9 +984,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
-    m_Target: 79.275764
+    m_Target: 75.55504
     speed: 2
-    m_Value: 79.275764
+    m_Value: 75.55504
   m_Ortho:
     m_Target: 1
     speed: 2
@@ -1061,7 +1061,7 @@ MonoBehaviour:
       scrollPos: {x: 0, y: 0}
       m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: 0cfbffff82bf0000
+      m_ExpandedIDs: 0cfbffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -1532,7 +1532,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 132.40002}
     m_SelectedIDs: 90d60000
     m_LastClickedID: 54928
-    m_ExpandedIDs: 00000000f8d30000fad30000fcd30000fed3000000d40000
+    m_ExpandedIDs: 00000000fcd30000fed3000000d4000002d4000004d40000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1561,7 +1561,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000f8d30000fad30000fcd30000fed3000000d40000
+    m_ExpandedIDs: 00000000fcd30000fed3000000d4000002d4000004d40000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
