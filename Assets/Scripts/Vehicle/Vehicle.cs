@@ -1,40 +1,22 @@
 ﻿using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(VehiclePhysics))]
 public class VehicleController : MonoBehaviour
 {
-    [Header("Settings")]
-    public float maxSpeed = 100f;       // Vmax (Đặt 100 cho ví dụ)
-    public float timeToMax = 5f;
-    public float turnSpeed = 200f;
-    public float maxAcceleration = 10f; // Amax (Đặt 10 cho ví dụ)
-    public float maxDeceleration = 15f; // Gia tốc phanh tối đa khi nhả Input (>= Amax)
-    public float minDecelFactor = 0.2f; // Gia tốc phanh tối thiểu (20% Amax)
-
-    private Rigidbody2D rb;
+    private VehiclePhysics vehiclePhysics;
     private Vector2 moveInput;
     private bool isDriving = false;
 
-    private float currentSpeed = 0f;
-    private int prevInputDir = 0;
-
     void Awake()
     {
-        rb = GetComponent<Rigidbody2D>();
-        // Khởi tạo Amax nếu chưa được đặt
-        if (maxAcceleration <= 0.01f)
-        {
-            maxAcceleration = maxSpeed / timeToMax;
-        }
+        vehiclePhysics = GetComponent<VehiclePhysics>();
     }
 
     public void EnableDriving(bool enable)
     {
         isDriving = enable;
         moveInput = Vector2.zero;
-        currentSpeed = 0f;
-        prevInputDir = 0;
-        rb.linearVelocity = Vector2.zero;
+        vehiclePhysics.ResetPhysics();
     }
 
     public void SetMoveInput(Vector2 input)
@@ -42,76 +24,11 @@ public class VehicleController : MonoBehaviour
         moveInput = input;
     }
 
-    private float CalculateDrivingAcceleration(float currentAbsSpeed)
-    {
-        if (maxSpeed <= 0.01f) return maxAcceleration;
-
-        return maxAcceleration * (1f - Mathf.Clamp01(currentAbsSpeed / maxSpeed));
-    }
-
-    private float CalculateIdleDeceleration(float currentAbsSpeed)
-    {
-        float idleBrakingA = maxDeceleration * Mathf.Clamp01(currentAbsSpeed / maxSpeed);
-
-
-        return Mathf.Max(idleBrakingA, maxAcceleration * minDecelFactor);
-    }
-
     void FixedUpdate()
     {
         if (!isDriving) return;
 
-        float inputY = moveInput.y;
-        float dt = Time.fixedDeltaTime;
-
-        // 1. Xác định hướng Input: 1 (tiến), -1 (lùi), 0 (nhả)
-        int inputDir = 0;
-        if (Mathf.Abs(inputY) > 0.01f) inputDir = (inputY > 0) ? 1 : -1;
-
-        // 2. Xác định hướng di chuyển hiện tại: 1 (tiến), -1 (lùi), 0 (đứng)
-        int currentMoveDir = (currentSpeed > 0.01f) ? 1 : ((currentSpeed < -0.01f) ? -1 : 0);
-
-        float accelerationMagnitude = 0f;
-        float absSpeed = Mathf.Abs(currentSpeed);
-
-        if (inputDir != 0) // ================== A. Nhấn Input ==================
-        {
-            accelerationMagnitude = CalculateDrivingAcceleration(absSpeed);
-
-            // Áp dụng gia tốc
-            currentSpeed += accelerationMagnitude * inputDir * dt;
-        }
-        else
-        {
-            if (absSpeed > 0.01f)
-            {
-
-                // Hướng giảm tốc (luôn ngược hướng di chuyển)
-                int frictionDir = (currentSpeed > 0) ? -1 : 1;
-
-                // Tính độ lớn gia tốc phanh
-                accelerationMagnitude = CalculateIdleDeceleration(absSpeed);
-
-                // Áp dụng gia tốc (đổi dấu)
-                currentSpeed += accelerationMagnitude * frictionDir * dt;
-
-                // Triệt tiêu tốc độ về 0 nếu gần 0
-                if (Mathf.Abs(currentSpeed) < 0.05f)
-                    currentSpeed = 0f;
-            }
-        }
-
-        // Giới hạn tốc độ theo Vmax
-        currentSpeed = Mathf.Clamp(currentSpeed, -maxSpeed, maxSpeed);
-
-        // Di chuyển xe
-        Vector2 forward = transform.up;
-        rb.MovePosition(rb.position + forward * currentSpeed * dt);
-
-        // Quay xe
-        float rotation = -moveInput.x * turnSpeed * dt;
-        rb.MoveRotation(rb.rotation + rotation);
-
-        prevInputDir = inputDir;
+        // Chuyển input sang physics để xử lý
+        vehiclePhysics.ApplyInput(moveInput);
     }
 }
