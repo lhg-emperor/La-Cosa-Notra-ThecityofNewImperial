@@ -134,7 +134,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      chomsky_0: 2508337899326962435
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
