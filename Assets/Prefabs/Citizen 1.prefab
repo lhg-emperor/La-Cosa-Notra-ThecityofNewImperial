@@ -10,14 +10,14 @@ GameObject:
   m_Component:
   - component: {fileID: 115605228913961694}
   - component: {fileID: 6312884160832537444}
-  - component: {fileID: 3378027848315255734}
   - component: {fileID: 4454655744234925873}
-  - component: {fileID: 599896832266870986}
   - component: {fileID: 6936884217960626246}
   - component: {fileID: 6903861000872178868}
   - component: {fileID: 3112656124504210214}
+  - component: {fileID: 7972171287643278927}
+  - component: {fileID: 3950237044659039535}
   m_Layer: 0
-  m_Name: Citizen
+  m_Name: Citizen 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -93,20 +93,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &3378027848315255734
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7515549550552888537}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8d143e14f2c9c914badd507e90fe07eb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  safeDistance: 15
-  dialogueSounds: []
 --- !u!195 &4454655744234925873
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -129,19 +115,6 @@ NavMeshAgent:
   m_BaseOffset: 0.1015625
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &599896832266870986
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7515549550552888537}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5c742da083cc1bf4fa0e938f116e9676, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Health: 105
 --- !u!95 &6936884217960626246
 Animator:
   serializedVersion: 7
@@ -218,7 +191,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7515549550552888537}
-  m_BodyType: 0
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -237,3 +210,34 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!114 &7972171287643278927
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7515549550552888537}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bc3e03602401e3469c2ba2c82e7f075, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 2
+  runSpeed: 4
+  health: 100
+  baseDamage: 10
+  attackCooldown: 1
+--- !u!114 &3950237044659039535
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7515549550552888537}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da6a5a4ea83b72a4b90c0a1326953caf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackRange: 1.5
+  attackCooldown: 1
