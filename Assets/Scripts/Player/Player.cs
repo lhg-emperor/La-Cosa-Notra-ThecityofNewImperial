@@ -17,6 +17,7 @@ public class Player : MonoBehaviour, IDamageable
     private PlayerControls controls;
     private playerPickup pickup;
     private PlayerTrigger playerTrigger;
+    private Collider2D playerCollider;
 
     private Vector2 moveInput;
     private Vector2 playerLookAround;
@@ -32,8 +33,9 @@ public class Player : MonoBehaviour, IDamageable
     private bool isDriving = false;
     private VehicleController currentVehicle;
     private bool skipVehicleInputFrame = false;
+    private Collider2D vehicleCollider;
 
-    // --- Debug state ---
+    // --- Debug ---
     private Coroutine vehicleDebugRoutine;
 
     void Awake()
@@ -43,16 +45,14 @@ public class Player : MonoBehaviour, IDamageable
         animCtrl = GetComponent<PlayerAnimatorController>();
         pickup = GetComponent<playerPickup>();
         playerTrigger = GetComponentInChildren<PlayerTrigger>();
+        playerCollider = GetComponent<Collider2D>();
 
         controls = new PlayerControls();
 
-        // Walking
         controls.Movement.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
         controls.Movement.Move.canceled += ctx => moveInput = Vector2.zero;
-
         controls.LookAround.look.performed += ctx => playerLookAround = ctx.ReadValue<Vector2>();
         controls.LookAround.look.canceled += ctx => playerLookAround = Vector2.zero;
-
         controls.Combat.Attack.performed += ctx => OnAttack();
         controls.PickUp.pick.performed += ctx => PickUp();
         controls.PutDown.drop.performed += ctx => Drop();
@@ -60,13 +60,9 @@ public class Player : MonoBehaviour, IDamageable
         {
             float scroll = ctx.ReadValue<float>();
             if (Mathf.Abs(scroll) > 0.01f)
-            {
-                int dir = scroll > 0 ? 1 : -1;
-                pickup.SwitchWeapon(dir);
-            }
+                pickup.SwitchWeapon(scroll > 0 ? 1 : -1);
         };
 
-        // Enter/Exit vehicle
         controls.EnterExitVehicle.EnterExitCar.performed += ctx => ToggleVehicle();
 
         CurrentDamage = BaseDamage;
@@ -99,24 +95,22 @@ public class Player : MonoBehaviour, IDamageable
             ApplyLookRotation();
             Animate();
         }
-        else
+        else if (currentVehicle != null)
         {
-            if (currentVehicle != null)
+            // Lấy input xe
+            if (skipVehicleInputFrame)
             {
-                if (skipVehicleInputFrame)
-                {
-                    currentVehicle.SetMoveInput(Vector2.zero);
-                    skipVehicleInputFrame = false;
-                }
-                else
-                {
-                    Vector2 vehicleInput = controls.VehicleController.VehicleMove.ReadValue<Vector2>();
-                    currentVehicle.SetMoveInput(vehicleInput);
-                }
-
-                // Đồng bộ vị trí Player với xe
-                transform.position = currentVehicle.transform.position;
+                currentVehicle.SetMoveInput(Vector2.zero);
+                skipVehicleInputFrame = false;
             }
+            else
+            {
+                Vector2 vehicleInput = controls.VehicleController.VehicleMove.ReadValue<Vector2>();
+                currentVehicle.SetMoveInput(vehicleInput);
+            }
+
+            // Player đi theo xe nhưng không tác động vật lý
+            transform.position = currentVehicle.transform.position;
         }
     }
 
@@ -135,7 +129,7 @@ public class Player : MonoBehaviour, IDamageable
     private void ApplyLookRotation()
     {
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(playerLookAround);
-        Vector2 direction = (mousePosition - transform.position);
+        Vector2 direction = mousePosition - transform.position;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f;
         rb.rotation = Mathf.LerpAngle(rb.rotation, angle, lookSensitivity * Time.fixedDeltaTime);
     }
@@ -151,24 +145,20 @@ public class Player : MonoBehaviour, IDamageable
     private void OnAttack()
     {
         if (isDriving) return;
-
         if (pickup.currentGun != null)
         {
             pickup.currentGun.Fire(pickup);
             return;
         }
-
         if (Hit || animCtrl == null) return;
 
         animCtrl.Attack();
         Hit = true;
-
         if (playerTrigger != null)
         {
             foreach (IDamageable target in playerTrigger.GetTargets().ToList())
-                target.TakeDamage(pickup.CurrentDamage, this.transform);
+                target.TakeDamage(pickup.CurrentDamage, transform);
         }
-
         StartCoroutine(ResetHit(0.5f));
     }
 
@@ -215,16 +205,9 @@ public class Player : MonoBehaviour, IDamageable
             currentVehicle.EnableDriving(true);
             skipVehicleInputFrame = true;
 
-            // Reset vật lý xe
-            Rigidbody2D vehicleRb = currentVehicle.GetComponent<Rigidbody2D>();
-            if (vehicleRb != null)
-            {
-                vehicleRb.bodyType = RigidbodyType2D.Kinematic;
-                vehicleRb.linearVelocity = Vector2.zero;
-                vehicleRb.angularVelocity = 0f;
-            }
-
-            rb.bodyType = RigidbodyType2D.Kinematic;
+            vehicleCollider = currentVehicle.GetComponent<Collider2D>();
+            if (vehicleCollider != null && playerCollider != null)
+                Physics2D.IgnoreCollision(playerCollider, vehicleCollider, true);
 
             if (vehicleDebugRoutine != null) StopCoroutine(vehicleDebugRoutine);
             vehicleDebugRoutine = StartCoroutine(VehicleDebugLoop());
@@ -239,15 +222,9 @@ public class Player : MonoBehaviour, IDamageable
             if (currentVehicle != null)
             {
                 currentVehicle.EnableDriving(false);
-
-                // Đặt Player ra ngoài xe, tránh va chạm
-                transform.position = currentVehicle.transform.position + (Vector3)(currentVehicle.transform.right * 1.5f);
-
-                // Reset lại Rigidbody Player
-                rb.bodyType = RigidbodyType2D.Dynamic;
-                rb.linearVelocity = Vector2.zero;
-                rb.angularVelocity = 0f;
-
+                transform.position = currentVehicle.transform.position + currentVehicle.transform.right * 1.5f;
+                if (vehicleCollider != null && playerCollider != null)
+                    Physics2D.IgnoreCollision(playerCollider, vehicleCollider, false);
                 currentVehicle = null;
             }
 
@@ -284,7 +261,6 @@ public class Player : MonoBehaviour, IDamageable
                 if (posChanged || rotChanged || hasInput)
                 {
                     Debug.Log($"[VehicleDebug] Player Pos: {transform.position}, Rotation: {transform.rotation.eulerAngles}");
-
                     if (hasInput)
                         Debug.Log($"[VehicleDebug] Keys Pressed: {string.Join(", ", pressedKeys)}");
                     else

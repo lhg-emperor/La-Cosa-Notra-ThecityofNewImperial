@@ -1,5 +1,9 @@
-﻿using UnityEngine;
+﻿// Holigan.cs
+using UnityEngine;
+using UnityEngine.AI;
 
+[RequireComponent(typeof(NavMeshAgent))]
+[RequireComponent(typeof(Animator))]
 public class Holigan : MonoBehaviour, IDamageable
 {
     [SerializeField] private float moveSpeed = 2f;
@@ -8,56 +12,56 @@ public class Holigan : MonoBehaviour, IDamageable
 
     [Header("Combat")]
     [SerializeField] private float baseDamage = 10f;
+    public float BaseDamage => baseDamage;
 
-    private Rigidbody2D rb;
-    private Vector2 moveDirection;
-    private Vector2 targetPosition;
+    private NavMeshAgent agent;
+    private Animator animator;
     private bool isMoving = false;
 
     public bool IsRunning { get; private set; } = false;
     public bool IsThreatened { get; private set; } = false;
     private Transform currentTarget;
 
-    private bool isAttacking = false;
-
     private void Awake()
     {
-        rb = GetComponent<Rigidbody2D>();
+        agent = GetComponent<NavMeshAgent>();
+        animator = GetComponent<Animator>();
+        agent.updateRotation = false;
+        agent.updateUpAxis = false;
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
-        if (isMoving)
+        Vector3 velocity = agent.velocity;
+        bool moving = velocity.sqrMagnitude > 0.1f;
+
+        if (moving)
         {
-            Vector2 direction = (targetPosition - rb.position);
-            if (direction.magnitude < 0.1f)
-            {
-                Stop();
-            }
-            else
-            {
-                moveDirection = direction.normalized;
-                float speed = IsRunning ? runSpeed : moveSpeed;
-                rb.MovePosition(rb.position + moveDirection * (speed * Time.fixedDeltaTime));
-            }
+            float angle = Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.Euler(0, 0, angle - 90f);
         }
+
+        animator?.SetBool("isMoving", moving);
     }
 
-    public void Moveto(Vector2 pos)
+    public void MoveTo(Vector2 pos, bool run)
     {
-        targetPosition = pos;
+        agent.speed = run ? runSpeed : moveSpeed;
+        IsRunning = run;
+        agent.SetDestination(pos);
         isMoving = true;
     }
 
     public void Stop()
     {
         isMoving = false;
-        moveDirection = Vector2.zero;
+        agent.ResetPath();
     }
 
     public void SetRunning(bool running)
     {
         IsRunning = running;
+        agent.speed = running ? runSpeed : moveSpeed;
     }
 
     public void TakeDamage(float damage, Transform attacker)
@@ -71,22 +75,23 @@ public class Holigan : MonoBehaviour, IDamageable
         }
         else
         {
+            // Trigger threat khi bị tấn công
             IsThreatened = true;
             currentTarget = attacker;
         }
     }
 
-    public void PerformAttack(IDamageable target)
+    public void TriggerAttackAnim()
     {
-        if (target == null) return;
-        target.TakeDamage(baseDamage, this.transform);
-        Debug.Log($"[Holigan] Gây damage cho mục tiêu! Damage: {baseDamage}");
+        animator?.SetBool("isFighting", true); // bật animation attack
     }
 
-    public Transform GetTarget()
+    public void StopAttackAnim()
     {
-        return currentTarget;
+        animator?.SetBool("isFighting", false); // tắt animation attack
     }
+
+    public Transform GetTarget() => currentTarget;
 
     public void ClearThreat()
     {

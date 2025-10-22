@@ -15,7 +15,8 @@ GameObject:
   - component: {fileID: 2831385757962634230}
   - component: {fileID: 2423438800914780281}
   - component: {fileID: 1601022820099607574}
-  m_Layer: 7
+  - component: {fileID: 3508734842592458314}
+  m_Layer: 0
   m_Name: Holigan
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -181,8 +182,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bc3e03602401e3469c2ba2c82e7f075, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 1.5
-  runSpeed: 5
+  moveSpeed: 2
+  runSpeed: 4
   health: 100
   baseDamage: 10
 --- !u!195 &1601022820099607574
@@ -207,3 +208,25 @@ NavMeshAgent:
   m_BaseOffset: 0.28866667
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!95 &3508734842592458314
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4380457169475805878}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

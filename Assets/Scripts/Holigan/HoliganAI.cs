@@ -1,13 +1,10 @@
-﻿using UnityEngine;
+﻿// HoliganAI.cs
 using System.Collections;
+using UnityEngine;
 
 public class HoliganAI : MonoBehaviour
 {
-    private enum State
-    {
-        Roaming,
-        Chasing
-    }
+    private enum State { Roaming, Chasing }
 
     private Holigan holigan;
     private Coroutine routine;
@@ -32,24 +29,24 @@ public class HoliganAI : MonoBehaviour
 
     private void Update()
     {
-        if (state == State.Roaming && holigan.IsThreatened)
+        Transform target = holigan.GetTarget();
+
+        if (state == State.Roaming && target != null && holigan.IsThreatened)
         {
-            Transform target = holigan.GetTarget();
-            if (target != null)
-            {
-                state = State.Chasing;
-                if (routine != null) StopCoroutine(routine);
-                routine = StartCoroutine(ChaseRoutine(target));
-            }
+            // Bắt đầu truy đuổi chỉ khi có threat
+            state = State.Chasing;
+            if (routine != null) StopCoroutine(routine);
+            routine = StartCoroutine(ChaseRoutine(target));
         }
         else if (state == State.Chasing)
         {
-            Transform target = holigan.GetTarget();
-            if (!holigan.IsThreatened || target == null)
+            if (target == null || !holigan.IsThreatened)
             {
+                // Mất threat -> quay về roaming
                 holigan.ClearThreat();
                 if (routine != null) StopCoroutine(routine);
                 holigan.Stop();
+                holigan.SetRunning(false);
                 state = State.Roaming;
                 routine = StartCoroutine(RoamingRoutine());
             }
@@ -61,10 +58,12 @@ public class HoliganAI : MonoBehaviour
         while (state == State.Roaming)
         {
             holigan.SetRunning(false);
-            Vector2 target = GetRandomPosition();
-            holigan.Moveto(target);
+            Vector2 destination = GetRandomPosition();
+            holigan.MoveTo(destination, false);
 
-            yield return new WaitForSeconds(Random.Range(2f, 12f));
+            float roamTime = Random.Range(2f, 8f);
+            yield return new WaitForSeconds(roamTime);
+
             holigan.Stop();
             yield return new WaitForSeconds(Random.Range(1f, 4f));
         }
@@ -73,18 +72,25 @@ public class HoliganAI : MonoBehaviour
     private IEnumerator ChaseRoutine(Transform target)
     {
         holigan.SetRunning(true);
+
         while (state == State.Chasing)
         {
             if (target == null || !holigan.IsThreatened) break;
 
-            holigan.Moveto(target.position);
+            holigan.MoveTo(target.position, true);
 
-            TryAttack(target);
+            // Tấn công chỉ khi ở gần mục tiêu
+            float distance = Vector2.Distance(holigan.transform.position, target.position);
+            if (distance <= attackRange)
+            {
+                TryAttack(target);
+            }
 
             yield return new WaitForSeconds(0.2f);
         }
 
         holigan.Stop();
+        holigan.SetRunning(false);
         holigan.ClearThreat();
         state = State.Roaming;
         routine = StartCoroutine(RoamingRoutine());
@@ -94,17 +100,15 @@ public class HoliganAI : MonoBehaviour
     {
         if (isAttacking) return;
 
-        float distance = Vector2.Distance(holigan.transform.position, target.position);
-
-        if (distance <= attackRange)
+        IDamageable damageable = target.GetComponent<IDamageable>();
+        if (damageable != null)
         {
-            IDamageable damageable = target.GetComponent<IDamageable>();
-            if (damageable != null)
-            {
-                holigan.PerformAttack(damageable);
-                isAttacking = true;
-                StartCoroutine(ResetAttack());
-            }
+            // Chỉ gây damage khi được trigger (ở gần) và animation được bật cùng lúc
+            isAttacking = true;
+            holigan.TriggerAttackAnim();    // bật animation tấn công
+            damageable.TakeDamage(holigan.BaseDamage, this.transform);
+
+            StartCoroutine(ResetAttack());
         }
     }
 
@@ -112,6 +116,7 @@ public class HoliganAI : MonoBehaviour
     {
         yield return new WaitForSeconds(attackCooldown);
         isAttacking = false;
+        holigan.StopAttackAnim();   // tắt animation sau khi attack xong
     }
 
     private Vector2 GetRandomPosition()

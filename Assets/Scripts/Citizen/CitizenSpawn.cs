@@ -4,19 +4,23 @@ using System.Collections.Generic;
 
 public class CitizenSpawn : MonoBehaviour
 {
+    [Header("Cài đặt cơ bản")]
     public List<GameObject> citizenPrefabs;
     public Transform player;
-    public float SpawnRadius;
-    public int targetCount;
-    public float checkInterval;
-    private Camera mainCamera;
+    public float SpawnRadius = 20f;
+    public int targetCount = 10;
+    public float checkInterval = 2f;
 
-    private List<GameObject> spawnCitizen = new List<GameObject>();
+    [Header("Cài đặt NavMesh")]
+    public float maxSampleDistance = 2f; // bán kính kiểm tra NavMesh quanh điểm random
+
+    private Camera mainCamera;
+    private readonly List<GameObject> spawnCitizen = new List<GameObject>();
 
     private void Start()
     {
-        InvokeRepeating(nameof(CheckAndSpawnCitizens), 0f, checkInterval);
         mainCamera = Camera.main;
+        InvokeRepeating(nameof(CheckAndSpawnCitizens), 0f, checkInterval);
     }
 
     private void CheckAndSpawnCitizens()
@@ -25,12 +29,12 @@ public class CitizenSpawn : MonoBehaviour
 
         if (citizenPrefabs == null || citizenPrefabs.Count == 0)
         {
-            Debug.LogError("citizenPrefabs bị trống hoặc chưa gán trong Inspector!");
+            Debug.LogError("⚠ citizenPrefabs bị trống hoặc chưa gán trong Inspector!");
             return;
         }
 
         int attempts = 0;
-        while (spawnCitizen.Count < targetCount && attempts < 20)
+        while (spawnCitizen.Count < targetCount && attempts < 50) // tăng số attempt để tìm được vùng có NavMesh
         {
             Vector3 spawnPos = GetValidSpawnPosition();
             if (spawnPos == Vector3.zero)
@@ -43,21 +47,37 @@ public class CitizenSpawn : MonoBehaviour
             {
                 int index = Random.Range(0, citizenPrefabs.Count);
                 GameObject newCitizen = Instantiate(citizenPrefabs[index], spawnPos, Quaternion.identity);
+
+                // Nếu có NavMeshAgent thì đặt vị trí thật chính xác
+                NavMeshAgent agent = newCitizen.GetComponent<NavMeshAgent>();
+                if (agent != null && agent.isActiveAndEnabled && agent.isOnNavMesh == false)
+                {
+                    NavMeshHit hit;
+                    if (NavMesh.SamplePosition(spawnPos, out hit, maxSampleDistance, NavMesh.AllAreas))
+                    {
+                        agent.Warp(hit.position); // snap agent vào đúng NavMesh
+                    }
+                }
+
                 spawnCitizen.Add(newCitizen);
             }
             attempts++;
         }
     }
 
+    /// <summary>
+    /// Random một vị trí nằm trong NavMesh quanh người chơi
+    /// </summary>
     private Vector3 GetValidSpawnPosition()
     {
-        Vector2 offset = Random.insideUnitCircle.normalized * Random.Range(2, SpawnRadius);
+        Vector2 offset = Random.insideUnitCircle.normalized * Random.Range(2f, SpawnRadius);
         Vector3 randomPos = player.position + (Vector3)offset;
 
-        if (NavMesh.SamplePosition(randomPos, out NavMeshHit hit, 10f, NavMesh.AllAreas))
+        if (NavMesh.SamplePosition(randomPos, out NavMeshHit hit, maxSampleDistance, NavMesh.AllAreas))
         {
             return hit.position;
         }
+
         return Vector3.zero;
     }
 
