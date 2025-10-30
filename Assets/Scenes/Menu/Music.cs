@@ -1,20 +1,64 @@
 ﻿using UnityEngine;
+using System.Collections;
 
-public class PersistentMusic : MonoBehaviour
+[RequireComponent(typeof(AudioSource))]
+public class Music : MonoBehaviour
 {
-    private static PersistentMusic instance;
+    [Header("Danh sách nhạc cho Scene (ít nhất 1)")]
+    public AudioClip[] sceneMusicClips;
+
+    private AudioSource audioSource;
+    private int currentClipIndex = 0;
 
     private void Awake()
     {
-        // Nếu chưa có instance => giữ lại
-        if (instance == null)
+        audioSource = GetComponent<AudioSource>();
+        audioSource.playOnAwake = false;
+        audioSource.loop = false; // Quản lý vòng lặp bằng script
+    }
+
+    private void OnEnable()
+    {
+        if (sceneMusicClips != null && sceneMusicClips.Length > 0)
+            StartCoroutine(PlayMusicLoop());
+    }
+
+    private IEnumerator PlayMusicLoop()
+    {
+        if (sceneMusicClips.Length == 1)
         {
-            instance = this;
-            DontDestroyOnLoad(gameObject); // Không bị hủy khi load scene mới
+            // Nếu chỉ có 1 bài: dừng 2s rồi phát lại
+            AudioClip clip = sceneMusicClips[0];
+            while (true)
+            {
+                audioSource.clip = clip;
+                audioSource.Play();
+                yield return new WaitForSeconds(clip.length);
+                yield return new WaitForSeconds(2f);
+            }
         }
         else
         {
-            Destroy(gameObject); // Đã có rồi thì xóa cái mới để tránh trùng nhạc
+            // Nếu có nhiều bài: phát nối tiếp từng bài, cách nhau 3s
+            while (true)
+            {
+                AudioClip clip = sceneMusicClips[currentClipIndex];
+                audioSource.clip = clip;
+                audioSource.Play();
+
+                yield return new WaitForSeconds(clip.length);
+                yield return new WaitForSeconds(3f);
+
+                currentClipIndex++;
+                if (currentClipIndex >= sceneMusicClips.Length)
+                    currentClipIndex = 0;
+            }
         }
+    }
+
+    private void OnDisable()
+    {
+        StopAllCoroutines();
+        audioSource.Stop();
     }
 }

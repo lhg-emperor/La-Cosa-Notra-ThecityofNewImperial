@@ -1,67 +1,72 @@
-using System.Collections;
+﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Collections.Generic;
-using UnityEngine;
-
 
 public class MusicManager : MonoBehaviour
 {
-    public static MusicManager Instance;
-    public AudioSource audioSource;
-    public List<AudioClip> normalClips;
-    public List<AudioClip> combatClips;
+    private static MusicManager instance;
 
-    private List<AudioClip> currentList;
-    private int currentIndex = 0;
-    private bool isCombat = false;
+    private List<AudioSource> currentSceneSources = new List<AudioSource>();
+    private string currentSceneName;
 
-    void Awake()
+    private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
-
-        DontDestroyOnLoad(gameObject);
-        currentList = normalClips;
-        PlayNext();
-    }
-
-    void Update()
-    {
-        if (!audioSource.isPlaying)
-            PlayNext();
-    }
-
-    public void SetCombat(bool state)
-    {
-        if (isCombat == state) return;
-        isCombat = state;
-        currentList = isCombat ? combatClips : normalClips;
-        StartCoroutine(CrossFade());
-    }
-
-    void PlayNext()
-    {
-        if (currentList.Count == 0) return;
-        currentIndex = Random.Range(0, currentList.Count);
-        audioSource.clip = currentList[currentIndex];
-        audioSource.Play();
-    }
-
-    IEnumerator CrossFade()
-    {
-        float duration = 1.5f;
-        float startVolume = audioSource.volume;
-        for (float t = 0; t < duration; t += Time.deltaTime)
+        // Đảm bảo chỉ có một MusicManager tồn tại
+        if (instance == null)
         {
-            audioSource.volume = Mathf.Lerp(startVolume, 0, t / duration);
-            yield return null;
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+
+            // Lắng nghe sự kiện đổi Scene
+            SceneManager.activeSceneChanged += OnSceneChanged;
+
+            // Phát nhạc của scene khởi đầu
+            PlaySceneMusic(SceneManager.GetActiveScene());
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    private void OnSceneChanged(Scene oldScene, Scene newScene)
+    {
+        PlaySceneMusic(newScene);
+    }
+
+    private void PlaySceneMusic(Scene scene)
+    {
+        if (currentSceneName == scene.name) return;
+
+        // Dừng và xóa nhạc cũ
+        foreach (AudioSource src in currentSceneSources)
+        {
+            if (src != null) src.Stop();
+        }
+        currentSceneSources.Clear();
+
+        // Tìm tất cả các GameObject có Script "Music" trong Scene
+        GameObject[] rootObjects = scene.GetRootGameObjects();
+        foreach (GameObject obj in rootObjects)
+        {
+            Music[] musicScripts = obj.GetComponentsInChildren<Music>(true);
+            foreach (Music music in musicScripts)
+            {
+                AudioSource source = music.GetComponent<AudioSource>();
+                if (source != null)
+                {
+                    source.loop = true;
+                    source.Play();
+                    currentSceneSources.Add(source);
+                }
+            }
         }
 
-        PlayNext();
+        currentSceneName = scene.name;
+    }
 
-        for (float t = 0; t < duration; t += Time.deltaTime)
-        {
-            audioSource.volume = Mathf.Lerp(0, startVolume, t / duration);
-            yield return null;
-        }
+    private void OnDestroy()
+    {
+        SceneManager.activeSceneChanged -= OnSceneChanged;
     }
 }
