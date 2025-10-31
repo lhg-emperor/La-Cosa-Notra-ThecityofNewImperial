@@ -88,10 +88,14 @@ public class SettingManager : MonoBehaviour
     /// </summary>
     public void OnSettingButtonPressed()
     {
+        if (isSettingActive)
+            return;
+
         if (isSpecialScene)
         {
             ToggleSetting();
         }
+        Debug.Log("Button Setting Pressed");
     }
 
     /// <summary>
@@ -109,9 +113,19 @@ public class SettingManager : MonoBehaviour
         settingInstance.SetActive(isSettingActive);
 
         // 🔹 Khi bật → dừng game, khi tắt → tiếp tục
-        Time.timeScale = isSettingActive ? 0 : 1;
+        if (isSettingActive)
+        {
+            Time.timeScale = 0;
+            if (openSettingButton != null)
+                openSettingButton.interactable = false; // khóa nút Setting
+        }
+        else
+        {
+            Time.timeScale = 1;
+            if (openSettingButton != null)
+                openSettingButton.interactable = true; // mở khóa lại sau khi tắt
+        }
     }
-
     /// <summary>
     /// Gắn vào nút “Thoát” trong UI Setting để đóng Setting.
     /// </summary>
