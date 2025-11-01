@@ -2,34 +2,26 @@
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-/// <summary>
-/// Script quản lý giao diện Setting (Prefab):
-/// - Tự căn giữa Setting UI khi bật.
-/// - Button mở Setting được gán thủ công (chỉ dùng cho Scene đặc biệt).
-/// - Scene đặc biệt được xác định bằng danh sách tên (SpecialSceneNames).
-/// - Trong Scene thường → nhấn ESC để mở/tắt Setting.
-/// - Trong Scene đặc biệt → chỉ mở qua Button.
-/// - Khi Setting bật → game tạm dừng (Time.timeScale = 0).
-/// - Khi đóng → game chạy lại bình thường.
-/// </summary>
 public class SettingManager : MonoBehaviour
 {
     [Header("Prefab giao diện Setting UI")]
-    public GameObject settingPrefab; // Prefab UI cài đặt
+    public GameObject settingPrefab;
 
     [Header("Button mở Setting (chỉ dùng cho Scene đặc biệt)")]
-    public Button openSettingButton; // Gán thủ công trong Menu
+    public Button openSettingButton;
+
+    [Header("Button đóng Setting (nút X trong Setting UI)")]
+    public Button closeSettingButton;
 
     [Header("Danh sách Scene đặc biệt (Menu, v.v.)")]
-    public string[] specialSceneNames; // Ví dụ: {"MainMenu", "Home"}
+    public string[] specialSceneNames;
 
-    private GameObject settingInstance; // Instance của Setting UI
-    private bool isSettingActive = false; // Trạng thái bật/tắt
-    private bool isSpecialScene = false; // Cờ nội bộ, tự xác định theo tên Scene
+    private GameObject settingInstance;
+    private bool isSettingActive = false;
+    private bool isSpecialScene = false;
 
     void Start()
     {
-        // 🔹 Kiểm tra xem Scene hiện tại có nằm trong danh sách đặc biệt không
         string currentScene = SceneManager.GetActiveScene().name;
         foreach (string name in specialSceneNames)
         {
@@ -40,19 +32,14 @@ public class SettingManager : MonoBehaviour
             }
         }
 
-        // 🔹 Nếu có Button Setting → gán sự kiện thủ công
         if (openSettingButton != null)
-        {
             openSettingButton.onClick.AddListener(OnSettingButtonPressed);
-        }
 
-        // 🔹 Khởi tạo Setting UI nếu có Prefab
         if (settingPrefab != null)
         {
             settingInstance = Instantiate(settingPrefab, transform);
             settingInstance.SetActive(false);
 
-            // 🔸 Căn giữa giao diện Setting (trong Canvas)
             RectTransform rect = settingInstance.GetComponent<RectTransform>();
             if (rect != null)
             {
@@ -61,6 +48,31 @@ public class SettingManager : MonoBehaviour
                 rect.pivot = new Vector2(0.5f, 0.5f);
                 rect.anchoredPosition = Vector2.zero;
             }
+
+            // 🔸 Tự tìm nút "Close" nếu chưa gán
+            if (closeSettingButton == null)
+            {
+                Button[] buttons = settingInstance.GetComponentsInChildren<Button>(true);
+                foreach (Button btn in buttons)
+                {
+                    if (btn.name.ToLower().Contains("close") || btn.name.ToLower().Contains("exit"))
+                    {
+                        closeSettingButton = btn;
+                        break;
+                    }
+                }
+            }
+
+            // 🔸 Gán sự kiện đóng Setting
+            if (closeSettingButton != null)
+            {
+                closeSettingButton.onClick.AddListener(CloseSetting);
+                closeSettingButton.gameObject.SetActive(false); // Ẩn nút X ban đầu
+            }
+            else
+            {
+                Debug.LogWarning("⚠️ Không tìm thấy nút Close trong Prefab Setting!");
+            }
         }
         else
         {
@@ -68,39 +80,15 @@ public class SettingManager : MonoBehaviour
         }
     }
 
-    void Update()
-    {
-        // 🔹 Nếu KHÔNG phải Scene đặc biệt → nhấn ESC để bật/tắt
-        if (!isSpecialScene && Input.GetKeyDown(KeyCode.Escape))
-        {
-            ToggleSetting();
-        }
-
-        // 🔹 Nếu đang ở Scene đặc biệt mà nhấn ESC khi đang mở Setting → thoát
-        if (isSpecialScene && isSettingActive && Input.GetKeyDown(KeyCode.Escape))
-        {
-            CloseSetting();
-        }
-    }
-
-    /// <summary>
-    /// Được gọi khi người chơi nhấn Button "Setting" trong Scene đặc biệt.
-    /// </summary>
     public void OnSettingButtonPressed()
     {
         if (isSettingActive)
             return;
 
-        if (isSpecialScene)
-        {
-            ToggleSetting();
-        }
+        ToggleSetting();
         Debug.Log("Button Setting Pressed");
     }
 
-    /// <summary>
-    /// Bật/tắt Setting UI và xử lý tạm dừng game.
-    /// </summary>
     private void ToggleSetting()
     {
         if (settingInstance == null)
@@ -112,30 +100,38 @@ public class SettingManager : MonoBehaviour
         isSettingActive = !isSettingActive;
         settingInstance.SetActive(isSettingActive);
 
-        // 🔹 Khi bật → dừng game, khi tắt → tiếp tục
+        if (closeSettingButton != null)
+            closeSettingButton.gameObject.SetActive(isSettingActive); // 🔹 chỉ hiện nút X khi mở Setting
+
         if (isSettingActive)
         {
             Time.timeScale = 0;
             if (openSettingButton != null)
-                openSettingButton.interactable = false; // khóa nút Setting
+                openSettingButton.interactable = false;
         }
         else
         {
             Time.timeScale = 1;
             if (openSettingButton != null)
-                openSettingButton.interactable = true; // mở khóa lại sau khi tắt
+                openSettingButton.interactable = true;
         }
     }
-    /// <summary>
-    /// Gắn vào nút “Thoát” trong UI Setting để đóng Setting.
-    /// </summary>
+
     public void CloseSetting()
     {
+        Debug.Log("⚙️ Close Button Clicked!");
+
         if (settingInstance != null)
         {
             settingInstance.SetActive(false);
             isSettingActive = false;
             Time.timeScale = 1;
+
+            if (closeSettingButton != null)
+                closeSettingButton.gameObject.SetActive(false); // 🔹 ẩn nút X khi tắt Setting
+
+            if (openSettingButton != null)
+                openSettingButton.interactable = true;
         }
     }
 }
