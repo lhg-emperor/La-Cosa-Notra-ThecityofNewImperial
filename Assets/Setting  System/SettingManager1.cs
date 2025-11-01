@@ -80,6 +80,15 @@ public class SettingManager : MonoBehaviour
         }
     }
 
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            ToggleSetting();
+        }
+    }
+
+
     public void OnSettingButtonPressed()
     {
         if (isSettingActive)
