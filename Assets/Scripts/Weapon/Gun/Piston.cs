@@ -34,6 +34,7 @@ public class Piston : MonoBehaviour, IGun
     public void OnPickUp()
     {
         gameObject.SetActive(false);
+        GameEventsManager.instance.miscEvents.ItemPickup();//Gửi thông báo đến hệ thống// nói chung là chỉ dùng cho mấy nhiệm vụ nhặt đồ
     }
 
     public void OnDrop(Vector3 dropPosition)
