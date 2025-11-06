@@ -15,5 +15,6 @@ MonoBehaviour:
   <id>k__BackingField: CollectGunQuest
   title: "Nh\u1EB7t s\xFAng"
   questPrerequisites: []
-  questStepPrefabs: []
+  questStepPrefabs:
+  - {fileID: 6084815052798543252, guid: 71c05ff41db56434e98f9560e7f4a059, type: 3}
   MoneyReward: 25
