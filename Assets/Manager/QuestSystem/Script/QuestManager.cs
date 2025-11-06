@@ -8,12 +8,45 @@ public class QuestManager : MonoBehaviour
     private void Awake()
     {
         questMap = CreateQuestMap();
-        Quest quest = GetQuestById("CollectGunQuest");
-        Debug.Log(quest.in4.title);
-        Debug.Log(quest.state);
-        Debug.Log(quest.CurrentStepExits());
+
     }
 
+    private void OnEnable()
+    {
+        GameEventsManager.instance.QuestEvents.onStartQuest += StartQuest;
+        GameEventsManager.instance.QuestEvents.onAdvanceQuest += AdvanceQuest;
+        GameEventsManager.instance.QuestEvents.onFinishQuest += FinishQuest;
+    }
+
+    private void OnDisable()
+    {
+        GameEventsManager.instance.QuestEvents.onStartQuest -= StartQuest;
+        GameEventsManager.instance.QuestEvents.onAdvanceQuest -= AdvanceQuest;
+        GameEventsManager.instance.QuestEvents.onFinishQuest -= FinishQuest;
+    }
+
+    private void Start()
+    {
+        foreach(Quest quest in questMap.Values)
+        {
+            GameEventsManager.instance.QuestEvents.QuestStateChange(quest);
+
+        }
+    }
+    private void StartQuest(string id)
+    {
+        Debug.Log("Bắt đầu nhiệm vụ" + id);
+    }
+
+    private void AdvanceQuest(string id)
+    {
+        Debug.Log("Làm nhiệm vụ kím xìn" + id);
+    }
+
+    private void FinishQuest(string id)
+    {
+        Debug.Log("Xong việc, hốt tiền" + id);
+    }
     private Dictionary<string, Quest> CreateQuestMap()
     {
         //Load tất cả các QuestIn4SO Scriptable Obj trong đường dẫn Assets/Manager/QuestSystem/Script folder
