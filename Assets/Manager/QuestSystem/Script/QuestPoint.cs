@@ -6,6 +6,11 @@ public class QuestPoint : MonoBehaviour
     [Header("Quest")]
     [SerializeField] private QuestInforSO questIn4Point;
 
+    [Header("Config")]
+    [SerializeField] private bool startPoint = true;
+    [SerializeField] private bool endPoint = true;
+
+
     private bool playerIsNear = false;
 
     private string questId;
@@ -28,15 +33,21 @@ public class QuestPoint : MonoBehaviour
         GameEventsManager.instance.inputEvents.onSubmitPressed -= SubmitPressed;
     }
 
-    private void SubmitPressed()
+    private void SubmitPressed(InputEventContext inputEventContext)
     {
         if (!playerIsNear)
         {
             return;
         } 
-        GameEventsManager.instance.QuestEvents.StartQuest(questId);
-        GameEventsManager.instance.QuestEvents.AdvanceQuest(questId);
-        GameEventsManager.instance.QuestEvents.FinishQuest(questId);
+        //Start or Finish Quest
+        if (currentQuestState.Equals(QuestState.CAN_START) && startPoint)
+        {
+            GameEventsManager.instance.QuestEvents.StartQuest(questId);
+        }
+        else if (currentQuestState.Equals(QuestState.CAN_FINISH) && endPoint)
+        {
+            GameEventsManager.instance.QuestEvents.FinishQuest(questId);
+        }
     }
     private void QuestStateChange(Quest quest)
     {
