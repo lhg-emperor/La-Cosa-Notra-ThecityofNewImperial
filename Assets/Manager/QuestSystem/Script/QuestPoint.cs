@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 [RequireComponent (typeof(CircleCollider2D))]
 public class QuestPoint : MonoBehaviour
@@ -8,7 +8,7 @@ public class QuestPoint : MonoBehaviour
 
     [Header("Config")]
     [SerializeField] private bool startPoint = true;
-    [SerializeField] private bool endPoint = true;
+    [SerializeField] private bool finishPoint = true;
 
 
     private bool playerIsNear = false;
@@ -17,9 +17,12 @@ public class QuestPoint : MonoBehaviour
 
     private QuestState currentQuestState;
 
+    private QuestIcon questIcon;
+
     private void Awake()
     {
         questId = questIn4Point.id ;
+        questIcon = GetComponentInChildren<QuestIcon>();
     }
 
     private void OnEnable()
@@ -44,7 +47,7 @@ public class QuestPoint : MonoBehaviour
         {
             GameEventsManager.instance.QuestEvents.StartQuest(questId);
         }
-        else if (currentQuestState.Equals(QuestState.CAN_FINISH) && endPoint)
+        else if (currentQuestState.Equals(QuestState.CAN_FINISH) && finishPoint)
         {
             GameEventsManager.instance.QuestEvents.FinishQuest(questId);
         }
@@ -55,6 +58,9 @@ public class QuestPoint : MonoBehaviour
         {
             currentQuestState = quest.state;
             Debug.Log("Quest with Id: " + questId + "Update to state: " + currentQuestState);
+            Debug.Log($"[{gameObject.name}] nhận update từ quest: {quest.in4.id} | local questId = {questId}");
+
+            questIcon.SetState(currentQuestState, startPoint, finishPoint);
         }
     }
     private void OnTriggerEnter2D(Collider2D collision)
