@@ -28,4 +28,13 @@ public class PlayerAnimatorController : MonoBehaviour
     {
         animator.SetBool("isShoot", isShoot);
     }
+    private bool HasParameter(string paramName)
+    {
+        foreach (AnimatorControllerParameter param in animator.parameters)
+        {
+            if (param.name == paramName)
+                return true;
+        }
+        return false;
+    }
 }

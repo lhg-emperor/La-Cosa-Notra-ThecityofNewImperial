@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc36c122ff3970e4a91b3dda03ce2374, type: 3}
+  m_Name: GoToFromAtoB
+  m_EditorClassIdentifier: Assembly-CSharp::QuestInfoSO
+  id: 001
+  questName: Go to the bar
+  progressRequirement: 1
+  rewardMoney: 10
+  rewardProgress: 1
+  questStepPrefabs:
+  - {fileID: 2626638384841474357, guid: 006b9116738dae84884393a1ffb4e11f, type: 3}
