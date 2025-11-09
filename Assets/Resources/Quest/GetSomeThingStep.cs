@@ -3,8 +3,8 @@
 public class GetSomething : QuestStep
 {
     [Header("Item to Collect")]
-    public GameObject itemPrefab;   // Prefab vật cần nhặt
-    public Transform point;          // Nơi vật xuất hiện
+    public GameObject itemPrefab;   
+    public Transform point;          
     private GameObject spawnedItem;
     private bool itemCollected = false;
 
