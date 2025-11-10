@@ -1,13 +1,17 @@
 ﻿using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
+using System.IO;
+using System;
 
 public class DataPersistenceManager : MonoBehaviour
 {
     [Header("File Storage Config")]
     [SerializeField] private string fileName;
 
+
     private GameData gameData;
+
     private List<IDataPersitence> dataPersistenceObjects;
 
     private FileDataHandler dataHandler;
@@ -26,7 +30,28 @@ public class DataPersistenceManager : MonoBehaviour
 
     private void Start()
     {
-        this.dataHandler = new FileDataHandler(Application.persistentDataPath, fileName);
+        // Đường dẫn cố định theo yêu cầu
+        string desiredRoot = @"D:\DataLacosanotra\SaveData";
+
+        string saveDirectory = desiredRoot;
+
+        // Đặt tên file mặc định nếu inspector để trống
+        string effectiveFileName = string.IsNullOrWhiteSpace(fileName) ? "gameData.json" : fileName;
+
+        try
+        {
+            // Tạo thư mục nếu chưa tồn tại
+            Directory.CreateDirectory(saveDirectory);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"Không thể tạo thư mục lưu tại '{saveDirectory}'. Lưu về Application.persistentDataPath. Exception: {e}");
+            saveDirectory = Application.persistentDataPath;
+        }
+
+        Debug.Log("Save folder: " + saveDirectory);
+
+        this.dataHandler = new FileDataHandler(saveDirectory, effectiveFileName);
         dataPersistenceObjects = FindAllDataPersistenceObjects();
         LoadGame();
     }
@@ -60,7 +85,6 @@ public class DataPersistenceManager : MonoBehaviour
             dataPersitenceObj.SaveData(ref gameData);
         }
         Debug.Log("Save Time Count = " + gameData.timeCount);
-        //
         dataHandler.Save(gameData);
     }
 

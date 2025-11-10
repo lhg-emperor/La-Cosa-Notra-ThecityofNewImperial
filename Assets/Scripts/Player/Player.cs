@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class Player : MonoBehaviour, IDamageable
+public class Player : MonoBehaviour, IDamageable, IDataPersitence
 {
     [Header("Settings")]
     public float moveSpeed = 5f;
@@ -321,5 +321,44 @@ public class Player : MonoBehaviour, IDamageable
     {
         Destroy(gameObject);
         SceneManager.LoadScene("Menu");
+    }
+
+
+
+
+    // ===================== Implement IDataPersitence =====================
+    public void LoadData(GameData data)
+    {
+        if (data == null) return;
+
+        Health = data.Health;
+        transform.position = data.playerPosition;
+
+        // Trạng thái trên xe
+        isDriving = data.IsInVehicle;
+        if (spriteRenderer != null)
+            spriteRenderer.enabled = !isDriving;
+
+        // Khôi phục vũ khí nếu có
+        if (!string.IsNullOrEmpty(data.CurrentWeapon) && pickup != null)
+        {
+            var allGuns = FindObjectsOfType<MonoBehaviour>().OfType<IGun>();
+            var gun = allGuns.FirstOrDefault(g => g.GetType().Name == data.CurrentWeapon);
+            if (gun != null)
+            {
+                pickup.currentGun = gun;
+                pickup.CurrentDamage = gun.GetDamage();
+            }
+        }
+    }
+
+    public void SaveData(ref GameData data)
+    {
+        if (data == null) data = new GameData();
+
+        data.Health = Mathf.RoundToInt(Health);
+        data.playerPosition = transform.position;
+        data.CurrentWeapon = pickup != null && pickup.currentGun != null ? pickup.currentGun.GetType().Name : null;
+        data.IsInVehicle = isDriving;
     }
 }
