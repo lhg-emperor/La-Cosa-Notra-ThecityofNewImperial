@@ -49,7 +49,7 @@ public class SettingManager : MonoBehaviour
                 rect.anchoredPosition = Vector2.zero;
             }
 
-            // 🔸 Tự tìm nút "Close" nếu chưa gán
+            // 🔸 Tự tìm nút Close nếu chưa gán
             if (closeSettingButton == null)
             {
                 Button[] buttons = settingInstance.GetComponentsInChildren<Button>(true);
@@ -63,11 +63,11 @@ public class SettingManager : MonoBehaviour
                 }
             }
 
-            // 🔸 Gán sự kiện đóng Setting
+            // 🔹 Gán sự kiện đóng Setting
             if (closeSettingButton != null)
             {
                 closeSettingButton.onClick.AddListener(CloseSetting);
-                closeSettingButton.gameObject.SetActive(false); // Ẩn nút X ban đầu
+                closeSettingButton.gameObject.SetActive(false);
             }
             else
             {
@@ -87,7 +87,6 @@ public class SettingManager : MonoBehaviour
             ToggleSetting();
         }
     }
-
 
     public void OnSettingButtonPressed()
     {
@@ -110,19 +109,23 @@ public class SettingManager : MonoBehaviour
         settingInstance.SetActive(isSettingActive);
 
         if (closeSettingButton != null)
-            closeSettingButton.gameObject.SetActive(isSettingActive); // 🔹 chỉ hiện nút X khi mở Setting
+            closeSettingButton.gameObject.SetActive(isSettingActive);
 
-        if (isSettingActive)
+        // 🔸 Chỉ Pause nếu Scene nằm trong danh sách đặc biệt
+        if (isSpecialScene)
         {
-            Time.timeScale = 0;
-            if (openSettingButton != null)
-                openSettingButton.interactable = false;
-        }
-        else
-        {
-            Time.timeScale = 1;
-            if (openSettingButton != null)
-                openSettingButton.interactable = true;
+            if (isSettingActive)
+            {
+                Time.timeScale = 0;
+                if (openSettingButton != null)
+                    openSettingButton.interactable = false;
+            }
+            else
+            {
+                Time.timeScale = 1;
+                if (openSettingButton != null)
+                    openSettingButton.interactable = true;
+            }
         }
     }
 
@@ -134,10 +137,13 @@ public class SettingManager : MonoBehaviour
         {
             settingInstance.SetActive(false);
             isSettingActive = false;
-            Time.timeScale = 1;
+
+            // 🔸 Chỉ Resume nếu là Scene đặc biệt
+            if (isSpecialScene)
+                Time.timeScale = 1;
 
             if (closeSettingButton != null)
-                closeSettingButton.gameObject.SetActive(false); // 🔹 ẩn nút X khi tắt Setting
+                closeSettingButton.gameObject.SetActive(false);
 
             if (openSettingButton != null)
                 openSettingButton.interactable = true;

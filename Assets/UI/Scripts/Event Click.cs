@@ -6,24 +6,45 @@ public class UISceneLoader : MonoBehaviour
 {
     [Header("Story")]
     [SerializeField] private Button storyButton;
-    [SerializeField] private string storySceneName = "StoryScene";
+    [SerializeField] private string storySceneName = "MainScene";
+    [SerializeField] private Button loadButton; 
 
     [Header("Quit")]
     [SerializeField] private Button quitButton;
 
     void Start()
     {
-        // Story
+        // Gán sự kiện cho Story
         if (storyButton != null)
         {
-            storyButton.onClick.AddListener(LoadStoryScene);
+            storyButton.onClick.AddListener(() =>
+            {
+                // Kiểm tra DataPersistenceManager trước khi gọi
+                if (DataPersistenceManager.instance != null)
+                {
+                    DataPersistenceManager.instance.NewGame();
+                }
+                else
+                {
+                    Debug.LogWarning("DataPersistenceManager.instance chưa tồn tại! Hãy thêm manager vào scene đầu tiên và bật DontDestroyOnLoad.");
+                }
+
+                Debug.Log("Loading scene: " + storySceneName);
+                SceneManager.LoadScene(storySceneName);
+            });
         }
         else
         {
             Debug.LogWarning("Story Button chưa được gán!");
         }
 
-        // Quit
+        // Load
+        if (loadButton != null)
+        {
+            loadButton.onClick.AddListener(LoadGame);
+        }
+
+        // Gán sự kiện cho Quit
         if (quitButton != null)
         {
             quitButton.onClick.AddListener(QuitGame);
@@ -32,15 +53,22 @@ public class UISceneLoader : MonoBehaviour
         {
             Debug.LogWarning("Quit Button chưa được gán!");
         }
+
+        //Xử lý vấn đề khi không có DataSave khiến Load Game trở thành New Game
+        if(!DataPersistenceManager.instance.HasGameData())
+        {
+                loadButton.interactable = false;
+                Debug.Log("Không tìm thấy dữ liệu lưu, vô hiệu hóa nút Load Game.");
+
+        }
     }
 
-    public void LoadStoryScene()
+    private void LoadGame()
     {
-        Debug.Log("Loading scene: " + storySceneName);
         SceneManager.LoadScene(storySceneName);
     }
 
-    public void QuitGame()
+    private void QuitGame()
     {
         Debug.Log("Đang thoát game...");
 

@@ -1,7 +1,8 @@
-﻿using UnityEngine;
-using UnityEngine.InputSystem;
-using System.Collections;
+﻿using System.Collections;
 using System.Linq;
+using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -34,6 +35,7 @@ public class Player : MonoBehaviour, IDamageable, IDataPersitence
     private VehicleController currentVehicle;
     private bool skipVehicleInputFrame = false;
     private Collider2D vehicleCollider;
+    private KeyControl[] vehicleKeys;
 
     // --- Debug ---
     private Coroutine vehicleDebugRoutine;
@@ -319,8 +321,15 @@ public class Player : MonoBehaviour, IDamageable, IDataPersitence
 
     private void Die()
     {
-        Destroy(gameObject);
-        SceneManager.LoadScene("Menu");
+        // Tắt Player
+        spriteRenderer.enabled = false;
+        EnableOnFootControls(false);
+
+        // Lấy tên Scene hiện tại
+        string currentScene = SceneManager.GetActiveScene().name;
+
+        // Reload lại Scene hiện tại
+        SceneManager.LoadScene(currentScene);
     }
 
 
@@ -354,6 +363,8 @@ public class Player : MonoBehaviour, IDamageable, IDataPersitence
 
     public void SaveData(ref GameData data)
     {
+        if (this == null || this.gameObject == null)
+            return;
         if (data == null) data = new GameData();
 
         data.Health = Mathf.RoundToInt(Health);

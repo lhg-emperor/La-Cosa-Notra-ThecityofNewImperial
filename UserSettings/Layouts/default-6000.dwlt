@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1536
     height: 772.8
   m_ShowMode: 4
-  m_Title: Game
+  m_Title: Inspector
   m_RootView: {fileID: 4}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -171,7 +171,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 100}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 0
-  controlID: 117
+  controlID: 64
   draggingID: 0
 --- !u!114 &8
 MonoBehaviour:
@@ -197,7 +197,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 100}
   m_MaxSize: {x: 16192, y: 16192}
   vertical: 1
-  controlID: 28
+  controlID: 65
   draggingID: 0
 --- !u!114 &9
 MonoBehaviour:
@@ -932,9 +932,9 @@ MonoBehaviour:
   m_AudioPlay: 0
   m_DebugDrawModesUseInteractiveLightBakingData: 0
   m_Position:
-    m_Target: {x: 1531.6427, y: 1034.2947, z: 11.590325}
+    m_Target: {x: 1615.3938, y: 1145.4343, z: -11.191853}
     speed: 2
-    m_Value: {x: 1531.6427, y: 1034.2947, z: 11.590325}
+    m_Value: {x: 76.28048, y: -35.639194, z: 8.395353}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -984,9 +984,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
-    m_Target: 1043.8751
+    m_Target: 1020.42926
     speed: 2
-    m_Value: 1043.8751
+    m_Value: 5.900412
   m_Ortho:
     m_Target: 1
     speed: 2
@@ -1061,7 +1061,7 @@ MonoBehaviour:
       scrollPos: {x: 0, y: 0}
       m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: ce77ffff8e7effff907effff0688ffff0888ffff0697ffffb099ffffc2a4ffff18abffffaeb3ffff40b4ffff46b4ffff62b4ffff7abefffff8c4ffffacc5ffffead7ffffa2ddfffffeddffffc4f4fffffafaffff6ef5000092f50000a0f50000ccf50000eaf50000
+      m_ExpandedIDs: 6894ffffd094ffff7496ffffacc2ffff38d9ffff54edffffe8f4ffff00fbffff66f500008af5000098f50000c4f50000e2f50000781d0100dc240100a051010004590100d25e0100cc7d0100
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -1513,7 +1513,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Setting System
+    - Assets/Scripts/Player
     m_Globs: []
     m_ProductIds: 
     m_AnyWithAssetOrigin: 0
@@ -1523,16 +1523,16 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/Setting System
+  - Assets/Scripts/Player
   m_LastFoldersGridSize: -1
   m_LastProjectPath: "D:\\CosaNostra\\Ch\u1EC9nh S\u1EEDa"
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 197.20001}
-    m_SelectedIDs: c0f40000
-    m_LastClickedID: 62656
-    m_ExpandedIDs: 000000002af400002cf40000
+    scrollPos: {x: 0, y: 245.20001}
+    m_SelectedIDs: ca070100
+    m_LastClickedID: 67530
+    m_ExpandedIDs: 0000000002f9000004f90000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1561,7 +1561,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 000000002af400002cf40000
+    m_ExpandedIDs: 0000000002f9000004f90000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 

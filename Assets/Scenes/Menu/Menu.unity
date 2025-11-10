@@ -1642,6 +1642,63 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   screenAnimator: {fileID: 2086454393}
+--- !u!1001 &1251322602
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 108958858622652871, guid: 90f06cb0da5de1942ae27aaa98b3033a, type: 3}
+      propertyPath: m_Name
+      value: DataPersistanceManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 4546964951785944606, guid: 90f06cb0da5de1942ae27aaa98b3033a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1348.3367
+      objectReference: {fileID: 0}
+    - target: {fileID: 4546964951785944606, guid: 90f06cb0da5de1942ae27aaa98b3033a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1404.9799
+      objectReference: {fileID: 0}
+    - target: {fileID: 4546964951785944606, guid: 90f06cb0da5de1942ae27aaa98b3033a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4546964951785944606, guid: 90f06cb0da5de1942ae27aaa98b3033a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4546964951785944606, guid: 90f06cb0da5de1942ae27aaa98b3033a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4546964951785944606, guid: 90f06cb0da5de1942ae27aaa98b3033a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4546964951785944606, guid: 90f06cb0da5de1942ae27aaa98b3033a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4546964951785944606, guid: 90f06cb0da5de1942ae27aaa98b3033a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4546964951785944606, guid: 90f06cb0da5de1942ae27aaa98b3033a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4546964951785944606, guid: 90f06cb0da5de1942ae27aaa98b3033a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 90f06cb0da5de1942ae27aaa98b3033a, type: 3}
 --- !u!1 &1448782719
 GameObject:
   m_ObjectHideFlags: 0
@@ -1751,7 +1808,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   storyButton: {fileID: 151831088}
-  storySceneName: Chapter1
+  storySceneName: MainScene
+  loadButton: {fileID: 1647005206}
   quitButton: {fileID: 670223706}
 --- !u!1 &1489244732
 GameObject:
@@ -2750,3 +2808,4 @@ SceneRoots:
   - {fileID: 1453074222}
   - {fileID: 890608475}
   - {fileID: 1521573673}
+  - {fileID: 1251322602}

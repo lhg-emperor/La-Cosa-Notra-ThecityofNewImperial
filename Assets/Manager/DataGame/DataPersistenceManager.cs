@@ -3,44 +3,48 @@ using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System;
+using UnityEngine.SceneManagement;
+using Unity.VisualScripting;
 
 public class DataPersistenceManager : MonoBehaviour
 {
+    [Header("Debugging")]
+    [SerializeField] private bool initializeDataIfNull = false;
+
     [Header("File Storage Config")]
     [SerializeField] private string fileName;
 
 
     private GameData gameData;
+    public GameData CurrentGameData => gameData;
+
 
     private List<IDataPersitence> dataPersistenceObjects;
 
     private FileDataHandler dataHandler;
+
+    private string selectedProfileId = "Em Là Của Anh Đừng Của Ai";
     public static DataPersistenceManager instance { get; private set; }
 
     private void Awake()
     {
         if (instance != null)
         {
-            Debug.LogError("Found more than one DataPersistenceManager in the Scene");
-            Destroy(gameObject);
+            Debug.Log("Found more than one DataPersistenceManager in the Scene");
+            Destroy(this.gameObject);
             return;
         }
         instance = this;
-    }
-
-    private void Start()
-    {
-        // Đường dẫn cố định theo yêu cầu
+        DontDestroyOnLoad(this.gameObject);
+        // Khởi tạo Data Handler
         string desiredRoot = @"D:\DataLacosanotra\SaveData";
 
         string saveDirectory = desiredRoot;
-
-        // Đặt tên file mặc định nếu inspector để trống
         string effectiveFileName = string.IsNullOrWhiteSpace(fileName) ? "gameData.json" : fileName;
 
         try
         {
-            // Tạo thư mục nếu chưa tồn tại
+
             Directory.CreateDirectory(saveDirectory);
         }
         catch (Exception e)
@@ -52,8 +56,31 @@ public class DataPersistenceManager : MonoBehaviour
         Debug.Log("Save folder: " + saveDirectory);
 
         this.dataHandler = new FileDataHandler(saveDirectory, effectiveFileName);
+    }
+
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+        SceneManager.sceneUnloaded += OnSceneUnLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+        SceneManager.sceneUnloaded -= OnSceneUnLoaded;
+    }
+
+    public void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        Debug.Log("OnSceneLoaded: " + scene.name);
         dataPersistenceObjects = FindAllDataPersistenceObjects();
         LoadGame();
+    }
+
+    public void OnSceneUnLoaded(Scene scene)
+    {
+        Debug.Log("OnSceneUnLoaded: " + scene.name);
+        SaveGame();
     }
 
     public void NewGame()
@@ -63,11 +90,17 @@ public class DataPersistenceManager : MonoBehaviour
 
     public void LoadGame()
     {
-        this.gameData = dataHandler.Load();
+        this.gameData = dataHandler.Load(selectedProfileId);
+
+        if (this.gameData == null && initializeDataIfNull)
+        {
+            Debug.Log("No data was found. Initializing to defaults.");
+            NewGame();
+        }
 
         if (gameData == null)
         {
-            Debug.Log("No data was found. Initializing to defaults.");
+            Debug.Log("No data was found. Initializing to defaults. Destroying the newest one");
             NewGame();
         }
 
@@ -80,17 +113,30 @@ public class DataPersistenceManager : MonoBehaviour
 
     public void SaveGame()
     {
+        if (dataPersistenceObjects == null || dataPersistenceObjects.Count == 0)
+        {
+            dataPersistenceObjects = FindAllDataPersistenceObjects();
+        }
+
         foreach (IDataPersitence dataPersitenceObj in dataPersistenceObjects)
         {
-            dataPersitenceObj.SaveData(ref gameData);
+            if (dataPersitenceObj != null) // ← Kiểm tra null trước khi save
+                dataPersitenceObj.SaveData(ref gameData);
         }
-        Debug.Log("Save Time Count = " + gameData.timeCount);
-        dataHandler.Save(gameData);
+
+        gameData.currentSceneName = SceneManager.GetActiveScene().name;
+        dataHandler.Save(gameData, selectedProfileId);
+
+        // Lưu scene hiện tại
+        gameData.currentSceneName = SceneManager.GetActiveScene().name;
+
+    Debug.Log("Save Time Count = " + gameData.timeCount);
+    dataHandler.Save(gameData, selectedProfileId);
     }
 
     private void OnApplicationQuit()
     {
-        SaveGame();
+        
     }
 
     private List<IDataPersitence> FindAllDataPersistenceObjects()
@@ -98,5 +144,15 @@ public class DataPersistenceManager : MonoBehaviour
         return FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None)
             .OfType<IDataPersitence>()
             .ToList();
+    }
+
+    public bool HasGameData()
+    {
+        return gameData != null;
+    }
+
+    public Dictionary<string, GameData> GetAllProfilesGameData()
+    {
+        return dataHandler.LoadAllProfiles();
     }
 }
