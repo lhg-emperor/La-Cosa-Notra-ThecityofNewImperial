@@ -1,111 +1,108 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-[DefaultExecutionOrder(-100)]
+
 public class QuestManager : MonoBehaviour
 {
     public static QuestManager Instance { get; private set; }
 
-    private Dictionary<string, Quest> questMap = new Dictionary<string, Quest>();
+    [Header("All QuestInfo ScriptableObjects")]
+    public QuestInfoSO[] allQuests;
 
-    private ChapterQuest activeChapterQuest;
-    private int currentQuestIndex = 0;
+  
+    private Dictionary<string, QuestState> questStates = new Dictionary<string, QuestState>();
+    private Dictionary<string, int> currentStepIndex = new Dictionary<string, int>();
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
-    }
-
-    public void RegisterChapterQuest(ChapterQuest chapterQuest)
-    {
-        activeChapterQuest = chapterQuest;
-        currentQuestIndex = 0;
-
-        Debug.Log("Danh sách QuestPoint nhận từ ChapterQuest:");
-        for (int i = 0; i < activeChapterQuest.questPoints.Count; i++)
+        if (Instance != null)
         {
-            GameObject qp = activeChapterQuest.questPoints[i];
-            Debug.Log($"  [{i}] {qp?.name ?? "null"} | Active: {qp?.activeSelf ?? false}");
+            Debug.LogWarning("QuestManager.Instance đã tồn tại! Xoá bản cũ nếu cần.");
+            Destroy(this);
+            return;
+        }
+        Instance = this;
+
+        // Khởi tạo trạng thái
+        foreach (var quest in allQuests)
+        {
+            questStates[quest.Id] = QuestState.CAN_START;
+            currentStepIndex[quest.Id] = 0;
         }
     }
 
-    private void ShowQuestPoint(int index)
+    public void StartQuest(string questId)
     {
-        if (index < activeChapterQuest.questPoints.Count)
-        {
-            GameObject qp = activeChapterQuest.questPoints[index];
-            qp.SetActive(true);
-            Debug.Log("QuestPoint hiện lên: " + qp.name + " | Active: " + qp.activeSelf);
-        }
+        if (!questStates.ContainsKey(questId)) return;
+
+        Debug.Log($"➡️ Bắt đầu Quest: {questId}");
+        questStates[questId] = QuestState.IN_PROGRESS;
+
+        InstantiateCurrentStep(questId);
     }
 
-    public void CompleteCurrentQuestPoint()
+   
+    public void AdvanceQuestStep(string questId)
     {
-        if (activeChapterQuest == null || currentQuestIndex >= activeChapterQuest.questPoints.Count) return;
+        if (!questStates.ContainsKey(questId)) return;
 
-        GameObject completedQP = activeChapterQuest.questPoints[currentQuestIndex];
-        if (completedQP != null)
+        currentStepIndex[questId]++;
+
+        QuestInfoSO questInfo = GetQuestInfo(questId);
+        if (currentStepIndex[questId] < questInfo.QuestStepPrefabs.Length)
         {
-            Debug.Log("QuestPoint đã hoàn thành: " + completedQP.name);
-            Destroy(completedQP);
-        }
-
-        currentQuestIndex++;
-
-        if (currentQuestIndex < activeChapterQuest.questPoints.Count)
-        {
-            Debug.Log("Quest tiếp theo là: " + activeChapterQuest.questPoints[currentQuestIndex].name);
-            ShowQuestPoint(currentQuestIndex);
-            Debug.Log("QuestPoint tiếp theo đã xuất hiện? " +
-                      activeChapterQuest.questPoints[currentQuestIndex].activeSelf);
+            InstantiateCurrentStep(questId);
         }
         else
         {
-            Debug.Log("Tất cả QuestPoint trong Chapter đã hoàn thành!");
+            Debug.Log($"✅ Quest hoàn thành: {questId}");
+            questStates[questId] = QuestState.FINISHED;
         }
-
-        // Kiểm tra trạng thái Quest trước đó
-        Debug.Log("Quest trước đã bị destroy? " + (completedQP == null));
     }
 
-    // ==== Quản lý Quest (tương tác với QuestStep) ====
-
-    public void AddQuest(Quest quest)
+   
+    private void InstantiateCurrentStep(string questId)
     {
-        if (!questMap.ContainsKey(quest.questId))
+        QuestInfoSO questInfo = GetQuestInfo(questId);
+        int stepIndex = currentStepIndex[questId];
+        if (stepIndex >= questInfo.QuestStepPrefabs.Length) return;
+
+        GameObject stepPrefab = questInfo.QuestStepPrefabs[stepIndex];
+        GameObject stepObj = Instantiate(stepPrefab);
+        QuestStep questStep = stepObj.GetComponent<QuestStep>();
+        if (questStep != null)
         {
-            questMap.Add(quest.questId, quest);
-            Debug.Log("Đã thêm nhiệm vụ: " + quest.questName);
+            questStep.InitializeQuestStep(questId, stepIndex);
         }
-    }
-
-    public Quest GetQuest(string id)
-    {
-        questMap.TryGetValue(id, out Quest quest);
-        return quest;
-    }
-
-    public void StartQuest(string id)
-    {
-        Quest quest = GetQuest(id);
-        if (quest != null)
+        else
         {
-            Debug.Log("Bắt đầu Quest: " + quest.questName);
-            quest.StartQuest();
+            Debug.LogWarning($"Prefab {stepPrefab.name} không chứa QuestStep!");
         }
     }
 
-    public void CompleteQuest(string id)
+   
+    private QuestInfoSO GetQuestInfo(string questId)
     {
-        Quest quest = GetQuest(id);
-        if (quest != null)
+        foreach (var quest in allQuests)
         {
-            Debug.Log("Quest đã hoàn thành: " + quest.questName);
-            quest.CompleteQuest();
-
-            // Thông báo QuestPoint hoàn thành
-            CompleteCurrentQuestPoint();
+            if (quest.Id == questId) return quest;
         }
+        Debug.LogError($"QuestInfoSO không tìm thấy với id {questId}");
+        return null;
     }
+
+    
+    public QuestState GetQuestState(string questId)
+    {
+        if (questStates.ContainsKey(questId)) return questStates[questId];
+        return QuestState.CAN_START;
+    }
+}
+
+
+public enum QuestState
+{
+    CAN_START,
+    IN_PROGRESS,
+    FINISHED
 }

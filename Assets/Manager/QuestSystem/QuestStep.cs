@@ -1,35 +1,38 @@
-﻿using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
-// QuestStep cơ bản, mọi step đều có thể kế thừa
+
 public abstract class QuestStep : MonoBehaviour
 {
     protected string questId;
     protected int stepIndex;
+    private bool isFinished = false;
 
-    // Khởi tạo step
-    public void InitializeStep(string questId, int stepIndex)
+ 
+    public void InitializeQuestStep(string questId, int stepIndex)
     {
         this.questId = questId;
         this.stepIndex = stepIndex;
-        Debug.Log($"QuestStep initialized: {questId} - step {stepIndex}");
+        OnInitialize();
     }
 
-    // Gọi khi step hoàn thành
-    protected void CompleteStep()
+
+    protected virtual void OnInitialize()
     {
-        if (QuestManager.Instance != null)
+        // Override n?u c?n
+    }
+
+  
+    protected void FinishQuestStep()
+    {
+        if (!isFinished)
         {
-            QuestManager.Instance.CompleteQuest(questId);
+            isFinished = true;
+            Debug.Log($"? QuestStep ho�n th�nh: QuestID={questId}, StepIndex={stepIndex}");
+            // Th�ng b�o cho QuestManager ?? chuy?n b??c ti?p theo
+            QuestManager.Instance.AdvanceQuestStep(questId);
+            Destroy(this.gameObject);
         }
-        Destroy(gameObject);
     }
-
-    // Hàm này bắt buộc các step cụ thể phải implement logic riêng
-    protected abstract void CheckStep();
-
-    void Update()
-    {
-        CheckStep();
-    }
-
 }

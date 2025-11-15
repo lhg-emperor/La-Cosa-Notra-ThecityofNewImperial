@@ -17,9 +17,12 @@ public class GameData
     public GameData()
     {
         this.timeCount = 0;
-        this.Health = 100; // giá trị mặc định
+        this.Health = 100; 
         this.CurrentWeapon = null;
         this.IsInVehicle = false;
-        this.currentSceneName = "MainScene"; // giá trị mặc định nếu chưa lưu
+        this.currentSceneName = "MainScene"; 
+
+
+        this.playerPosition = new Vector3(-111f, -130f, 0f);
     }
 }
