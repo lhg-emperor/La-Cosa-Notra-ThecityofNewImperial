@@ -1,0 +1,29 @@
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+
+# Visual Studio
+.vs/
+*.csproj
+*.unityproj
+*.sln
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+
+# Unity3D generated files
+*.pidb.meta
+*.pdb
+*.mdb
+
+# Auto-generated VS/MD solution and project files
+ExportedObj/
+*.svd
+UnityHubSetup.exe
+TestBuild/
+

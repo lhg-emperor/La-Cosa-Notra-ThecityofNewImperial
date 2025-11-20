@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 3
+  tags:
+  - Weapon
+  - playerTrigger
+  - NPC
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - Player
+  - NPC
+  - Can Move
+  - Obstacle
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Background
+    uniqueID: 3572266759
+    locked: 0
+  - name: weapon
+    uniqueID: 783632711
+    locked: 0
+  - name: Character
+    uniqueID: 2168037715
+    locked: 0
+  - name: Vehicle
+    uniqueID: 405471427
+    locked: 0
+  - name: Overpass
+    uniqueID: 2987275543
+    locked: 0
+  - name: Top
+    uniqueID: 1924554479
+    locked: 0
+  - name: UI
+    uniqueID: 2609338361
+    locked: 0
+  m_RenderingLayers:
+  - Default
+  - Background
+  - Player and NPC

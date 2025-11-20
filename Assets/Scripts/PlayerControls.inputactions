@@ -1,0 +1,347 @@
+{
+    "version": 1,
+    "name": "PlayerControls",
+    "maps": [
+        {
+            "name": "Movement",
+            "id": "3ba4fa62-87c4-4688-81bf-0079fd53faa9",
+            "actions": [
+                {
+                    "name": "Move",
+                    "type": "Value",
+                    "id": "dabd8dc3-7539-4fd8-b911-728a9e6924f6",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "2D Vector",
+                    "id": "68ddbbee-8376-45db-a0b5-3dbd4b257c41",
+                    "path": "2DVector",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "up",
+                    "id": "034fb602-cf63-4d7c-8feb-35d206d379e6",
+                    "path": "<Keyboard>/w",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "down",
+                    "id": "29ba63b4-1f85-4144-b241-34927fb59ae0",
+                    "path": "<Keyboard>/s",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "3d955b61-4e37-4ddc-a3fb-662eac6a8b89",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "fe6fd5b4-e0a1-4b83-a888-843a55643a02",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                }
+            ]
+        },
+        {
+            "name": "Combat",
+            "id": "ebed4a3f-83ca-4630-9d0c-c07ceca3e676",
+            "actions": [
+                {
+                    "name": "Attack",
+                    "type": "Button",
+                    "id": "cb8ab3ce-bd54-44de-89a0-d0c1e02f09bb",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "9cd772ea-cbbe-41d0-bd9f-8826af163a84",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Attack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "PickUp",
+            "id": "41503caf-d3b0-4ba8-8fa8-429db53fa737",
+            "actions": [
+                {
+                    "name": "pick",
+                    "type": "Button",
+                    "id": "616f96b1-4e94-4f3a-b37b-bf4bde0c7af4",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "0881df96-f3da-4e1b-94d0-5c18c3328c27",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "pick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "PutDown",
+            "id": "ef50b0c9-7e0e-400f-bc39-74eb21a9a43d",
+            "actions": [
+                {
+                    "name": "drop",
+                    "type": "Button",
+                    "id": "8fbc5c72-6804-44c9-9579-333b4e4abe7f",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "e20730be-0d3c-4719-9358-921db9f4f502",
+                    "path": "<Keyboard>/t",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "drop",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "LookAround",
+            "id": "842d999e-42a4-4291-bc8b-eb11c42a6c01",
+            "actions": [
+                {
+                    "name": "look",
+                    "type": "Value",
+                    "id": "2cb3a142-c1cf-4e02-b9f8-7aeba8198c2b",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "231910f7-f0b0-4c24-9414-7072733a4f18",
+                    "path": "<Mouse>/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "look",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "SwitchWeapon",
+            "id": "c891a3e3-5a37-4f63-b220-664f5ffb5e8b",
+            "actions": [
+                {
+                    "name": "Scroll",
+                    "type": "Value",
+                    "id": "cd167c0a-09c9-43c0-802e-ea2f84c7a36c",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "63f07967-486b-462c-a694-32ca1e40a236",
+                    "path": "<Mouse>/scroll/y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Scroll",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "EnterExitVehicle",
+            "id": "71b0be30-c4dd-457f-a077-ed4634383f39",
+            "actions": [
+                {
+                    "name": "EnterExitCar",
+                    "type": "Button",
+                    "id": "f958c44f-cb2b-4f58-99f9-e81d16e9243f",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "Press",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "4a5fb497-5b0d-483f-ac72-43e129c99872",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "EnterExitCar",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "VehicleController",
+            "id": "97f6fe03-2d5b-45fd-bc4e-85cef62fd42c",
+            "actions": [
+                {
+                    "name": "VehicleMove",
+                    "type": "Value",
+                    "id": "f8e7b6f6-575a-457f-8a58-3a2c1b17f9e2",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "2D Vector",
+                    "id": "68732992-f712-4617-91e4-419265660654",
+                    "path": "2DVector",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "VehicleMove",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "up",
+                    "id": "0851fc5d-c89e-4fb3-951d-1a87e8aa7451",
+                    "path": "<Keyboard>/w",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "VehicleMove",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "down",
+                    "id": "17fbe351-67bf-415e-b91d-f22e24e35a20",
+                    "path": "<Keyboard>/s",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "VehicleMove",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "b0e1efc2-68db-4a2b-a49d-903394df7efc",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "VehicleMove",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "bb27ada0-73e0-4026-8ab0-d2b4e5cafd0b",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "VehicleMove",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                }
+            ]
+        },
+        {
+            "name": "Dialog",
+            "id": "c853348d-cc22-4953-9e61-b42890f6869a",
+            "actions": [
+                {
+                    "name": "dialogEnter",
+                    "type": "Button",
+                    "id": "ba898fc3-0654-4f3a-8398-273dc4effe23",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "4324ab78-9a97-4df7-917d-6e44dbbe9396",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "dialogEnter",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
