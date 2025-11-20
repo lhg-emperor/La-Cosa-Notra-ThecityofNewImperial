@@ -6,13 +6,13 @@ public class QuestPoint : MonoBehaviour
     [Header("Quest")]
     [Tooltip("Id của quest (phải trùng với QuestInfoSO.Id)")]
     public string questId;
-    [Tooltip("Optional: link directly to the QuestInfoSO for this point (overrides questId if set)")]
+    [Tooltip("Tuỳ chọn: liên kết trực tiếp tới QuestInfoSO cho điểm này (ghi đè questId nếu được gán)")]
     public QuestInfoSO questInfo;
 
-    [Tooltip("Optional: a visual prefab representing the quest (for designer reference). This will NOT be auto-instantiated by the QuestPoint to avoid duplicate step instances.")]
+    [Tooltip("Tuỳ chọn: prefab hiển thị cho quest (dùng tham chiếu cho designer). Sẽ KHÔNG được QuestPoint tự động instantiate để tránh trùng lặp.")]
     public GameObject questPrefab;
     [Header("Step Mapping")]
-    [Tooltip("Which step index of the quest this QuestPoint belongs to (0-based). Use 0 for the first step.")]
+    [Tooltip("Thuộc bước nào của quest (đánh số từ 0). Dùng 0 cho bước đầu tiên.")]
     public int stepIndex = 0;
 
     [Header("Display")]
@@ -66,6 +66,15 @@ public class QuestPoint : MonoBehaviour
 
     public void TryAcceptQuest()
     {
+        // Global guard: if QuestManager has blocked accepts (e.g. during a cutscene), do not accept
+        if (QuestManager.Instance != null && QuestManager.Instance.IsAcceptsBlocked())
+        {
+            // optionally log for debugging
+            if (QuestManager.Instance != null && QuestManager.Instance.debugLogMapping)
+                Debug.Log($"QuestPoint: accepting is currently blocked (cutscene running) - '{gameObject.name}'");
+            return;
+        }
+
         // if questInfo is assigned, prefer it
         if (questInfo != null)
         {

@@ -3,9 +3,9 @@ using UnityEngine;
 [RequireComponent(typeof(CircleCollider2D))]
 public class QuestTargetIcon : MonoBehaviour
 {
-    [Tooltip("Quest id (optional if questInfo assigned on parent step)")]
+    [Tooltip("Id quest (tuỳ chọn nếu đã gán questInfo trên parent step)")]
     public string questId;
-    [Tooltip("Step index this icon represents")]
+    [Tooltip("Chỉ số step mà icon này đại diện")]
     public int stepIndex = 0;
 
     private QuestStep parentStep;

@@ -10,9 +10,9 @@ public class DialogTrigger : MonoBehaviour
     [SerializeField] private TextAsset inkJSON;
 
     [Header("Cutscene Settings")]
-    [Tooltip("If true, this dialogue is mandatory/cutscene-only and must be tied to a Timeline (PlayableDirector).")]
+    [Tooltip("Nếu đúng, hội thoại này là bắt buộc/chỉ cho cắt cảnh và phải gắn với Timeline (PlayableDirector).")]
     [SerializeField] private bool mandatoryDialogue = false;
-    [Tooltip("PlayableDirector (Timeline) that controls when this mandatory dialogue is allowed to play.")]
+    [Tooltip("PlayableDirector (Timeline) điều khiển khi nào hội thoại bắt buộc này được phép phát.")]
     [SerializeField] private PlayableDirector associatedTimeline;
 
     private bool playerInRange = false;

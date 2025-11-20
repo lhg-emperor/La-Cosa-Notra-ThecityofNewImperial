@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Quest_01
   m_EditorClassIdentifier: Assembly-CSharp::QuestInfoSO
   id: 1
-  questName: Test
+  questName: First
   questStepPrefabs:
   - {fileID: 3149483481162383624, guid: d44055604087f954996a96ccce49196d, type: 3}
   rewardMoney: 0

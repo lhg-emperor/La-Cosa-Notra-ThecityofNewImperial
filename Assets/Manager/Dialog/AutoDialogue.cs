@@ -5,13 +5,13 @@ using UnityEngine;
 // activated dialogues in a configured order.
 public class AutoDialogue : MonoBehaviour
 {
-    [Tooltip("The compiled Ink JSON/TextAsset to play when this object is activated.")]
+    [Tooltip("Tệp Ink (TextAsset/JSON đã biên dịch) sẽ phát khi đối tượng này được kích hoạt.")]
     public TextAsset dialogueAsset;
 
-    [Tooltip("If true, this dialogue is intended for use in cutscenes only.")]
+    [Tooltip("Nếu đúng, hội thoại này chỉ dùng cho cắt cảnh.")]
     public bool cutsceneOnly = true;
 
-    [Tooltip("If true, this AutoDialogue will only play once (first activation). If false it can trigger repeatedly each time the object is enabled.)")]
+    [Tooltip("Nếu đúng, AutoDialogue chỉ chạy một lần (lần đầu). Nếu sai, có thể kích hoạt lại mỗi khi đối tượng được enable.")]
     public bool playOnlyOnce = true;
 
     // runtime flag

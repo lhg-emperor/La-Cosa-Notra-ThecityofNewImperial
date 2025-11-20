@@ -10,10 +10,10 @@ public class QuestManager : MonoBehaviour
     [Header("All QuestInfo ScriptableObjects")]
     public QuestInfoSO[] allQuests;
     [Header("Debug")]
-    [Tooltip("If true, QuestManager will print mapping info (ordered quests, questPointsMap, questStates) on Awake")] 
+    [Tooltip("Nếu đúng, QuestManager sẽ in thông tin mapping (ordered quests, questPointsMap, questStates) khi Awake.")]
     public bool debugLogMapping = true;
 
-    [Tooltip("If true, when there is no QuestPoint for the expected step index, show the lowest-index QuestPoint available as a fallback.")]
+    [Tooltip("Nếu đúng, khi không có QuestPoint cho step mong đợi, sẽ hiển thị QuestPoint có index thấp nhất có sẵn làm phương án dự phòng.")]
     public bool autoShowFirstAvailablePoint = false;
 
   
@@ -23,6 +23,20 @@ public class QuestManager : MonoBehaviour
     private Dictionary<string, Dictionary<int, List<QuestPoint>>> questPointsMap = new Dictionary<string, Dictionary<int, List<QuestPoint>>>();
     // Ordered list of quest ids (by numeric id parsed from QuestInfoSO.Id)
     private List<QuestInfoSO> orderedQuests = new List<QuestInfoSO>();
+    // When true, QuestPoints should not accept/start quests (used while cutscenes play)
+    private bool acceptsBlocked = false;
+
+    public void SetAcceptsBlocked(bool blocked)
+    {
+        acceptsBlocked = blocked;
+        if (debugLogMapping)
+            Debug.Log($"QuestManager: SetAcceptsBlocked = {blocked}");
+    }
+
+    public bool IsAcceptsBlocked()
+    {
+        return acceptsBlocked;
+    }
 
     private void OnEnable()
     {
@@ -42,11 +56,12 @@ public class QuestManager : MonoBehaviour
     {
         if (Instance != null)
         {
-            Debug.LogWarning("QuestManager.Instance đã tồn tại! Xoá bản cũ nếu cần.");
-            Destroy(this);
+            Debug.LogWarning("QuestManager.Instance đã tồn tại! Destroying duplicate GameObject.");
+            Destroy(this.gameObject);
             return;
         }
         Instance = this;
+        DontDestroyOnLoad(this.gameObject);
 
         // Khởi tạo: thu thập QuestPoint trong scene (bao gồm inactive) và sắp xếp quests theo id số
         if (allQuests == null) allQuests = new QuestInfoSO[0];
@@ -108,7 +123,12 @@ public class QuestManager : MonoBehaviour
         {
             LogQuestMapping();
         }
+        // Mark manager fully initialized (other components can wait for this)
+        IsInitialized = true;
     }
+
+    // Indicates whether QuestManager finished Awake initialization
+    public bool IsInitialized { get; private set; } = false;
 
     private void LogQuestMapping()
     {
@@ -265,6 +285,23 @@ public class QuestManager : MonoBehaviour
     {
         if (currentStepIndex.ContainsKey(questId)) return currentStepIndex[questId];
         return -1;
+    }
+
+    // Force-set a quest's state (used by StoryEvent sequencing). This will update internal state,
+    // notify listeners and update quest points visibility.
+    public void ForceSetQuestState(string questId, QuestState newState)
+    {
+        if (string.IsNullOrEmpty(questId)) return;
+        if (!questStates.ContainsKey(questId))
+        {
+            // initialize default tracking for unknown questId
+            currentStepIndex[questId] = 0;
+            questStates[questId] = QuestState.REQUIREMENTS_NOT_MET;
+        }
+
+        questStates[questId] = newState;
+        QuestEvents.QuestStateChange(questId, newState);
+        UpdateQuestPointVisibility(questId, newState);
     }
 
     private void UpdateQuestPointVisibility(string questId, QuestState state)

@@ -12,10 +12,10 @@ public class AutoDialogueSequencer : MonoBehaviour
 {
     public static AutoDialogueSequencer Instance { get; private set; }
 
-    [Tooltip("Ordered list of AutoDialogue entries. The sequencer will play activated entries following this order.")]
+    [Tooltip("Danh sách theo thứ tự các AutoDialogue; sequencer sẽ phát các entry được kích hoạt theo thứ tự này.")]
     public List<AutoDialogue> sequence = new List<AutoDialogue>();
 
-    [Tooltip("If true the sequencer will automatically start processing pending activations when one is received.")]
+    [Tooltip("Nếu đúng, sequencer sẽ tự động xử lý các kích hoạt đang chờ khi nhận được một kích hoạt.")]
     public bool autoProcessOnActivation = true;
 
     // pending activations (populated by AutoDialogue.Notify)

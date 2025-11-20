@@ -7,7 +7,7 @@ public class WantedSystem : MonoBehaviour
     [Range(0, 5)]
     public int WantedLevel = 0;
 
-    [Tooltip("Số lượng Cop được điều động để trán áp")]
+    [Tooltip("Số lượng cảnh sát được điều động để trấn áp")]
     [SerializeField] public int[] CopCount = new int[6] { 2, 3, 5, 9, 15, 29 };
 
     [Header("Thiết lập sinh Cop")]

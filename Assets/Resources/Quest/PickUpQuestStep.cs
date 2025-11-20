@@ -5,10 +5,10 @@ using UnityEngine;
 public class PickUpQuestStep : QuestStep
 {
     [Header("Pickup Config")]
-    [Tooltip("Name of the target GameObject to pick up (exact name)")]
+    [Tooltip("Tên chính xác của GameObject cần nhặt (tên chính xác)")]
     public string targetObjectName;
 
-    [Tooltip("Radius to detect player pickup")]
+    [Tooltip("Bán kính để phát hiện việc người chơi nhặt")]
     public float pickupRadius = 0.5f;
 
     private GameObject targetObj;

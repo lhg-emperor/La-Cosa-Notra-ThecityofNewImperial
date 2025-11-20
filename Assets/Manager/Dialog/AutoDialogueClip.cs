@@ -21,6 +21,16 @@ public class AutoDialogueClip : PlayableAsset, ITimelineClipAsset
         behaviour.allowCutsceneOnly = allowCutsceneOnly;
         behaviour.autoAdvance = autoAdvance;
         behaviour.autoAdvanceDelay = autoAdvanceDelay;
+        // Try to capture the PlayableDirector from the owner so the behaviour can pause/resume it
+        if (owner != null)
+        {
+            var dir = owner.GetComponent<UnityEngine.Playables.PlayableDirector>();
+            if (dir != null)
+            {
+                behaviour.directorRef = dir;
+            }
+        }
+
         return playable;
     }
 }

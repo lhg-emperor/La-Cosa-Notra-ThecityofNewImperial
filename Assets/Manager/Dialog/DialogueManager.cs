@@ -12,7 +12,7 @@ public class DialogueManager : MonoBehaviour
 
    private Story currentStory;
     [Header("Options")]
-    [Tooltip("If true, DialogueManager will persist across scene loads. Turn on only if you need a single manager that survives scenes.")]
+    [Tooltip("Nếu đúng, DialogueManager sẽ không bị huỷ khi đổi scene. Bật chỉ khi cần một manager duy nhất tồn tại qua nhiều scene.")]
     [SerializeField] private bool persistBetweenScenes = false;
 
     public bool isDialoguePlaying{ get; private set;}
