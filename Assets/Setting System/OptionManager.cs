@@ -5,6 +5,8 @@ public class OptionManager : MonoBehaviour
     [SerializeField] private GameObject optionPanel;
     private bool isOpen = false;
     public bool OptionVisible => isOpen;
+    private bool previousCursorVisible = true;
+    private CursorLockMode previousLockState = CursorLockMode.None;
 
     void Awake()
     {
@@ -40,6 +42,10 @@ public class OptionManager : MonoBehaviour
 
         if (isOpen)
         {
+            // Save current cursor state so we can restore it when closing
+            previousCursorVisible = Cursor.visible;
+            previousLockState = Cursor.lockState;
+
             Time.timeScale = 0f;
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
@@ -47,8 +53,9 @@ public class OptionManager : MonoBehaviour
         else
         {
             Time.timeScale = 1f;
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
+            // Restore the cursor state that was active before opening the options
+            Cursor.visible = previousCursorVisible;
+            Cursor.lockState = previousLockState;
         }
     }
 

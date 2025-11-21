@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 
-public class QuestManager : MonoBehaviour
+public class QuestManager : MonoBehaviour, IDataPersitence
 {
     public static QuestManager Instance { get; private set; }
 
@@ -43,6 +43,7 @@ public class QuestManager : MonoBehaviour
         QuestEvents.OnStartQuestRequested += StartQuest;
         QuestEvents.OnAdvanceQuestRequested += AdvanceQuestStep;
         QuestEvents.OnFinishQuestRequested += FinishQuest;
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded_Rebuild;
     }
 
     private void OnDisable()
@@ -50,6 +51,7 @@ public class QuestManager : MonoBehaviour
         QuestEvents.OnStartQuestRequested -= StartQuest;
         QuestEvents.OnAdvanceQuestRequested -= AdvanceQuestStep;
         QuestEvents.OnFinishQuestRequested -= FinishQuest;
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded_Rebuild;
     }
 
     private void Awake()
@@ -57,11 +59,12 @@ public class QuestManager : MonoBehaviour
         if (Instance != null)
         {
             Debug.LogWarning("QuestManager.Instance đã tồn tại! Destroying duplicate GameObject.");
-            Destroy(this.gameObject);
+            // Destroy the root GameObject to match DontDestroyOnLoad semantics
+            Destroy(transform.root.gameObject);
             return;
         }
         Instance = this;
-        DontDestroyOnLoad(this.gameObject);
+        DontDestroyOnLoad(transform.root.gameObject);
 
         // Khởi tạo: thu thập QuestPoint trong scene (bao gồm inactive) và sắp xếp quests theo id số
         if (allQuests == null) allQuests = new QuestInfoSO[0];
@@ -97,7 +100,35 @@ public class QuestManager : MonoBehaviour
                 questStates[q.Id] = QuestState.REQUIREMENTS_NOT_MET;
         }
 
-        // Find all QuestPoint in the scene (include inactive) and map them by questId
+        // Build initial quest point map for the current scene
+        RebuildQuestPointsMap();
+
+        // Apply initial visibility of quest points according to state
+        foreach (var kv in questStates)
+        {
+            UpdateQuestPointVisibility(kv.Key, kv.Value);
+        }
+
+        if (debugLogMapping)
+        {
+            LogQuestMapping();
+        }
+        // Mark manager fully initialized (other components can wait for this)
+        IsInitialized = true;
+    }
+
+    private void OnSceneLoaded_Rebuild(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode)
+    {
+        RebuildQuestPointsMap();
+        // Re-apply visibility according to saved/initialized states
+        foreach (var kv in questStates)
+        {
+            UpdateQuestPointVisibility(kv.Key, kv.Value);
+        }
+    }
+
+    private void RebuildQuestPointsMap()
+    {
         questPointsMap.Clear();
         var points = UnityEngine.Object.FindObjectsByType<QuestPoint>(UnityEngine.FindObjectsInactive.Include, UnityEngine.FindObjectsSortMode.None);
         foreach (var p in points)
@@ -112,19 +143,6 @@ public class QuestManager : MonoBehaviour
             if (!inner.ContainsKey(idx)) inner[idx] = new List<QuestPoint>();
             inner[idx].Add(p);
         }
-
-        // Apply initial visibility of quest points according to state
-        foreach (var kv in questStates)
-        {
-            UpdateQuestPointVisibility(kv.Key, kv.Value);
-        }
-
-        if (debugLogMapping)
-        {
-            LogQuestMapping();
-        }
-        // Mark manager fully initialized (other components can wait for this)
-        IsInitialized = true;
     }
 
     // Indicates whether QuestManager finished Awake initialization
@@ -308,7 +326,8 @@ public class QuestManager : MonoBehaviour
     {
         if (!TryGetQuestPointsInner(questId, out var inner))
         {
-            Debug.LogWarning($"QuestManager: no QuestPoint entries found for questId '{questId}' (checked raw and numeric). Existing keys: {string.Join(",", questPointsMap.Keys)}");
+            if (debugLogMapping)
+                Debug.LogWarning($"QuestManager: no QuestPoint entries found for questId '{questId}' (checked raw and numeric). Existing keys: {string.Join(",", questPointsMap.Keys)}");
             return;
         }
         switch (state)
@@ -399,6 +418,40 @@ public class QuestManager : MonoBehaviour
             }
         }
         return new List<QuestPoint>();
+    }
+
+    // ===================== Implement IDataPersitence =====================
+    public void LoadData(GameData data)
+    {
+        if (data == null) return;
+
+        // If there are saved quests, apply them
+        if (data.quests != null && data.quests.Count > 0)
+        {
+            foreach (var entry in data.quests)
+            {
+                if (string.IsNullOrEmpty(entry.id)) continue;
+                questStates[entry.id] = (QuestState)entry.state;
+                currentStepIndex[entry.id] = entry.currentStepIndex;
+                UpdateQuestPointVisibility(entry.id, questStates[entry.id]);
+                QuestEvents.QuestStateChange(entry.id, questStates[entry.id]);
+            }
+        }
+    }
+
+    public void SaveData(ref GameData data)
+    {
+        if (data == null) data = new GameData();
+
+        data.quests = new List<GameData.QuestSaveEntry>();
+        foreach (var kv in questStates)
+        {
+            var id = kv.Key;
+            var state = kv.Value;
+            int step = currentStepIndex.ContainsKey(id) ? currentStepIndex[id] : 0;
+            var entry = new GameData.QuestSaveEntry() { id = id, state = (int)state, currentStepIndex = step };
+            data.quests.Add(entry);
+        }
     }
 }
  

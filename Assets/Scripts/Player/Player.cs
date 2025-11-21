@@ -354,14 +354,52 @@ public class Player : MonoBehaviour, IDamageable, IDataPersitence
             spriteRenderer.enabled = !isDriving;
 
         // Khôi phục vũ khí nếu có
-        if (!string.IsNullOrEmpty(data.CurrentWeapon) && pickup != null)
+        if (pickup != null)
         {
-            var allGuns = FindObjectsOfType<MonoBehaviour>().OfType<IGun>();
-            var gun = allGuns.FirstOrDefault(g => g.GetType().Name == data.CurrentWeapon);
-            if (gun != null)
+            // Restore weapon slots list
+            pickup.weaponSlots = new System.Collections.Generic.List<IWeapon>();
+            if (data.WeaponSlots != null)
             {
-                pickup.currentGun = gun;
-                pickup.CurrentDamage = gun.GetDamage();
+                var allGuns = UnityEngine.Object.FindObjectsByType<MonoBehaviour>(UnityEngine.FindObjectsInactive.Include, UnityEngine.FindObjectsSortMode.None).OfType<IWeapon>();
+                foreach (var wname in data.WeaponSlots)
+                {
+                    if (string.IsNullOrEmpty(wname)) continue;
+                    var found = allGuns.FirstOrDefault(g => g.GetType().Name == wname);
+                    if (found != null)
+                        pickup.weaponSlots.Add(found);
+                }
+            }
+
+            // Restore active weapon index
+            pickup.activeWeaponIndex = data.ActiveWeaponIndex;
+
+            // Restore current gun reference by type name
+            if (!string.IsNullOrEmpty(data.CurrentWeapon))
+            {
+                var allGuns2 = UnityEngine.Object.FindObjectsByType<MonoBehaviour>(UnityEngine.FindObjectsInactive.Include, UnityEngine.FindObjectsSortMode.None).OfType<IGun>();
+                var gun = allGuns2.FirstOrDefault(g => g.GetType().Name == data.CurrentWeapon);
+                if (gun != null)
+                {
+                    pickup.currentGun = gun;
+                    pickup.CurrentDamage = gun.GetDamage();
+
+                    // Attempt to restore ammo fields if available (public fields like 'ammo' and 'totalReserveAmmo')
+                    var mb = gun as MonoBehaviour;
+                    if (mb != null)
+                    {
+                        var t = mb.GetType();
+                        var fAmmo = t.GetField("ammo");
+                        var fTotal = t.GetField("totalReserveAmmo");
+                        try
+                        {
+                            if (fAmmo != null && fAmmo.FieldType == typeof(int))
+                                fAmmo.SetValue(mb, data.CurrentMagazineAmmo);
+                            if (fTotal != null && fTotal.FieldType == typeof(int))
+                                fTotal.SetValue(mb, data.TotalReserveAmmo);
+                        }
+                        catch { }
+                    }
+                }
             }
         }
     }
@@ -376,5 +414,32 @@ public class Player : MonoBehaviour, IDamageable, IDataPersitence
         data.playerPosition = transform.position;
         data.CurrentWeapon = pickup != null && pickup.currentGun != null ? pickup.currentGun.GetType().Name : null;
         data.IsInVehicle = isDriving;
+
+        // Save weapon slots and active index
+        if (pickup != null)
+        {
+            data.WeaponSlots = pickup.weaponSlots != null ? pickup.weaponSlots.Select(w => w != null ? w.GetType().Name : string.Empty).ToList() : new System.Collections.Generic.List<string>();
+            data.ActiveWeaponIndex = pickup.activeWeaponIndex;
+
+            // Save current gun ammo info if available
+            try
+            {
+                if (pickup.currentGun != null)
+                {
+                    data.CurrentMagazineAmmo = pickup.currentGun.CurrentMagazineAmmo;
+                    data.TotalReserveAmmo = pickup.currentGun.TotalReserveAmmo;
+                }
+                else
+                {
+                    data.CurrentMagazineAmmo = 0;
+                    data.TotalReserveAmmo = 0;
+                }
+            }
+            catch
+            {
+                data.CurrentMagazineAmmo = 0;
+                data.TotalReserveAmmo = 0;
+            }
+        }
     }
 }

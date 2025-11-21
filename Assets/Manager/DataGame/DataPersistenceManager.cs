@@ -31,11 +31,12 @@ public class DataPersistenceManager : MonoBehaviour
         if (instance != null)
         {
             Debug.Log("Found more than one DataPersistenceManager in the Scene");
-            Destroy(this.gameObject);
+            // Destroy the root GameObject to match DontDestroyOnLoad usage and avoid orphaned children
+            Destroy(transform.root.gameObject);
             return;
         }
         instance = this;
-        DontDestroyOnLoad(this.gameObject);
+        DontDestroyOnLoad(transform.root.gameObject);
         // Khởi tạo Data Handler
         string desiredRoot = @"D:\DataLacosanotra\SaveData";
 
@@ -74,6 +75,27 @@ public class DataPersistenceManager : MonoBehaviour
     {
         Debug.Log("OnSceneLoaded: " + scene.name);
         dataPersistenceObjects = FindAllDataPersistenceObjects();
+        // Defer loading one frame so scene objects (QuestManager, QuestPoints, EventSystem) finish enabling.
+        StartCoroutine(WaitForSceneAndLoad());
+    }
+
+    private System.Collections.IEnumerator WaitForSceneAndLoad()
+    {
+        // wait one frame to allow other sceneLoaded handlers to run and Awake/OnEnable to complete
+        yield return null;
+
+        // small additional wait to allow slower initialization; loop briefly until QuestManager ready or timeout
+        var qm = UnityEngine.Object.FindFirstObjectByType<QuestManager>();
+        float timeout = 1.0f;
+        float t = 0f;
+        while (qm != null && !qm.IsInitialized && t < timeout)
+        {
+            t += Time.unscaledDeltaTime;
+            yield return null;
+        }
+
+        // Rebuild dataPersistenceObjects in case new objects were created during wait
+        dataPersistenceObjects = FindAllDataPersistenceObjects();
         LoadGame();
     }
 
@@ -86,6 +108,27 @@ public class DataPersistenceManager : MonoBehaviour
     public void NewGame()
     {
         gameData = new GameData();
+        // Set default scene and player position based on current active scene
+        string active = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        gameData.currentSceneName = active;
+        // Default player spawn for New Game
+        gameData.playerPosition = new UnityEngine.Vector3(-110.17f, -129.1f, 0f);
+
+        // If starting in FalconeHome scene, use its specific default spawn override
+        if (!string.IsNullOrEmpty(active) && active.IndexOf("FalconeHome", System.StringComparison.OrdinalIgnoreCase) >= 0)
+        {
+            gameData.playerPosition = new UnityEngine.Vector3(-122.5f, -199.4f, 0f);
+        }
+        // Persist the new game immediately so subsequent Load() won't load an old save
+        try
+        {
+            dataHandler.Save(gameData, selectedProfileId);
+            Debug.Log("NewGame: initial game data saved for profile: " + selectedProfileId);
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning("NewGame: failed to save initial game data: " + e.Message);
+        }
     }
 
     public void LoadGame()

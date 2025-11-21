@@ -10,7 +10,7 @@ public class SceneCleanupManager : MonoBehaviour
 
     void Awake()
     {
-        DontDestroyOnLoad(this.gameObject);
+        DontDestroyOnLoad(transform.root.gameObject);
         SceneManager.sceneLoaded += OnSceneLoaded;
         // run once for current scene
         DeduplicateAudioAndEventSystems();
@@ -43,19 +43,22 @@ public class SceneCleanupManager : MonoBehaviour
             l.enabled = false;
         }
 
-        // EventSystem: keep first active, destroy or disable others
-        var systems = FindObjectsOfType<EventSystem>();
-        bool kept = false;
+        // EventSystem: keep first active, destroy others to avoid duplicate ES errors
+        var systems = UnityEngine.Object.FindObjectsByType<EventSystem>(UnityEngine.FindObjectsInactive.Include, UnityEngine.FindObjectsSortMode.None);
+        EventSystem keepOne = null;
         foreach (var es in systems)
         {
             if (es == null) continue;
-            if (!kept && es.gameObject.activeInHierarchy)
+            if (keepOne == null && es.gameObject.activeInHierarchy)
             {
-                kept = true;
+                keepOne = es;
                 continue;
             }
-            // Prefer disabling to destroying to avoid removing designer's prefab instances.
-            es.gameObject.SetActive(false);
+            if (es != keepOne)
+            {
+                // Destroy duplicate EventSystem GameObjects
+                Destroy(es.gameObject);
+            }
         }
     }
 }
