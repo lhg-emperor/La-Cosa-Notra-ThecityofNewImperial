@@ -327,7 +327,17 @@ public class QuestManager : MonoBehaviour, IDataPersitence
         if (!TryGetQuestPointsInner(questId, out var inner))
         {
             if (debugLogMapping)
-                Debug.LogWarning($"QuestManager: no QuestPoint entries found for questId '{questId}' (checked raw and numeric). Existing keys: {string.Join(",", questPointsMap.Keys)}");
+            {
+                bool knownQuest = orderedQuests.Any(q => q != null && q.Id == questId);
+                if (knownQuest)
+                {
+                    Debug.Log($"QuestManager: no QuestPoint entries found for questId '{questId}' in current scene. Existing keys: {string.Join(",", questPointsMap.Keys)}");
+                }
+                else
+                {
+                    Debug.Log($"QuestManager: no QuestPoint entries for questId '{questId}' (likely not present in this scene). Existing keys: {string.Join(",", questPointsMap.Keys)}");
+                }
+            }
             return;
         }
         switch (state)

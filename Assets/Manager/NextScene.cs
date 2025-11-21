@@ -27,6 +27,13 @@ public class NextScene : MonoBehaviour
     [Tooltip("Scene name to load when trigger fires (must be in Build Settings)")]
     public string sceneName;
 
+    [Header("Player Spawn")]
+    [Tooltip("If true, the Player will be moved to `playerSpawnPosition` after the new scene loads.")]
+    public bool setPlayerPositionOnLoad = true;
+
+    [Tooltip("Player position to set after loading the target scene.")]
+    public Vector3 playerSpawnPosition = new Vector3(-122.6f, -196.8f, 0f);
+
     [Tooltip("If true, the scene will be loaded additively using LoadSceneMode.Additive")]
     public bool loadAdditively = false;
 
@@ -145,9 +152,40 @@ public class NextScene : MonoBehaviour
         }
 
         Debug.Log($"NextScene: loading scene '{sceneName}' (additive={useAdditive}) (GameObject={gameObject.name})");
+
+        // If requested, register a one-shot callback to set the player's position after the scene finishes loading.
+        if (setPlayerPositionOnLoad)
+        {
+            UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded_SetPlayerPos;
+        }
+
         if (useAdditive)
             SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
         else
             SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
+    }
+
+    private void OnSceneLoaded_SetPlayerPos(Scene scene, LoadSceneMode mode)
+    {
+        // Only run once; unsubscribe immediately
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded_SetPlayerPos;
+
+        if (!setPlayerPositionOnLoad) return;
+
+        // If sceneName is set, only apply when the loaded scene matches (or if sceneName empty, apply to any next scene)
+        if (!string.IsNullOrEmpty(sceneName) && !scene.name.Equals(sceneName, System.StringComparison.OrdinalIgnoreCase))
+            return;
+
+        // Try to find Player component in the newly loaded scene
+        var player = UnityEngine.Object.FindFirstObjectByType<Player>();
+        if (player != null)
+        {
+            player.transform.position = playerSpawnPosition;
+            Debug.Log($"NextScene: moved Player to {playerSpawnPosition} after loading scene '{scene.name}'");
+        }
+        else
+        {
+            Debug.LogWarning($"NextScene: could not find Player to move after scene '{scene.name}' loaded.");
+        }
     }
 }
