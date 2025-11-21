@@ -27,13 +27,7 @@ public class StoryEntry
     public float autoAdvanceSeconds = 0f;
 }
 
-// StoryEvent: mở rộng để quản lý cắt cảnh nhỏ khi một quest hoàn thành.
-// Cách dùng:
-// - Gán component này lên 1 GameObject trong scene (ví dụ "StoryEvent_Quest1_Cutscene").
-// - Gán `questIdToWatch` và bật `triggerOnQuestFinish` để lắng nghe khi quest đó hoàn thành.
-// - Gán `cutsceneObject` (ví dụ canvas/anim) — component sẽ SetActive(true/false)
-//    khi cutscene bắt đầu/kết thúc.
-// - Người chơi có thể nhấn `skipKey` (mặc định Enter/Return) để bỏ qua cutscene.
+
 
 public class StoryEvent : MonoBehaviour
 {

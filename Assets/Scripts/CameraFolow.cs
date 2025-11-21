@@ -8,6 +8,16 @@ public class CameraFollow : MonoBehaviour
     // Khoảng cách camera so với Player (có thể chỉnh trong Inspector)
     public Vector3 offset = new Vector3(0, 0, -10);
 
+    [Header("Clamping")]
+    [Tooltip("Giới hạn nhỏ nhất cho tâm camera trên trục X (world units)")]
+    public float minX = -10f;
+    [Tooltip("Giới hạn lớn nhất cho tâm camera trên trục X (world units)")]
+    public float maxX = 10f;
+    [Tooltip("Giới hạn nhỏ nhất cho tâm camera trên trục Y (world units)")]
+    public float minY = -10f;
+    [Tooltip("Giới hạn lớn nhất cho tâm camera trên trục Y (world units)")]
+    public float maxY = 10f;
+
     // Cập nhật vị trí camera sau khi Player di chuyển
     void LateUpdate()
     {
@@ -18,6 +28,11 @@ public class CameraFollow : MonoBehaviour
         }
 
         // Camera luôn giữ vị trí bằng vị trí Player + offset
-        transform.position = target.position + offset;
+        Vector3 desired = target.position + offset;
+
+        // Áp dụng clamp theo min/max X/Y (giữ nguyên z)
+        float clampedX = Mathf.Clamp(desired.x, minX, maxX);
+        float clampedY = Mathf.Clamp(desired.y, minY, maxY);
+        transform.position = new Vector3(clampedX, clampedY, desired.z);
     }
 }
