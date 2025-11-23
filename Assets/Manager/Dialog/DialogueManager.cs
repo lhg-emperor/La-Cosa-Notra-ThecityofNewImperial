@@ -1,154 +1,31 @@
-using System.Collections.Generic;
+// DialogueManager removed per user request. This is a minimal stub to avoid compile errors
+// in other parts of the project that may reference DialogueManager. All behavior is no-op.
 using UnityEngine;
-using TMPro;
-using Ink.Runtime;
 
 public class DialogueManager : MonoBehaviour
 {
-   [Header("DialogUI")]
-   [SerializeField] private GameObject dialogPanel;
-   [SerializeField] private TMPro.TextMeshProUGUI dialogText;
-   private static DialogueManager instance;
-
-   private Story currentStory;
-    [Header("Options")]
-    [Tooltip("Nếu đúng, DialogueManager sẽ không bị huỷ khi đổi scene. Bật chỉ khi cần một manager duy nhất tồn tại qua nhiều scene.")]
-    [SerializeField] private bool persistBetweenScenes = false;
-
-    public bool isDialoguePlaying{ get; private set;}
-    private PlayerControls controls;
-    // Registered set of dialogues that are marked cutscene-only (StoryEvent registers these at Start)
-    private HashSet<TextAsset> cutsceneOnlyDialogues = new HashSet<TextAsset>();
-    
-
-   private void Awake()
-   {
-       if (instance != null && instance != this)
-       {
-           Destroy(gameObject);
-           return;
-       }
-
-        instance = this;
-        if (persistBetweenScenes)
+    private static DialogueManager instance;
+    public static DialogueManager GetInstance
+    {
+        get
         {
-            DontDestroyOnLoad(gameObject);
-        }
-
-       // Initialize input actions for dialog
-       controls = new PlayerControls();
-       try { controls.Dialog.Enable(); } catch { }
-   }
-
-   public static DialogueManager GetInstance
-   {
-       get
-       {
-           if (instance == null)
-           {
-               instance = UnityEngine.Object.FindAnyObjectByType<DialogueManager>();
-               if (instance == null)
-               {
-                   GameObject obj = new GameObject("DialogueManager");
-                    instance = obj.AddComponent<DialogueManager>();
-               }
-           }
-
-           return instance;
-       }
-   }
-
-    private void OnDestroy()
-    {
-        if (controls != null)
-        {
-            try { controls.Dialog.Disable(); } catch { }
-            try { controls.Dispose(); } catch { }
-            controls = null;
-        }
-
-        if (instance == this) instance = null;
-    }
-   private void Start()
-    {
-         dialogPanel.SetActive(false);
-         isDialoguePlaying = false;
-    }
-
-    // Expose whether a dialogue is currently playing
-    public bool IsDialoguePlaying()
-    {
-        return isDialoguePlaying;
-    }
-
-    // Expose a helper so other components can check the dialog input action
-    public bool IsDialogEnterTriggered()
-    {
-        if (controls == null) return false;
-        try { return controls.Dialog.dialogEnter.triggered; } catch { return false; }
-    }
-
-    // Allow StoryEvent to register dialogues that should only play inside cutscenes
-    public void RegisterCutsceneOnly(TextAsset asset)
-    {
-        if (asset == null) return;
-        cutsceneOnlyDialogues.Add(asset);
-    }
-
-    public void UnregisterCutsceneOnly(TextAsset asset)
-    {
-        if (asset == null) return;
-        cutsceneOnlyDialogues.Remove(asset);
-    }
-
-    public bool IsCutsceneOnly(TextAsset asset)
-    {
-        if (asset == null) return false;
-        return cutsceneOnlyDialogues.Contains(asset);
-    }
-
-    private void Update()
-    {
-        if(!isDialoguePlaying)
-        {
-            return;
-        }
-        // handle input to next dialogue line
-        bool submit = false;
-
-        // Primary: Input System action
-        if (controls != null)
-        {
-            try { submit = controls.Dialog.dialogEnter.triggered; } catch { submit = false; }
-        }
-
-        // Fallback: new Input System keyboard (if available)
-        try
-        {
-            var k = UnityEngine.InputSystem.Keyboard.current;
-            if (k != null && !submit)
+            if (instance == null)
             {
-                submit = k.enterKey.wasPressedThisFrame || k.numpadEnterKey.wasPressedThisFrame;
+                instance = UnityEngine.Object.FindAnyObjectByType<DialogueManager>();
             }
+            return instance;
         }
-        catch { }
+    }
 
-        // Last resort: legacy Input
-        if (!submit)
-        {
-            submit = Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter);
-        }
-
-        // If there are choices, don't advance the story here (choice handling will be implemented separately)
-        if (currentStory != null && currentStory.currentChoices != null && currentStory.currentChoices.Count > 0)
-        {
-            // TODO: Display choices and allow selection via keyboard/gamepad
-            return;
-        }
-
-        if (submit)
-        {
-            ContinueStory();
+    public bool IsDialoguePlaying() { return false; }
+    public bool IsDialogEnterTriggered() { return false; }
+    public void EnterDialogueMode(TextAsset inkJSON, bool allowCutsceneOnly = false) { }
+    public void AdvanceStory() { }
+    public void ExitDialogueMode() { }
+    public void RegisterCutsceneOnly(TextAsset asset) { }
+    public void UnregisterCutsceneOnly(TextAsset asset) { }
+    public bool IsCutsceneOnly(TextAsset asset) { return false; }
+}
         }
     }
     // EnterDialogueMode: if allowCutsceneOnly==false and the asset is registered as cutscene-only,
