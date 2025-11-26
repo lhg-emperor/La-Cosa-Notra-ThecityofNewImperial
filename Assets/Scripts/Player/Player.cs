@@ -91,16 +91,23 @@ public class Player : MonoBehaviour, IDamageable, IDataPersitence
 
     void FixedUpdate()
     {
-        if(DialogueManager.GetInstance.isDialoguePlaying)
-        {
-            // Nếu đang trong hội thoại thì không di chuyển
-            return;
-        }
+        // If a dialogue is playing, prevent player movement and actions while on foot
+        var dm = DialogueManager.GetInstance();
+        bool dialoguePlaying = dm != null && dm.dialogueIsPlaying;
+
         if (!isDriving)
         {
-            Move();
-            ApplyLookRotation();
-            Animate();
+            if (!dialoguePlaying)
+            {
+                Move();
+                ApplyLookRotation();
+                Animate();
+            }
+            else
+            {
+                // When dialogue is playing, ensure idle animation
+                animCtrl?.OnRunning(false);
+            }
         }
         else if (currentVehicle != null)
         {

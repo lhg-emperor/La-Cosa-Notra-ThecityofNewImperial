@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1536
     height: 772.8
   m_ShowMode: 4
-  m_Title: Project
+  m_Title: Console
   m_RootView: {fileID: 2}
   m_MinSize: {x: 875, y: 332}
   m_MaxSize: {x: 10000, y: 10000}
@@ -119,7 +119,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 100}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 0
-  controlID: 100
+  controlID: 115
   draggingID: 0
 --- !u!114 &6
 MonoBehaviour:
@@ -240,7 +240,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 1
   m_Script: {fileID: 12006, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: ProjectBrowser
+  m_Name: ConsoleWindow
   m_EditorClassIdentifier: 
   m_Children: []
   m_Position:
@@ -249,14 +249,14 @@ MonoBehaviour:
     y: 497.6
     width: 1226.4
     height: 219.19998
-  m_MinSize: {x: 231, y: 276}
-  m_MaxSize: {x: 10001, y: 10026}
-  m_ActualView: {fileID: 19}
+  m_MinSize: {x: 101, y: 126}
+  m_MaxSize: {x: 4001, y: 4026}
+  m_ActualView: {fileID: 20}
   m_Panes:
   - {fileID: 19}
   - {fileID: 20}
-  m_Selected: 0
-  m_LastSelected: 1
+  m_Selected: 1
+  m_LastSelected: 0
 --- !u!114 &11
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -971,9 +971,9 @@ MonoBehaviour:
   m_AudioPlay: 0
   m_DebugDrawModesUseInteractiveLightBakingData: 0
   m_Position:
-    m_Target: {x: -105.75064, y: -158.04211, z: -0.7173658}
+    m_Target: {x: 1792.4089, y: 1115.7687, z: 21.00504}
     speed: 2
-    m_Value: {x: -105.75064, y: -158.04211, z: -0.7173658}
+    m_Value: {x: -42.91486, y: -106.15997, z: -1.1146828}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -1023,9 +1023,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
-    m_Target: 81.73655
+    m_Target: 1087.9736
     speed: 2
-    m_Value: 81.73655
+    m_Value: 121.46828
   m_Ortho:
     m_Target: 1
     speed: 2
@@ -1458,7 +1458,7 @@ MonoBehaviour:
       scrollPos: {x: 0, y: 0}
       m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: eaf9ffff
+      m_ExpandedIDs: ae02ffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -1505,9 +1505,9 @@ MonoBehaviour:
   m_Pos:
     serializedVersion: 2
     x: 0
-    y: 521.6
+    y: 576.8
     width: 1225.4
-    height: 193.20001
+    height: 193.19998
   m_SerializedDataModeController:
     m_DataMode: 0
     m_PreferredDataMode: 0
@@ -1530,7 +1530,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Sprites/Map/kientruc
+    - Assets
     m_Globs: []
     m_ProductIds: 
     m_AnyWithAssetOrigin: 0
@@ -1540,16 +1540,16 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/Sprites/Map/kientruc
+  - Assets
   m_LastFoldersGridSize: -1
-  m_LastProjectPath: "D:\\CosaNostra\\\u0110\xE2y n\xE8\\La-Cosa-Notra-ThecityofNewImperial-master"
+  m_LastProjectPath: D:\DataLacosanotra\SaveData\La-Cosa-Notra-ThecityofNewImperial
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 242.80002}
-    m_SelectedIDs: e8c00000
-    m_LastClickedID: 49384
-    m_ExpandedIDs: 0000000056be0000
+    scrollPos: {x: 0, y: 79}
+    m_SelectedIDs: 180f0100
+    m_LastClickedID: 69400
+    m_ExpandedIDs: 000000003c630100
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1578,7 +1578,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 0000000056be0000
+    m_ExpandedIDs: 000000003c630100
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1606,7 +1606,7 @@ MonoBehaviour:
   m_ListAreaState:
     m_SelectedInstanceIDs: 
     m_LastClickedInstanceID: 0
-    m_HadKeyboardFocusLastEvent: 1
+    m_HadKeyboardFocusLastEvent: 0
     m_ExpandedInstanceIDs: c623000064c000002cb10000e0b70000b0b000007ec4000030ae0000b2ae00003ebf0000deca0000d2ca0000a47e02001cd60000aed6000032220100f6600100e2ee000064fa0000f2f700000cfb000064620100b41f0400
     m_RenameOverlay:
       m_UserAcceptedRename: 0
@@ -1658,9 +1658,9 @@ MonoBehaviour:
   m_Pos:
     serializedVersion: 2
     x: 0
-    y: 576.8
+    y: 521.6
     width: 1225.4
-    height: 193.19998
+    height: 193.20001
   m_SerializedDataModeController:
     m_DataMode: 0
     m_PreferredDataMode: 0
