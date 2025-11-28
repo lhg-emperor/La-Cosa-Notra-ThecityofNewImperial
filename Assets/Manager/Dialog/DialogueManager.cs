@@ -21,6 +21,11 @@ public class DialogueManager : MonoBehaviour
         if (instance == null)
         {
             instance = this;
+            // Ensure this GameObject is a root object before marking DontDestroyOnLoad
+            if (transform.parent != null)
+            {
+                transform.SetParent(null);
+            }
             DontDestroyOnLoad(gameObject);
         }
         else

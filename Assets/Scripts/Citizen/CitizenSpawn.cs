@@ -33,13 +33,34 @@ public class CitizenSpawn : MonoBehaviour
             return;
         }
 
+        if (player == null)
+        {
+            Debug.LogError("⚠ CitizenSpawn: 'player' chưa được gán trong Inspector! Không thể tính vị trí spawn.");
+            return;
+        }
+
+        if (mainCamera == null)
+        {
+            mainCamera = Camera.main;
+            if (mainCamera == null)
+            {
+                Debug.LogWarning("CitizenSpawn: Không tìm thấy Camera.main. Kiểm tra Camera trong scene.");
+            }
+        }
+
+        Debug.Log($"CitizenSpawn: spawnCitizen.Count={spawnCitizen.Count}, targetCount={targetCount}");
+
         int attempts = 0;
-        while (spawnCitizen.Count < targetCount && attempts < 50) // tăng số attempt để tìm được vùng có NavMesh
+        while (spawnCitizen.Count < targetCount && attempts < 200) // tăng số attempt để tìm được vùng có NavMesh
         {
             Vector3 spawnPos = GetValidSpawnPosition();
             if (spawnPos == Vector3.zero)
             {
                 attempts++;
+                if (attempts % 25 == 0)
+                {
+                    Debug.LogWarning($"CitizenSpawn: vẫn chưa tìm được vị trí spawn hợp lệ sau {attempts} lần thử. Kiểm tra NavMesh và giá trị maxSampleDistance={maxSampleDistance}.");
+                }
                 continue;
             }
 
@@ -81,10 +102,11 @@ public class CitizenSpawn : MonoBehaviour
         return Vector3.zero;
     }
 
-    private bool IsInCameraView(Vector2 position)
+    private bool IsInCameraView(Vector3 position)
     {
+        if (mainCamera == null) return false;
         Vector3 viewPortPos = mainCamera.WorldToViewportPoint(position);
-        return viewPortPos.x > 0 && viewPortPos.x < 1 && viewPortPos.y > 0 && viewPortPos.y < 1;
+        return viewPortPos.x > 0 && viewPortPos.x < 1 && viewPortPos.y > 0 && viewPortPos.y < 1 && viewPortPos.z > 0;
     }
 
     private void CleanUpCitizens()
@@ -98,7 +120,7 @@ public class CitizenSpawn : MonoBehaviour
                 continue;
             }
 
-            float distance = Vector2.Distance(player.position, citizen.transform.position);
+            float distance = Vector3.Distance(player.position, citizen.transform.position);
             if (distance > SpawnRadius)
             {
                 Destroy(citizen);

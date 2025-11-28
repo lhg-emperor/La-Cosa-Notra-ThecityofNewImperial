@@ -48,10 +48,16 @@ public class CitizenAI : MonoBehaviour
             float stuckTimer = 0f;
             bool isStuck = false;
 
-            // 2. Theo dõi đường đi
-            while (Vector2.Distance(transform.position, destination) > 0.5f)
+            // 2. Theo dõi đường đi: chờ cho đến khi pathPending false và remainingDistance <= stoppingDistance
+            while (agent.pathPending || agent.remainingDistance > agent.stoppingDistance + 0.1f)
             {
-                if (!agent.hasPath && !agent.pathPending)
+                // Nếu đường đi không hợp lệ hoặc chỉ là partial path và vẫn còn xa, coi là kẹt
+                if (agent.pathStatus == NavMeshPathStatus.PathInvalid)
+                {
+                    isStuck = true;
+                    break;
+                }
+                if (agent.pathStatus == NavMeshPathStatus.PathPartial && agent.remainingDistance > 2f)
                 {
                     isStuck = true;
                     break;

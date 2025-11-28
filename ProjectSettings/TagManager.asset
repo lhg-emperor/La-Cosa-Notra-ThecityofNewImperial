@@ -50,6 +50,9 @@ TagManager:
   - name: weapon
     uniqueID: 783632711
     locked: 0
+  - name: IconTarget
+    uniqueID: 2689891991
+    locked: 0
   - name: Character
     uniqueID: 2168037715
     locked: 0

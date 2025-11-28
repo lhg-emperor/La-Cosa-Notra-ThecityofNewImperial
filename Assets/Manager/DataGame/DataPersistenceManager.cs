@@ -25,6 +25,13 @@ public class DataPersistenceManager : MonoBehaviour
 
     private string selectedProfileId = "Em Là Của Anh Đừng Của Ai";
     public static DataPersistenceManager instance { get; private set; }
+    // When set to true before calling LoadGame(), indicates the load was requested
+    // explicitly by the player (Load Game button). Used to decide whether
+    // Player should be positioned from saved data or from scene spawn points.
+    public bool RequestedLoad { get; set; } = false;
+
+    // True if the last LoadGame() call originated from a requested load
+    public bool LastLoadFromMenu { get; set; } = false;
 
     private void Awake()
     {
@@ -133,6 +140,11 @@ public class DataPersistenceManager : MonoBehaviour
 
     public void LoadGame()
     {
+        // Record whether this LoadGame invocation was explicitly requested
+        LastLoadFromMenu = RequestedLoad;
+        // Reset the request flag so subsequent automatic loads don't count as menu loads
+        RequestedLoad = false;
+
         this.gameData = dataHandler.Load(selectedProfileId);
 
         if (this.gameData == null && initializeDataIfNull)

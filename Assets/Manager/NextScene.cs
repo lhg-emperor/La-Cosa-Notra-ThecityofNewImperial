@@ -176,16 +176,26 @@ public class NextScene : MonoBehaviour
         if (!string.IsNullOrEmpty(sceneName) && !scene.name.Equals(sceneName, System.StringComparison.OrdinalIgnoreCase))
             return;
 
-        // Try to find Player component in the newly loaded scene
-        var player = UnityEngine.Object.FindFirstObjectByType<Player>();
-        if (player != null)
+        // Prefer to configure PlayerSpawn if present; otherwise fall back to moving the Player directly.
+        var playerSpawn = UnityEngine.Object.FindObjectOfType<PlayerSpawn>();
+        if (playerSpawn != null)
         {
-            player.transform.position = playerSpawnPosition;
-            Debug.Log($"NextScene: moved Player to {playerSpawnPosition} after loading scene '{scene.name}'");
+            playerSpawn.SetSpawnPosition(playerSpawnPosition);
+            Debug.Log($"NextScene: set PlayerSpawn position to {playerSpawnPosition} for scene '{scene.name}'");
         }
         else
         {
-            Debug.LogWarning($"NextScene: could not find Player to move after scene '{scene.name}' loaded.");
+            // Try to find Player and move directly as a fallback
+            var player = UnityEngine.Object.FindFirstObjectByType<Player>();
+            if (player != null)
+            {
+                player.transform.position = playerSpawnPosition;
+                Debug.Log($"NextScene: moved Player to {playerSpawnPosition} after loading scene '{scene.name}'");
+            }
+            else
+            {
+                Debug.LogWarning($"NextScene: could not find Player or PlayerSpawn to set spawn after scene '{scene.name}' loaded.");
+            }
         }
     }
 }

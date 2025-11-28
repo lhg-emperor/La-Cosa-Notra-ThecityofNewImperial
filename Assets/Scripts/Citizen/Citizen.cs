@@ -38,7 +38,23 @@ public class Citizen : MonoBehaviour, IDamageable
     {
         agent.speed = run ? 4f : 1f;
         IsRunning = run; 
-        agent.SetDestination(pos);
+        // Ensure agent is on the NavMesh. If not, try to sample the nearest NavMesh and warp the agent there.
+        Vector3 target = new Vector3(pos.x, pos.y, transform.position.z);
+        if (!agent.isOnNavMesh)
+        {
+            NavMeshHit hit;
+            float sampleDist = 5f;
+            if (NavMesh.SamplePosition(target, out hit, sampleDist, NavMesh.AllAreas))
+            {
+                agent.Warp(hit.position);
+            }
+            else
+            {
+                Debug.LogWarning($"Citizen.MoveTo: agent not on NavMesh and no sample found near {target} (sampleDist={sampleDist}).");
+            }
+        }
+
+        agent.SetDestination(target);
     }
 
     public void TakeDamage(float dmg, Transform attacker)

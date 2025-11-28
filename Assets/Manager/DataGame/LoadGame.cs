@@ -42,6 +42,8 @@ public class LoadGameButton : MonoBehaviour
             return;
         }
 
+        // Indicate that this load was explicitly requested by the player
+        manager.RequestedLoad = true;
         // Load dữ liệu
         manager.LoadGame();
 

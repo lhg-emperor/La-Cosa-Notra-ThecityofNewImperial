@@ -353,7 +353,15 @@ public class Player : MonoBehaviour, IDamageable, IDataPersitence
         if (data == null) return;
 
         Health = data.Health;
-        transform.position = data.playerPosition;
+        // Only apply the saved player position if the scene load originated from
+        // an explicit 'Load Game' request. Otherwise, let PlayerSpawn handle
+        // placing the player for regular scene transitions / new games.
+        if (DataPersistenceManager.instance != null && DataPersistenceManager.instance.LastLoadFromMenu)
+        {
+            transform.position = data.playerPosition;
+            // clear the flag so subsequent scene loads won't mistakenly treat them as menu loads
+            DataPersistenceManager.instance.LastLoadFromMenu = false;
+        }
 
         // Trạng thái trên xe
         isDriving = data.IsInVehicle;
