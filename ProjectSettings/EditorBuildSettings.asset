@@ -17,6 +17,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/FalconeHomeScene.unity
     guid: b296cd78fc8718447b11b888cb49a0ae
+  - enabled: 1
+    path: Assets/Scenes/Chapter1.unity
+    guid: c3ec8995901d61942b06c9777879c56c
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

@@ -1,201 +1,138 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-// NextScene: simple component that loads a scene when a Quest or Cutscene finishes.
-// Usage:
-// - Add this component to any GameObject in the scene (preferably under Manager).
-// - Choose Trigger Type: Quest or Cutscene.
-//   - If Quest: assign a `QuestInfoSO` in `questRef` or set `questId` string.
-//   - If Cutscene: assign the cutscene GameObject in `cutsceneObject` (the component watches for it to be deactivated).
-// - Fill `sceneName` with the exact Scene name as in Build Settings.
-// When the chosen trigger completes, the component will call `SceneManager.LoadScene(sceneName)`.
+/// <summary>
+/// NextScene: Automatically loads the next scene when ANY quest finishes.
+/// Configure quest → scene mappings in the inspector.
+/// </summary>
 public class NextScene : MonoBehaviour
 {
-    public enum TriggerType { Quest, Cutscene }
-    public TriggerType triggerType = TriggerType.Quest;
+    [System.Serializable]
+    public class QuestSceneMapping
+    {
+        [Tooltip("Quest that triggers scene transition")]
+        public QuestInfoSO questRef;
+        [Tooltip("Fallback quest ID")]
+        public string questId;
+        [Tooltip("Scene to load")]
+        public string sceneName;
+        [Tooltip("Player spawn position")]
+        public Vector3 playerSpawnPosition = Vector3.zero;
+        [Tooltip("Load additively")]
+        public bool loadAdditively = false;
+    }
 
-    [Tooltip("Quest asset (preferred)")]
-    public QuestInfoSO questRef;
-
-    [Tooltip("Fallback quest id string (used if questRef is not assigned)")]
-    public string questId;
-
-    [Tooltip("Cutscene GameObject to watch. When it becomes inactive after being active, the scene will load.")]
-    public GameObject cutsceneObject;
-
-    [Tooltip("Scene name to load when trigger fires (must be in Build Settings)")]
-    public string sceneName;
+    [Header("Quest → Scene Mappings")]
+    [Tooltip("When any of these quests finish, load the corresponding scene")]
+    public QuestSceneMapping[] questMappings = new QuestSceneMapping[0];
 
     [Header("Player Spawn")]
-    [Tooltip("If true, the Player will be moved to `playerSpawnPosition` after the new scene loads.")]
+    [Tooltip("Set player position after scene loads")]
     public bool setPlayerPositionOnLoad = true;
 
-    [Tooltip("Player position to set after loading the target scene.")]
-    public Vector3 playerSpawnPosition = new Vector3(-122.6f, -196.8f, 0f);
-
-    [Tooltip("If true, the scene will be loaded additively using LoadSceneMode.Additive")]
-    public bool loadAdditively = false;
-
-    private bool triggered = false;
+    private Dictionary<string, QuestSceneMapping> mappingCache = new Dictionary<string, QuestSceneMapping>();
+    private HashSet<string> triggeredQuests = new HashSet<string>(); // Track which quests already triggered
 
     private void OnEnable()
     {
-        QuestEvents.OnQuestStateChanged += OnQuestStateChanged_Global;
-        if (triggerType == TriggerType.Cutscene && cutsceneObject != null)
-        {
-            StartCoroutine(MonitorCutscene());
-        }
+        QuestEvents.OnQuestStateChanged += OnQuestFinished;
+        BuildCache();
     }
 
     private void OnDisable()
     {
-        QuestEvents.OnQuestStateChanged -= OnQuestStateChanged_Global;
-        StopAllCoroutines();
+        QuestEvents.OnQuestStateChanged -= OnQuestFinished;
+        triggeredQuests.Clear();
     }
 
-    private void Start()
+    private void BuildCache()
     {
-        // If trigger is quest and the quest is already finished at Start, trigger immediately
-        if (triggerType == TriggerType.Quest && !triggered)
+        mappingCache.Clear();
+        foreach (var mapping in questMappings)
         {
-            string id = ResolveQuestId();
-            if (!string.IsNullOrEmpty(id) && QuestManager.Instance != null)
+            if (mapping == null) continue;
+            string id = mapping.questRef != null ? mapping.questRef.Id : mapping.questId;
+            if (!string.IsNullOrEmpty(id))
             {
-                var state = QuestManager.Instance.GetQuestState(id);
-                if (state == QuestState.FINISHED) TriggerLoad();
+                mappingCache[id] = mapping;
+                Debug.Log($"  - Quest '{id}' → Scene '{mapping.sceneName}'");
             }
         }
+        Debug.Log($"NextScene: Loaded {mappingCache.Count} quest mappings");
     }
 
-    private string ResolveQuestId()
+    private void OnQuestFinished(string questId, QuestState state)
     {
-        if (questRef != null && !string.IsNullOrEmpty(questRef.Id)) return questRef.Id;
-        return questId;
-    }
-
-    private void OnQuestStateChanged_Global(string qid, QuestState newState)
-    {
-        if (triggered) return;
-        if (triggerType != TriggerType.Quest) return;
-        string id = ResolveQuestId();
-        if (string.IsNullOrEmpty(id)) return;
-        if (qid == id && newState == QuestState.FINISHED)
+        Debug.Log($"NextScene.OnQuestFinished: questId={questId}, state={state}");
+        
+        if (triggeredQuests.Contains(questId))
         {
-            TriggerLoad();
+            Debug.Log($"  -> Quest '{questId}' already triggered, ignoring");
+            return;
         }
-    }
-
-    private IEnumerator MonitorCutscene()
-    {
-        // Wait until the cutscene is used (becomes active), then wait until it's deactivated.
-        while (!triggered)
+        
+        if (state != QuestState.FINISHED)
         {
-            // wait until active
-            while (cutsceneObject != null && !cutsceneObject.activeSelf)
-            {
-                yield return null;
-            }
-
-            // now wait until it's deactivated
-            while (cutsceneObject != null && cutsceneObject.activeSelf)
-            {
-                yield return null;
-            }
-
-            // cutscene went from active -> inactive: trigger
-            if (cutsceneObject != null && !triggered)
-            {
-                TriggerLoad();
-                yield break;
-            }
-
-            yield return null;
-        }
-    }
-
-    private void TriggerLoad()
-    {
-        if (triggered) return;
-        triggered = true;
-
-        // guard: don't attempt to load the same scene that's already active
-        var active = SceneManager.GetActiveScene();
-        if (!string.IsNullOrEmpty(sceneName) && active.name == sceneName)
-        {
-            Debug.Log($"NextScene: active scene already '{sceneName}', skipping load (GameObject={gameObject.name}).");
+            Debug.Log($"  -> State is not FINISHED, ignoring");
             return;
         }
 
-        if (string.IsNullOrEmpty(sceneName))
+        if (mappingCache.TryGetValue(questId, out var mapping))
         {
-            // Fallback: try to load next scene by build index
-            int nextIndex = active.buildIndex + 1;
-            int max = SceneManager.sceneCountInBuildSettings;
-            if (nextIndex >= 0 && nextIndex < max)
-            {
-                Debug.Log($"NextScene: sceneName empty on '{gameObject.name}', loading next build-index scene {nextIndex}.");
-                SceneManager.LoadScene(nextIndex);
-                return;
-            }
+            triggeredQuests.Add(questId);
+            Debug.Log($"NextScene: Quest '{questId}' finished → Loading '{mapping.sceneName}'");
+            LoadScene(mapping);
+        }
+        else
+        {
+            Debug.Log($"  -> Quest '{questId}' not found in mappings. Available: {string.Join(", ", mappingCache.Keys)}");
+        }
+    }
 
-            Debug.LogWarning($"NextScene: sceneName is empty on '{gameObject.name}' and no next scene in Build Settings.");
+    private void LoadScene(QuestSceneMapping mapping)
+    {
+        if (string.IsNullOrEmpty(mapping.sceneName))
+        {
+            Debug.LogWarning("NextScene: Scene name is empty");
             return;
         }
 
-        // If this is the main Menu, prefer replacing the scene (Single) to avoid stacking UI/managers
-        bool useAdditive = loadAdditively;
-        if (sceneName.Equals("Menu", System.StringComparison.OrdinalIgnoreCase))
+        var current = SceneManager.GetActiveScene();
+        if (current.name == mapping.sceneName)
         {
-            useAdditive = false;
-            Debug.Log($"NextScene: overriding additive load for Menu -> using Single (GameObject={gameObject.name}).");
+            Debug.Log($"NextScene: Already on '{mapping.sceneName}'");
+            return;
         }
 
-        Debug.Log($"NextScene: loading scene '{sceneName}' (additive={useAdditive}) (GameObject={gameObject.name})");
-
-        // If requested, register a one-shot callback to set the player's position after the scene finishes loading.
         if (setPlayerPositionOnLoad)
         {
-            UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded_SetPlayerPos;
+            var pos = mapping.playerSpawnPosition;
+            SceneManager.sceneLoaded += (scene, mode) => SetPlayerPosition(pos);
         }
 
-        if (useAdditive)
-            SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
-        else
-            SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
+        var loadMode = mapping.loadAdditively ? LoadSceneMode.Additive : LoadSceneMode.Single;
+        SceneManager.LoadScene(mapping.sceneName, loadMode);
     }
 
-    private void OnSceneLoaded_SetPlayerPos(Scene scene, LoadSceneMode mode)
+    private void SetPlayerPosition(Vector3 position)
     {
-        // Only run once; unsubscribe immediately
-        UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded_SetPlayerPos;
+        SceneManager.sceneLoaded -= (s, m) => SetPlayerPosition(position);
 
-        if (!setPlayerPositionOnLoad) return;
-
-        // If sceneName is set, only apply when the loaded scene matches (or if sceneName empty, apply to any next scene)
-        if (!string.IsNullOrEmpty(sceneName) && !scene.name.Equals(sceneName, System.StringComparison.OrdinalIgnoreCase))
+        var spawn = FindFirstObjectByType<PlayerSpawn>();
+        if (spawn != null)
+        {
+            spawn.SetSpawnPosition(position);
+            Debug.Log($"NextScene: Set spawn position to {position}");
             return;
-
-        // Prefer to configure PlayerSpawn if present; otherwise fall back to moving the Player directly.
-        var playerSpawn = UnityEngine.Object.FindObjectOfType<PlayerSpawn>();
-        if (playerSpawn != null)
-        {
-            playerSpawn.SetSpawnPosition(playerSpawnPosition);
-            Debug.Log($"NextScene: set PlayerSpawn position to {playerSpawnPosition} for scene '{scene.name}'");
         }
-        else
+
+        var player = FindFirstObjectByType<Player>();
+        if (player != null)
         {
-            // Try to find Player and move directly as a fallback
-            var player = UnityEngine.Object.FindFirstObjectByType<Player>();
-            if (player != null)
-            {
-                player.transform.position = playerSpawnPosition;
-                Debug.Log($"NextScene: moved Player to {playerSpawnPosition} after loading scene '{scene.name}'");
-            }
-            else
-            {
-                Debug.LogWarning($"NextScene: could not find Player or PlayerSpawn to set spawn after scene '{scene.name}' loaded.");
-            }
+            player.transform.position = position;
+            Debug.Log($"NextScene: Moved player to {position}");
         }
     }
 }

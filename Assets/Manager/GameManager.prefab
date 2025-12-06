@@ -124,6 +124,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DialogueManager
   dialoguePanel: {fileID: 1699103834146930164}
   dialogueText: {fileID: 1024152637999191562}
+  typingSpeed: 0.04
+  continueIcon: {fileID: 0}
 --- !u!1 &2386408181151040030
 GameObject:
   m_ObjectHideFlags: 0
@@ -881,14 +883,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c699bdb312c3604991cbbc815383206, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NextScene
-  triggerType: 0
-  questRef: {fileID: 11400000, guid: b2dd84ae06524fa418d677d6527930f3, type: 2}
-  questId: 2
-  cutsceneObject: {fileID: 0}
-  sceneName: FalconeHomeScene
+  questMappings: []
+  fallbackSceneName: 
+  fallbackPlayerPosition: {x: -122.6, y: -196.8, z: 0}
   setPlayerPositionOnLoad: 1
-  playerSpawnPosition: {x: -122.6, y: -196.8, z: 0}
-  loadAdditively: 0
 --- !u!1 &8585407252669508984
 GameObject:
   m_ObjectHideFlags: 0

@@ -45,6 +45,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e7ab0853a7d0744ab5581c6be78674a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GoToQuestStep
+  questNPCs:
+  - npc: {fileID: 0}
+    npcName: Farther of Antony_0
+    npcTag: 
+    behavior: 0
+    moveToDestination: {fileID: 0}
+    moveToDestinationName: location
+    pauseDistance: 0
+    resumeDistance: 0
+    arrivalRadius: 0
+    checkInterval: 0
+    attackPlayer: 0
   completeDistance: 0.5
   targetPosition: {x: 0, y: 0, z: 0}
 --- !u!1001 &3536851392221406936
