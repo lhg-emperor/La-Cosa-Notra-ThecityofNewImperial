@@ -45906,7 +45906,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::QuestPoint
   questId: 4
   questInfo: {fileID: 11400000, guid: b1ff4ce0b51a1134da82b914b5fc599f, type: 2}
-  questPrefab: {fileID: 0}
+  questPrefab: {fileID: 2620624701207974996, guid: 3aa9325c02d3efe479285b456655ac3b, type: 3}
   stepIndex: 4
   icon: {fileID: 768143812}
   disableAfterAccept: 1

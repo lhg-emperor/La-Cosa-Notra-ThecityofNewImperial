@@ -28,6 +28,10 @@ public class NextScene : MonoBehaviour
     [Tooltip("When any of these quests finish, load the corresponding scene")]
     public QuestSceneMapping[] questMappings = new QuestSceneMapping[0];
 
+    [Header("Delay Before Loading")]
+    [Tooltip("Delay (in seconds) before loading the next scene")]
+    public float delayBeforeLoad = 2f;
+
     [Header("Player Spawn")]
     [Tooltip("Set player position after scene loads")]
     public bool setPlayerPositionOnLoad = true;
@@ -83,6 +87,15 @@ public class NextScene : MonoBehaviour
         {
             triggeredQuests.Add(questId);
             Debug.Log($"NextScene: Quest '{questId}' finished → Loading '{mapping.sceneName}'");
+            
+            // Signal TurnOff to fade light to dark
+            var turnOff = FindFirstObjectByType<TurnOff>();
+            if (turnOff != null)
+            {
+                turnOff.TurnOffLight();
+                Debug.Log("NextScene: Signaled TurnOff to fade light");
+            }
+            
             LoadScene(mapping);
         }
         else
@@ -105,6 +118,16 @@ public class NextScene : MonoBehaviour
             Debug.Log($"NextScene: Already on '{mapping.sceneName}'");
             return;
         }
+
+        Debug.Log($"NextScene: Waiting {delayBeforeLoad} seconds before loading '{mapping.sceneName}'");
+        StartCoroutine(LoadSceneWithDelay(mapping));
+    }
+
+    private IEnumerator LoadSceneWithDelay(QuestSceneMapping mapping)
+    {
+        yield return new WaitForSeconds(delayBeforeLoad);
+
+        Debug.Log($"NextScene: Now loading '{mapping.sceneName}'");
 
         if (setPlayerPositionOnLoad)
         {
